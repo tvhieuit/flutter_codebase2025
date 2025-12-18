@@ -50,18 +50,18 @@ flutter:
   uses-material-design: true
   generate: true
 
-  assets:
-    - assets/icon/
-    - assets/image/
-    - assets/animation/
-    - assets/image/bank/
+  # assets:
+  #   - assets/icon/
+  #   - assets/image/
+  #   - assets/animation/
+  #   - assets/image/bank/
 
-  fonts:
-    - family: Pretendard
-      fonts:
-        - asset: assets/fonts/Pretendard-Regular.otf
-        - asset: assets/fonts/Pretendard-Bold.otf
-          weight: 700
+  # fonts:
+  #   - family: Pretendard
+  #     fonts:
+  #       - asset: assets/fonts/Pretendard-Regular.otf
+  #       - asset: assets/fonts/Pretendard-Bold.otf
+  #         weight: 700
 
 flutter_gen:
   line_length: 250

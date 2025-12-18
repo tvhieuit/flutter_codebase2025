@@ -1,0 +1,6 @@
+{
+  "app_name": "Flutter App Staging",
+  "api_base_url": "https://api-stg.example.com",
+  "environment": "staging"
+}
+

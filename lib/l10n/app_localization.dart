@@ -91,13 +91,13 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[Locale('en')];
 
-  /// Application name
+  /// No description provided for @app_name.
   ///
   /// In en, this message translates to:
   /// **''**
   String get app_name;
 
-  /// Welcome message
+  /// No description provided for @welcome.
   ///
   /// In en, this message translates to:
   /// **'Welcome'**
@@ -139,7 +139,7 @@ abstract class AppLocalizations {
   /// **'Retry'**
   String get retry;
 
-  /// Splash screen title
+  /// No description provided for @splash_screen_title.
   ///
   /// In en, this message translates to:
   /// **''**

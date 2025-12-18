@@ -1,0 +1,6 @@
+{
+  "app_name": "Flutter App Beta",
+  "api_base_url": "https://api-beta.example.com",
+  "environment": "beta"
+}
+

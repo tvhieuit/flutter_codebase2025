@@ -1,3 +1,12 @@
 {
-  "dart.flutterSdkPath": ".fvm/versions/3.38.5"
+  "dart.flutterSdkPath": ".fvm/flutter_sdk",
+  "debug.toolBarLocation": "commandCenter",
+  "dart.openDevTools": "never",
+  "git.blame.editorDecoration.enabled": true,
+  "editor.inlayHints.enabled": "onUnlessPressed",
+  "editor.fontWeight": "normal",
+  "editor.lineHeight": 24,
+  "arb-editor.suppressedWarnings": [
+    "missing_metadata_for_key"
+  ]
 }

@@ -1,22 +1,13 @@
 {
   "@@locale": "en",
   "app_name": "",
-  "@app_name": {
-    "description": "Application name"
-  },
   "welcome": "Welcome",
-  "@welcome": {
-    "description": "Welcome message"
-  },
   "save": "Save",
   "cancel": "Cancel",
   "delete": "Delete",
   "loading": "Loading...",
   "error": "Error",
   "retry": "Retry",
-  "splash_screen_title": "",
-  "@splash_screen_title": {
-    "description": "Splash screen title"
-  }
+  "splash_screen_title": ""
 }
 
