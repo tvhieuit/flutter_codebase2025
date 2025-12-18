@@ -1,0 +1,22 @@
+{
+  "@@locale": "en",
+  "app_name": "Chauffeur",
+  "@app_name": {
+    "description": "Application name"
+  },
+  "welcome": "Welcome",
+  "@welcome": {
+    "description": "Welcome message"
+  },
+  "save": "Save",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "loading": "Loading...",
+  "error": "Error",
+  "retry": "Retry",
+  "splash_screen_title": "Chauffeur",
+  "@splash_screen_title": {
+    "description": "Splash screen title"
+  }
+}
+
