@@ -36,7 +36,7 @@ lib/
 
 ### Prerequisites
 
-- Flutter SDK 3.35.2 (managed via FVM)
+- Flutter SDK 3.38.5 (managed via FVM)
 - FVM (Flutter Version Management)
 - Melos (for monorepo management)
 
@@ -49,8 +49,8 @@ dart pub global activate fvm
 
 2. Install Flutter version:
 ```bash
-fvm install 3.35.2
-fvm use 3.35.2
+fvm install 3.38.5
+fvm use 3.38.5
 ```
 
 3. Install dependencies:
