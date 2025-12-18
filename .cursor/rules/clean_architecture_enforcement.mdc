@@ -1,0 +1,355 @@
+---
+alwaysApply: true
+---
+
+# Clean Architecture Enforcement Rules
+
+## ❌ NEVER INJECT - Repository Directly in BLoCs
+```dart
+// ❌ WRONG - Direct repository injection violates Clean Architecture
+@injectable
+class MyBloc extends Bloc<MyEvent, MyState> with SafetyNetworkMixin {
+  final MyRepository _repository; // VIOLATION - Skip Use Case layer
+
+  MyBloc(this._repository) : super(MyState.initial());
+
+  Future<void> _doGetData(emit) async {
+    await safeNetworkCall(() async {
+      final result = await _repository.getData(); // WRONG - Direct repository call
+      emit(state.copyWith(data: result));
+    });
+  }
+}
+```
+
+## ✅ ALWAYS INJECT - Use Cases in BLoCs
+```dart
+// ✅ CORRECT - Use Case injection follows Clean Architecture
+@injectable
+class MyBloc extends Bloc<MyEvent, MyState> with SafetyNetworkMixin {
+  final MyUseCase _useCase; // CORRECT - Use Case layer
+
+  MyBloc(this._useCase) : super(MyState.initial());
+
+  Future<void> _doGetData(emit) async {
+    await safeNetworkCall(() async {
+      final result = await _useCase.getData(); // CORRECT - Use Case call
+      emit(state.copyWith(data: result));
+    });
+  }
+}
+```
+
+## Dependency Injection Requirements
+
+### BLoC Registration
+```dart
+// ✅ CORRECT - BLoC with Use Case dependency
+@injectable
+class AuthBloc extends Bloc<AuthEvent, AuthState> with SafetyNetworkMixin {
+  final AuthUseCase _authUseCase;
+  final ValidationUseCase _validationUseCase;
+
+  AuthBloc(
+    this._authUseCase,
+    this._validationUseCase,
+  ) : super(AuthState.initial());
+}
+```
+
+### Use Case Registration
+```dart
+// ✅ CORRECT - Use Case with Repository dependencies
+@Injectable(as: AuthUseCase)
+class AuthUseCaseImpl implements AuthUseCase {
+  final RemoteRepository _remoteRepository;
+  final LocalRepository _localRepository;
+
+  AuthUseCaseImpl(
+    this._remoteRepository,
+    this._localRepository,
+  );
+
+  @override
+  Future<UserEntity> login(String email, String password) async {
+    // Business logic here
+    final response = await _remoteRepository.login(email, password);
+    await _localRepository.saveUserToken(response.token);
+    return UserEntity.fromResponse(response);
+  }
+}
+```
+
+### Repository Registration
+```dart
+// ✅ CORRECT - Repository with interface
+@lazySingleton
+abstract class RemoteRepository {
+  @factoryMethod
+  factory RemoteRepository(Dio dio) = _RemoteRepository;
+
+  Future<LoginResponse> login(String email, String password);
+  Future<UserResponse> getUserProfile();
+}
+
+@Injectable(as: RemoteRepository)
+class _RemoteRepository implements RemoteRepository {
+  final Dio _dio;
+
+  _RemoteRepository(this._dio);
+
+  @override
+  Future<LoginResponse> login(String email, String password) async {
+    final response = await _dio.post('/auth/login', data: {
+      'email': email,
+      'password': password,
+    });
+    return LoginResponse.fromJson(response.data);
+  }
+}
+```
+
+## Factory Parameters for Runtime Dependencies
+
+### ❌ WRONG - Constructor with Runtime Parameters
+```dart
+// ❌ WRONG - Runtime parameters in constructor
+@injectable
+class OrderBloc extends Bloc<OrderEvent, OrderState> {
+  final OrderUseCase _useCase;
+  final String _orderId; // WRONG - Runtime parameter
+
+  OrderBloc(this._useCase, this._orderId) : super(OrderState.initial());
+}
+```
+
+### ✅ CORRECT - Factory Method with @factoryParam
+```dart
+// ✅ CORRECT - Factory method for runtime parameters
+@injectable
+class OrderBloc extends Bloc<OrderEvent, OrderState> {
+  final OrderUseCase _useCase;
+
+  OrderBloc(this._useCase) : super(OrderState.initial());
+
+  @factoryParam
+  static OrderBloc create(String orderId) {
+    final bloc = getIt<OrderBloc>();
+    bloc.add(OrderEvent.initialize(orderId));
+    return bloc;
+  }
+}
+
+// Usage in Widget
+BlocProvider(
+  create: (context) => OrderBloc.create(widget.orderId),
+  child: OrderScreen(),
+)
+```
+
+## Interface Segregation
+
+### Abstract Interfaces Required
+```dart
+// ✅ REQUIRED - Abstract interface for Use Case
+abstract class AuthUseCase {
+  Future<UserEntity> login(String email, String password);
+  Future<void> logout();
+  Future<UserEntity> getCurrentUser();
+}
+
+// ✅ REQUIRED - Abstract interface for Repository
+abstract class RemoteRepository {
+  Future<LoginResponse> login(String email, String password);
+  Future<UserResponse> getUserProfile();
+}
+
+// ✅ REQUIRED - Abstract interface for Local Repository
+abstract class LocalRepository {
+  Future<void> saveUserToken(String token);
+  Future<String?> getUserToken();
+  Future<void> clearUserData();
+}
+```
+
+## Module Registration for Third-Party Dependencies
+
+```dart
+// ✅ CORRECT - Module for external dependencies
+@module
+abstract class NetworkModule {
+  @lazySingleton
+  Dio get dio {
+    final dio = Dio();
+    dio.options.connectTimeout = const Duration(seconds: 30);
+    dio.options.receiveTimeout = const Duration(seconds: 30);
+    dio.interceptors.add(LogInterceptor());
+    return dio;
+  }
+
+  @lazySingleton
+  @Named('baseUrl')
+  String get baseUrl => Environment.apiBaseUrl;
+}
+
+@module
+abstract class StorageModule {
+  @lazySingleton
+  SharedPreferences get prefs => SharedPreferences.getInstance();
+}
+```
+
+## Environment-Specific Configuration
+
+```dart
+// ✅ CORRECT - Environment configuration
+@module
+abstract class ConfigModule {
+  @lazySingleton
+  @Named('apiKey')
+  String get apiKey => Environment.apiKey;
+
+  @lazySingleton
+  @Named('environment')
+  String get environment => Environment.current;
+
+  @lazySingleton
+  @Named('enableLogging')
+  bool get enableLogging => Environment.isDebug;
+}
+
+// Usage in Repository
+@Injectable(as: RemoteRepository)
+class _RemoteRepository implements RemoteRepository {
+  final Dio _dio;
+  final String _apiKey;
+
+  _RemoteRepository(
+    this._dio,
+    @Named('apiKey') this._apiKey,
+  );
+}
+```
+
+## Error Handling in Clean Architecture
+
+### Use Case Error Handling
+```dart
+// ✅ CORRECT - Use Case handles domain errors
+@Injectable(as: AuthUseCase)
+class AuthUseCaseImpl implements AuthUseCase {
+  @override
+  Future<Either<AppError, UserEntity>> login(String email, String password) async {
+    try {
+      // Validation
+      if (email.isEmpty || password.isEmpty) {
+        return left(AppError.validation('Email and password required'));
+      }
+
+      // Repository call
+      final response = await _remoteRepository.login(email, password);
+
+      // Domain logic
+      final user = UserEntity.fromResponse(response);
+      await _localRepository.saveUserToken(response.token);
+
+      return right(user);
+    } on NetworkException catch (e) {
+      return left(AppError.network(e.message));
+    } on ServerException catch (e) {
+      return left(AppError.server(e.message));
+    } catch (e) {
+      return left(AppError.unknown(e.toString()));
+    }
+  }
+}
+```
+
+### BLoC Error Handling
+```dart
+// ✅ CORRECT - BLoC handles Use Case results
+Future<void> _doLogin(_DoLogin event, emit) async {
+  await safeNetworkCall(
+    () async {
+      emit(state.copyWith(isLoading: true, error: null));
+
+      final result = await _authUseCase.login(event.email, event.password);
+
+      result.fold(
+        (error) => emit(state.copyWith(
+          error: error.message,
+          isLoading: false,
+        )),
+        (user) => emit(state.copyWith(
+          user: user,
+          isLoading: false,
+          isAuthenticated: true,
+        )),
+      );
+    },
+    onError: (error) {
+      emit(state.copyWith(
+        error: 'Unexpected error occurred',
+        isLoading: false,
+      ));
+    },
+  );
+}
+```
+
+## Validation Rules
+
+### Pre-commit Hook for Architecture
+```bash
+#!/bin/bash
+echo "🏗️ Validating Clean Architecture compliance..."
+
+# Check for Repository injection in BLoCs
+if find lib/screen -name "*_bloc.dart" -exec grep -l "Repository.*_" {} \; | head -1; then
+    echo "❌ Found Repository injection in BLoCs. Use Use Cases instead."
+    echo "Files with violations:"
+    find lib/screen -name "*_bloc.dart" -exec grep -l "Repository.*_" {} \;
+    exit 1
+fi
+
+# Check for missing abstract interfaces
+if find lib/use_case -name "*.dart" ! -name "*_impl.dart" -exec grep -L "abstract class" {} \; | head -1; then
+    echo "❌ Found Use Cases without abstract interfaces"
+    echo "Files missing interfaces:"
+    find lib/use_case -name "*.dart" ! -name "*_impl.dart" -exec grep -L "abstract class" {} \;
+    exit 1
+fi
+
+# Check for missing @injectable annotations
+if find lib/screen -name "*_bloc.dart" -exec grep -L "@injectable" {} \; | head -1; then
+    echo "❌ Found BLoCs without @injectable annotation"
+    echo "Files missing @injectable:"
+    find lib/screen -name "*_bloc.dart" -exec grep -L "@injectable" {} \;
+    exit 1
+fi
+
+echo "✅ Clean Architecture compliance validated"
+```
+
+## Summary
+
+### ✅ MUST DO
+- Inject Use Cases in BLoCs, never Repositories
+- Implement abstract interfaces for all layers
+- Use @injectable, @lazySingleton, @singleton annotations
+- Use @factoryParam for runtime parameters
+- Handle errors at appropriate layers
+
+### ❌ NEVER DO
+- Inject Repositories directly in BLoCs
+- Skip abstract interfaces
+- Use constructors for runtime parameters
+- Mix presentation logic with business logic
+- Skip dependency injection annotations
+
+### 🎯 Architecture Goals
+- Separation of concerns
+- Testability
+- Maintainability
+- Scalability
+- Clean dependencies flow

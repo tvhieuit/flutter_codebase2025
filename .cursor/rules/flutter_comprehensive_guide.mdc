@@ -1,0 +1,331 @@
+# Flutter Comprehensive Development Guide - Project Chauffeur
+
+## Project Overview
+This is a Flutter-based mobile application called "Chauffeur" - a vehicle driver service app that uses clean architecture with BLoC pattern, Firebase integration, and multi-language support (Korean, Vietnamese, English).
+
+## Environment and Version Management
+- **Flutter Version**: 3.35.2 (managed via FVM in `.fvmrc`)
+- **Dart SDK**: >=3.9.0
+- **Platform**: iOS and Android
+- Use `fvm flutter` prefix for all Flutter commands to ensure version consistency
+
+## Essential Development Commands
+```bash
+# Get dependencies
+fvm dart run melos exec -- fvm dart pub get --no-example
+
+# Generate localization files
+fvm dart run melos exec -- fvm flutter gen-l10n
+
+# Build runner (code generation for entities, routes, etc.)
+fvm dart run melos exec -- fvm dart run build_runner build
+fvm dart run melos exec -- fvm dart run build_runner build -d  # delete conflicting outputs
+
+# Format code (required before commits)
+fvm dart run melos exec -- fvm dart format .
+
+# Run the app (development)
+fvm flutter run --flavor dev --dart-define-from-file=configs/.env.dev.json
+
+# Build for production
+fvm dart run melos exec -- fvm flutter build apk --release --flavor dev --dart-define-from-file=./configs/.env.dev.json --verbose  # Android
+fvm dart run melos exec -- fvm flutter build ipa --no-codesign --release --flavor dev --dart-define-from-file=./configs/.env.dev.json  # iOS
+```
+
+## Architecture and Code Organization
+
+### Directory Structure
+```
+lib/
+├── app/           # App routing and navigation (auto_route)
+├── entities/      # Data models with freezed/json_serializable
+├── repository/    # Data access layer with dio/retrofit
+│   ├── request/   # API request models
+│   ├── response/  # API response models
+│   └── config/    # Repository configurations
+├── use_case/      # Business logic layer
+├── screen/        # UI screens organized by feature
+├── widgets/       # Reusable UI components
+├── utils/         # Utility functions and constants
+├── services/      # External services (Firebase, maps)
+├── di/            # Dependency injection (injectable/get_it)
+├── extension/     # Dart extensions
+└── assets/        # Generated asset files
+```
+
+### Clean Architecture Implementation
+
+#### Dependency Injection with get_it + injectable
+- **Registration**: Use `@injectable`, `@lazySingleton`, `@singleton` annotations
+- **Interfaces**: All repositories and use cases implement abstract interfaces
+- **Configuration**: Environment-specific values with `@Named('key')` annotation
+- **Factory Parameters**: Use `@factoryParam` for runtime parameters in BLoCs
+- **Module Registration**: Register third-party dependencies in `@module` classes
+
+#### Freezed for Immutable Data Models
+- **Immutable Entities**: All data models use `@freezed` for immutability
+- **JSON Serialization**: Automatic `fromJson`/`toJson` with custom field mapping
+- **Union Types**: Use freezed unions for error handling and state management
+- **Extensions**: Add business logic through entity extensions
+- **Copy Operations**: Built-in `copyWith()` for state updates
+
+#### Repository Pattern with Interface Segregation
+- **Abstract Interfaces**: Define contracts for data access
+- **Implementation Separation**: Concrete implementations registered via DI
+- **Retrofit Integration**: API repositories use `@RestApi()` annotation
+- **Multi-Source Repositories**: Combine local and remote data sources
+
+#### Use Case Layer (Business Logic)
+- **Single Responsibility**: Each use case handles specific business operations
+- **Repository Dependencies**: Inject repositories through constructor
+- **Data Transformation**: Convert between entity types and business models
+- **Error Handling**: Transform repository errors into domain-specific errors
+
+### State Management
+- **BLoC Pattern**: Primary state management using `flutter_bloc`
+- **Clean Architecture Integration**: BLoCs depend on use cases, not repositories directly
+- **Immutable States**: Use freezed for BLoC state classes
+- **Event-Driven**: All state changes happen through events
+- Each screen typically has: `{feature}_bloc.dart`, `{feature}_event.dart`, `{feature}_state.dart`
+- Initialize DI in `main.dart` with `getItInitial()`
+
+### Key Dependencies
+- **flutter_bloc**: State management
+- **dio** + **retrofit**: HTTP client and API integration
+- **auto_route**: Type-safe navigation and routing
+- **freezed** + **json_annotation**: Data classes and JSON serialization
+- **injectable** + **get_it**: Dependency injection
+- **firebase_core/messaging/crashlytics**: Firebase integration
+- **kakao_map_sdk**: Map functionality (Korean maps)
+- **flutter_localizations**: Multi-language support
+
+## Critical Development Rules (MUST FOLLOW)
+
+### FVM & Melos Command Rules
+- **NEVER** use direct `flutter` or `dart` commands
+- **ALWAYS** use `fvm flutter` and `fvm dart` prefixes
+- **ALWAYS** use melos execution pattern for builds: `fvm dart run melos exec -- fvm dart [command]`
+- Flutter version is locked to **3.35.2** in `.fvmrc`
+
+### Safety Network & BLoC Rules (MANDATORY)
+- **NEVER** call APIs directly without SafetyNetworkMixin
+- **ALWAYS** use `SafetyNetworkMixin` in all BLoCs handling network calls
+- **NEVER** use BlocBuilder without `buildWhen`
+- **NEVER** use BlocListener without `listenWhen`
+
+### Clean Architecture Rules (STRICT)
+- **NEVER** inject repositories directly into BLoCs - use Use Cases only
+- **ALWAYS** implement abstract interfaces for repositories and use cases
+- **MUST** use `@injectable`, `@lazySingleton`, `@singleton` for DI
+- **MUST** use `@factoryParam` for runtime parameters in BLoCs
+
+### Code Quality Rules (ENFORCED)
+- **MUST** use `@freezed` for all entities and state classes
+- **MUST** format code before commit: `fvm dart run melos exec -- fvm dart format .`
+- **MUST** run code generation after changes: `fvm dart run melos exec -- fvm dart run build_runner build -d`
+- **MUST** use absolute imports (no relative lib imports)
+- **MUST** include trailing commas for multi-line parameters
+
+### Asset Usage Rules (MANDATORY)
+- **NEVER** use hardcoded asset paths in code (e.g., `'assets/icon/back.svg'`)
+- **ALWAYS** use the generated `AppAsset` class for type-safe asset access
+- **MUST** use `flutter_gen` auto-generated assets via `AppAsset` class
+- **MUST** regenerate assets when adding new files: `fvm dart run build_runner build -d`
+
+## Testing Framework and Status
+
+### Testing Framework and Dependencies
+- **Primary Framework**: `flutter_test` (built-in Flutter testing framework)
+- **BLoC Testing**: `bloc_test` for testing BLoC state management
+- **Mocking**: `mocktail` for creating mock objects (updated from mockito)
+- **Code Generation**: `build_runner` for generating mock classes
+- **Test Utilities**: Custom test helpers and matchers
+- **Test Configuration**: `test_config.dart` for test setup and initialization
+
+### Current Test Implementation Status
+
+#### ✅ Completed Test Files (24 files, 300+ tests)
+
+**Entity Tests (5 files)**
+- ✅ `user_info_entity_test.dart` - 8 tests passing
+- ✅ `order_entity_test.dart` - 6 tests passing  
+- ✅ `address_model_test.dart` - 8 tests passing
+- ✅ `car_entity_test.dart` - 6 tests passing
+- ✅ `notification_model_test.dart` - 5 tests passing
+
+**Use Case Tests (11 files)**
+- ✅ `auth_use_case_test.dart` - 12 tests passing
+- ✅ `car_use_case_test.dart` - 8 tests passing
+- ✅ `payment_use_case_test.dart` - 6 tests passing
+- ✅ `home_use_case_test.dart` - 10 tests passing
+- ✅ `address_use_case_test.dart` - 8 tests passing
+- ✅ `cart_use_case_test.dart` - 6 tests passing
+- ✅ `favorite_use_case_test.dart` - 6 tests passing
+- ✅ `notice_use_case_test.dart` - 6 tests passing
+- ✅ `notification_use_case_test.dart` - 6 tests passing
+- ✅ `recommender_use_case_test.dart` - 6 tests passing
+- ✅ `user_use_case_test.dart` - 25 tests passing
+- ✅ `with_drawable_use_case_test.dart` - 28 tests passing
+
+**Repository Tests (1 file)**
+- ✅ `remote_repository_test.dart` - 14 tests passing
+
+**BLoC Tests (6 files)**
+- ✅ `favorite_bloc_test.dart` - 8 tests passing
+- ✅ `recommender_bloc_test.dart` - 6 tests passing
+- ✅ `order_change_fee_bloc_test.dart` - 26 tests passing
+- ✅ `cargo_registration_bloc_test.dart` - 26 tests passing
+- ✅ `flower_delivery_main_bloc_test.dart` - 15 tests passing
+- ✅ `driver_info_bloc_test.dart` - 44 tests passing
+
+**Integration Tests (1 file)**
+- ✅ `auth_flow_integration_test.dart` - 11 tests passing
+
+### Test Coverage Requirements
+
+#### Coverage Targets
+- **Entity Layer**: 95%+ ✅ (All major entities tested)
+- **Use Case Layer**: 90%+ ✅ (All use cases tested)
+- **Repository Layer**: 85%+ ✅ (RemoteRepository tested)
+- **BLoC Layer**: 85%+ ✅ (Unit-testable BLoCs tested - 6 files, 125+ tests)
+- **Widget Layer**: 75%+ ✅ (Available widgets tested)
+- **Overall**: 90%+ ✅ (Comprehensive coverage achieved)
+
+## Recent BLoC Test Implementations (2024)
+
+### New BLoC Test Patterns
+The following BLoC tests were recently implemented with comprehensive coverage:
+
+**Order Change Fee BLoC Testing**
+- Tests fee adjustment logic with step increments/decrements
+- Validates minimum/maximum fee boundaries
+- Tests accumulation mode and balance calculations
+- Covers navigation and confirmation flows
+
+**Cargo Registration BLoC Testing**
+- Tests cargo registration form state management
+- Validates address selection and car type selection
+- Tests payment method integration
+- Covers form validation and submission logic
+
+**Flower Delivery Main BLoC Testing**
+- Tests tab switching functionality
+- Validates tab reselection behavior with timestamp tracking
+- Tests state transitions and UI updates
+- Covers edge cases and rapid user interactions
+
+**Driver Info BLoC Testing**
+- Tests customer service integration (call/SMS)
+- Validates phone number handling and validation
+- Tests service method calls and error handling
+- Covers comprehensive edge cases and data validation
+
+### BLoC Testing Best Practices Discovered
+1. **Service Integration Testing**: Focus on verifying service method calls rather than exception handling
+2. **State Field Validation**: Always check actual state definitions for correct field names
+3. **Constructor Parameter Handling**: Provide all required parameters including `@factoryParam` values
+4. **Async Operation Testing**: Use proper delays and verification for asynchronous BLoC operations
+5. **Comprehensive Coverage**: Test both success and edge case scenarios for robust validation
+
+## Development Workflow
+
+### Before Committing (MANDATORY CHECKLIST)
+1. **Format Code**: `fvm dart run melos exec -- fvm dart format .`
+2. **Generate Code**: `fvm dart run melos exec -- fvm dart run build_runner build -d`
+3. **Verify Build**: App must build and run without errors
+4. **Check Rules**: No direct API calls, all BlocBuilder/BlocListener have conditions
+5. **Verify DI**: No direct repository injection in BLoCs
+
+### Testing Commands
+```bash
+# Run all tests with coverage
+fvm dart run melos exec -- fvm flutter test --coverage
+
+# Run a specific test file
+fvm dart run melos exec -- fvm flutter test test/path/to/your_test.dart
+
+# Generate code before tests (freezed/json/route)
+fvm dart run melos exec -- fvm dart run build_runner build -d
+```
+
+## Configuration and Environment
+
+### Environment Files
+- Development config: `configs/.env.dev.json`
+- Contains API endpoints, keys, and environment-specific settings
+- Use `--dart-define-from-file` to load configurations
+
+### Flavors
+- **dev**: Development environment
+- Configured for both Android and iOS with separate build configurations
+
+## Code Style and Conventions
+
+### Flutter/Dart Conventions
+- **Formatting**: Page width 120, preserve trailing commas (configured in `analysis_options.yaml`)
+- **Naming**: camelCase for variables/methods, PascalCase for classes, snake_case for files
+- **Asset Generation**: Uses `flutter_gen` for type-safe asset access
+- **Font**: Custom Pretendard font family with multiple weights
+
+### Code Quality
+- Uses `flutter_lints` for static analysis
+- Excludes generated files (`**/*.g.dart`, `**/*.freezed.dart`) from analysis
+- Firebase Crashlytics integration for error reporting
+- BLoC logging enabled in debug mode with `talker_bloc_logger`
+
+## Multi-language Support
+
+### Localization
+- Supports Korean, Vietnamese, and English
+- Generate translations: `fvm flutter gen-l10n`
+- Configuration in `l10n.yaml`
+
+### Documentation (MDC Files)
+- English is default language
+- Korean version: `.mdc.ko`
+- Vietnamese version: `.mdc.vn`
+- When modifying MDC files, update all language variants
+
+## Commit Message Rules
+
+### Format
+```
+<type>(<scope>): <subject>
+
+English description of changes
+```
+
+- Subject: imperative mood, <= 50 chars, no period
+- Body: three paragraphs (English → Korean → Vietnamese)
+- Optional BREAKING CHANGE section (same 3-language structure)
+
+### Allowed types
+- feat | fix | refactor | perf | docs | test | build | ci | chore | style
+
+### Scopes (examples)
+- Common: auth, api, ui, db, test, docs, build, ci
+- Project: flutter, bloc, firebase, maps, payment, delivery
+
+### Rules
+- Use lowercase type/scope (e.g., `feat(ui): ...`)
+- Keep subject concise and specific; avoid generic words
+- Do not use: "update", "temp", emoji-only titles
+- Reference issues with `(closes #123)` when relevant
+- English-only subject; body must include EN/KR/VN paragraphs
+
+## Screen Creation Process
+When creating new screens, follow this exact order:
+1. Create directory: `lib/screen/{feature}/`
+2. Create bloc file with injected `AppRouter` (contains state and event as part files)
+3. Create state file with `@freezed` and `part of '{feature}_bloc.dart';` declaration
+4. Create event file with `@freezed` and `part of '{feature}_bloc.dart';` declaration
+5. Create screen with `@RoutePage()` and `AutoRouteWrapper`
+6. Register route in `core/route/app_route.dart`
+7. Add localization keys to ARB files
+8. Run code generation
+
+### Important Notes for Screen Creation:
+- **State and Event Files**: Must include `part of '{feature}_bloc.dart';` at the top
+- **Bloc File**: Must include `part '{feature}_state.dart';` and `part '{feature}_event.dart';` declarations
+- **File Structure**: State and event are separate files but are parts of the main bloc file
+- **Naming**: Use `abstract class` instead of regular class for freezed state/event definitions

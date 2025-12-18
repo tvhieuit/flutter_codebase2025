@@ -1,0 +1,309 @@
+---
+alwaysApply: true
+---
+
+# FontSize Rules - Project Chauffeur
+
+## Required FontSize Rules
+
+### 🚫 DO NOT USE
+```dart
+// ❌ WRONG - Do not use fixed numbers
+Text(
+  'Hello World',
+  style: TextStyle(fontSize: 16),        // WRONG
+)
+
+// ❌ WRONG - Do not use const with fixed numbers
+Text(
+  'Hello World',
+  style: TextStyle(fontSize: 16.0),      // WRONG
+)
+
+// ❌ WRONG - Do not use fixed double
+Text(
+  'Hello World',
+  style: TextStyle(fontSize: 16.5),      // WRONG
+)
+```
+
+### ✅ MUST USE
+```dart
+// ✅ CORRECT - Use .sp with ScreenUtil
+Text(
+  'Hello World',
+  style: TextStyle(fontSize: 16.sp),     // CORRECT
+)
+
+// ✅ CORRECT - Use .sp with const
+Text(
+  'Hello World',
+  style: TextStyle(fontSize: 16.0.sp),   // CORRECT
+)
+
+// ✅ CORRECT - Use .sp with double
+Text(
+  'Hello World',
+  style: TextStyle(fontSize: 16.5.sp),   // CORRECT
+)
+```
+
+## Required Imports
+
+### In every file using fontSize
+```dart
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+```
+
+### Or use extension
+```dart
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+// Use extension
+Text(
+  'Hello World',
+  style: TextStyle(fontSize: 16.sp),
+)
+```
+
+## Usage Cases
+
+### 1. TextStyle
+```dart
+TextStyle(
+  fontSize: 14.sp,        // Body text
+  fontWeight: FontWeight.w400,
+)
+
+TextStyle(
+  fontSize: 16.sp,        // Title text
+  fontWeight: FontWeight.w600,
+)
+
+TextStyle(
+  fontSize: 20.sp,        // Heading text
+  fontWeight: FontWeight.w700,
+)
+```
+
+### 2. Theme TextTheme
+```dart
+Theme(
+  data: Theme.of(context).copyWith(
+    textTheme: TextTheme(
+      bodyLarge: TextStyle(fontSize: 16.sp),
+      bodyMedium: TextStyle(fontSize: 14.sp),
+      titleLarge: TextStyle(fontSize: 22.sp),
+      titleMedium: TextStyle(fontSize: 20.sp),
+      titleSmall: TextStyle(fontSize: 18.sp),
+    ),
+  ),
+  child: child,
+)
+```
+
+### 3. Custom Text Styles
+```dart
+class AppTextStyles {
+  static TextStyle get heading1 => TextStyle(
+    fontSize: 24.sp,
+    fontWeight: FontWeight.w700,
+  );
+  
+  static TextStyle get body1 => TextStyle(
+    fontSize: 16.sp,
+    fontWeight: FontWeight.w400,
+  );
+  
+  static TextStyle get caption => TextStyle(
+    fontSize: 12.sp,
+    fontWeight: FontWeight.w300,
+  );
+}
+```
+
+## FontSize Naming Rules
+
+### Use meaningful names
+```dart
+// ✅ CORRECT - Clear names
+static const double fontSizeSmall = 12.0;
+static const double fontSizeBody = 14.0;
+static const double fontSizeTitle = 18.0;
+static const double fontSizeHeading = 24.0;
+
+// Usage
+TextStyle(fontSize: fontSizeSmall.sp)
+TextStyle(fontSize: fontSizeBody.sp)
+```
+
+### Or use enum
+```dart
+enum AppFontSize {
+  small(12.0),
+  body(14.0),
+  title(18.0),
+  heading(24.0);
+  
+  const AppFontSize(this.size);
+  final double size;
+  
+  double get sp => size.sp;
+}
+
+// Usage
+TextStyle(fontSize: AppFontSize.title.sp)
+```
+
+## Responsive FontSize
+
+### Use .sp for responsive
+```dart
+// ✅ ĐÚNG - Responsive theo screen size
+Text(
+  'Responsive Text',
+  style: TextStyle(
+    fontSize: 16.sp,        // Automatically scales by device
+  ),
+)
+
+// ✅ CORRECT - Responsive with min/max
+Text(
+  'Responsive Text',
+  style: TextStyle(
+    fontSize: 16.sp.clamp(12.sp, 20.sp),  // Limit min/max
+  ),
+)
+```
+
+## Linter Rules
+
+### Add to analysis_options.yaml
+```yaml
+analyzer:
+  rules:
+    - avoid_fixed_font_size
+    
+custom_lint:
+  rules:
+    - avoid_fixed_font_size
+```
+
+### Custom Linter Rule
+```dart
+// Create custom linter rule to check fontSize
+class FontSizeLinter extends DartLinterRule {
+  FontSizeLinter() : super(
+    name: 'font_size_must_use_sp',
+    description: 'FontSize must use .sp',
+    group: Group.style,
+  );
+  
+  @override
+  void run(
+    CustomLintResolver resolver,
+    ErrorReporter reporter,
+    CustomLintContext context,
+  ) {
+    // Implementation to check fontSize
+  }
+}
+```
+
+## Best Practices
+
+### 1. Use constants
+```dart
+class AppFontSizes {
+  static const double xs = 10.0;
+  static const double sm = 12.0;
+  static const double md = 14.0;
+  static const double lg = 16.0;
+  static const double xl = 18.0;
+  static const double xxl = 20.0;
+  static const double xxxl = 24.0;
+}
+
+// Usage
+TextStyle(fontSize: AppFontSizes.lg.sp)
+```
+
+### 2. Use extension
+```dart
+extension FontSizeExtension on double {
+  double get sp => this.sp;
+}
+
+// Usage
+TextStyle(fontSize: 16.sp)
+```
+
+### 3. Use mixin
+```dart
+mixin FontSizeMixin {
+  double get fontSizeSmall => 12.sp;
+  double get fontSizeBody => 14.sp;
+  double get fontSizeTitle => 18.sp;
+  double get fontSizeHeading => 24.sp;
+}
+
+class MyWidget extends StatelessWidget with FontSizeMixin {
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      'Hello',
+      style: TextStyle(fontSize: fontSizeTitle),
+    );
+  }
+}
+```
+
+## Checking and Validation
+
+### Pre-commit Hook
+```bash
+#!/bin/bash
+# Check fontSize in code
+grep -r "fontSize: [0-9]" lib/ | grep -v ".sp"
+if [ $? -eq 0 ]; then
+  echo "❌ Found fontSize not using .sp"
+  exit 1
+fi
+echo "✅ All fontSize uses .sp"
+```
+
+### CI/CD Check
+```yaml
+# GitHub Actions
+- name: Check FontSize Usage
+  run: |
+    if grep -r "fontSize: [0-9]" lib/ | grep -v ".sp"; then
+      echo "❌ FontSize not using .sp"
+      exit 1
+    fi
+    echo "✅ FontSize check passed"
+```
+
+## Summary
+
+### ✅ MUST DO
+- Always use `.sp` with all fontSize
+- Import `flutter_screenutil` in every file
+- Use constants for fontSize
+- Responsive design with .sp
+
+### ❌ DO NOT
+- Use fixed numbers for fontSize
+- Forget to import flutter_screenutil
+- Hardcode fontSize values
+- Not responsive
+
+### 🎯 Goals
+- All text in app is responsive
+- Consistent font sizing across devices
+- Easy maintenance and scaling
+- Professional code quality
+description:
+globs:
+alwaysApply: true
+---

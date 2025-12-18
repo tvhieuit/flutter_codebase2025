@@ -1,0 +1,371 @@
+---
+alwaysApply: true
+---
+# Flutter Architecture - Project Chauffeur
+
+## Architecture Overview
+Project Chauffeur uses **Feature-Based Architecture** combined with **Clean Architecture** principles to create a clear, maintainable and scalable code structure.
+
+## Main Directory Structure
+
+```
+lib/
+├── app/                    # App configuration & routing
+├── app_mixin/             # Shared mixins
+├── assets/                # Asset utilities
+├── converter/             # Data converters
+├── di/                    # Dependency Injection
+├── entities/              # Data models & entities
+├── extension/             # Extension methods
+├── l10n/                  # Localization
+├── map/                   # Map related features
+├── repository/            # Data layer
+├── screen/                # UI screens & features
+├── services/              # External services
+├── use_case/              # Business logic
+├── utils/                 # Utility classes
+└── widgets/               # Reusable UI components
+```
+
+## Layer-by-Layer Architecture
+
+### 1. Presentation Layer (`screen/`)
+- **BLoC Pattern**: Uses `flutter_bloc` for state management
+- **Feature-based organization**: Each feature has its own directory
+- **Separation of concerns**: Each screen has separate bloc, event, page files
+
+```
+screen/
+├── auth/                  # Authentication features
+│   ├── signup/
+│   │   ├── signup_bloc.dart
+│   │   ├── signup_event.dart
+│   │   ├── signup_page.dart
+│   │   └── signup_state.dart
+│   └── verify_phone/
+├── main/                  # Main app features
+│   ├── deariya/          # Deariya service
+│   ├── fastdelivery/     # Fast delivery service
+│   └── flowerdelivery/   # Flower delivery service
+└── shared/                # Shared screens
+```
+
+### 2. Business Logic Layer (`use_case/`)
+- **Single Responsibility**: Each use case handles only one business logic
+- **Dependency Injection**: Uses `get_it` and `injectable`
+- **Testable**: Easy to write unit tests
+
+```dart
+@injectable
+class AddressUseCase {
+  final AddressRepository _repository;
+  
+  AddressUseCase(this._repository);
+  
+  Future<List<AddressModel>> getAddresses() async {
+    return await _repository.getAddresses();
+  }
+}
+```
+
+### 3. Data Layer (`repository/`)
+- **Repository Pattern**: Abstract interface for data access
+- **Multiple Data Sources**: API, Local Storage, Cache
+- **Error Handling**: Centralized error handling
+
+```dart
+abstract class AddressRepository {
+  Future<List<AddressModel>> getAddresses();
+  Future<void> saveAddress(AddressModel address);
+}
+
+class AddressRepositoryImpl implements AddressRepository {
+  final ApiService _apiService;
+  final LocalStorage _localStorage;
+  
+  // Implementation...
+}
+```
+
+### 4. Domain Layer (`entities/`)
+- **Freezed**: Immutable data classes
+- **JSON Serialization**: Auto-generated from/to JSON
+- **Type Safety**: Strong typing with nullable support
+
+```dart
+@freezed
+abstract class AddressModel with _$AddressModel {
+  const factory AddressModel({
+    int? id,
+    @JsonKey(name: 'address_name') String? name,
+    @JsonKey(name: 'y') double? lat,
+    @JsonKey(name: 'x') double? lng,
+  }) = _AddressModel;
+
+  factory AddressModel.fromJson(Map<String, dynamic> json) => 
+      _$AddressModelFromJson(json);
+}
+```
+
+## State Management
+
+### BLoC Pattern
+- **Event-driven**: UI sends events to BLoC
+- **State-based**: BLoC emits states for UI rebuild
+- **Separation**: UI doesn't know about business logic
+
+```dart
+// Event
+abstract class DeariyaMainEvent {
+  const DeariyaMainEvent();
+}
+
+class DeariyaMainEventStart extends DeariyaMainEvent {}
+
+// State
+@freezed
+abstract class DeariyaMainState with _$DeariyaMainState {
+  const factory DeariyaMainState({
+    @Default(false) bool isLoading,
+    List<AddressModel>? addresses,
+    // ... other fields
+  }) = _DeariyaMainState;
+}
+
+// BLoC
+class DeariyaMainBloc extends Bloc<DeariyaMainEvent, DeariyaMainState> {
+  DeariyaMainBloc() : super(const DeariyaMainState()) {
+    on<DeariyaMainEventStart>(_onStart);
+  }
+  
+  Future<void> _onStart(
+    DeariyaMainEventStart event,
+    Emitter<DeariyaMainState> emit,
+  ) async {
+    // Business logic
+  }
+}
+```
+
+## Dependency Injection (CRITICAL RULES)
+
+### GetIt + Injectable (REQUIRED)
+- **MUST** use Service Locator Pattern with `GetIt`
+- **MUST** use `injectable` annotations for code generation
+- **MUST** implement abstract interfaces for all repositories and use cases
+- **NEVER** inject repositories directly into BLoCs
+- **MUST** use @factoryParam for runtime parameters in BLoCs
+
+### Required DI Annotations
+```dart
+@injectable        // For classes that have dependencies
+@lazySingleton    // For services that should be created once when first requested
+@singleton        // For services that should be created immediately
+@factoryMethod    // For factory constructors
+@factoryParam     // For runtime parameters (especially in BLoCs)
+@module          // For third-party dependency registration
+@Named('key')    // For environment-specific values
+```
+
+### Repository Interface Pattern (REQUIRED)
+```dart
+// Abstract interface - MUST be defined
+abstract class AddressRepository {
+  Future<List<AddressModel>> getAddresses();
+  Future<void> saveAddress(AddressModel address);
+}
+
+// Implementation - MUST implement abstract interface
+@Injectable(as: AddressRepository)
+class AddressRepositoryImpl implements AddressRepository {
+  final ApiService _apiService;
+  final LocalStorage _localStorage;
+  
+  AddressRepositoryImpl(this._apiService, this._localStorage);
+  
+  @override
+  Future<List<AddressModel>> getAddresses() async {
+    // Implementation
+  }
+}
+```
+
+### Use Case Pattern (REQUIRED)
+```dart
+// Abstract interface - MUST be defined
+abstract class AddressUseCase {
+  Future<List<AddressModel>> getAddresses();
+  Future<void> saveAddress(AddressModel address);
+}
+
+// Implementation - MUST implement abstract interface
+@Injectable(as: AddressUseCase)
+class AddressUseCaseImpl implements AddressUseCase {
+  final AddressRepository _repository;
+  final ValidationService _validation;
+  
+  AddressUseCaseImpl(this._repository, this._validation);
+  
+  @override
+  Future<List<AddressModel>> getAddresses() async {
+    // Business logic here
+    return await _repository.getAddresses();
+  }
+}
+```
+
+### BLoC Dependency Injection (REQUIRED)
+```dart
+@injectable
+class AddressBloc extends Bloc<AddressEvent, AddressState> 
+    with SafetyNetworkMixin {
+  final AddressUseCase _useCase; // NEVER inject repository directly
+  
+  AddressBloc(this._useCase) : super(AddressState.initial()) {
+    on<AddressEventLoad>(_onLoad);
+  }
+  
+  // Factory parameters for runtime data
+  @factoryParam
+  static AddressBloc create(String initialFilter) {
+    return AddressBloc(getIt<AddressUseCase>())
+      ..add(AddressEventLoad(filter: initialFilter));
+  }
+}
+```
+
+### Module Registration (REQUIRED)
+```dart
+// di_module.dart
+@module
+abstract class DiModule {
+  // Third-party dependencies
+  @singleton
+  Dio get dio => Dio();
+  
+  @singleton
+  ApiService get apiService => ApiService(dio);
+  
+  // Environment-specific values
+  @Named('apiBaseUrl')
+  String get apiBaseUrl => const String.fromEnvironment('API_BASE_URL');
+  
+  @Named('isDebug')
+  bool get isDebug => kDebugMode;
+}
+
+// main.dart
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await configureDependencies(); // MUST be called before runApp
+  runApp(MyApp());
+}
+```
+
+### Clean Architecture Layer Dependencies
+```dart
+// ❌ WRONG - BLoC depends on Repository directly
+class MyBloc {
+  final MyRepository _repository; // VIOLATION
+}
+
+// ✅ CORRECT - BLoC depends on Use Case only
+class MyBloc {
+  final MyUseCase _useCase; // CORRECT
+}
+
+// ❌ WRONG - Use Case depends on external services
+class MyUseCase {
+  final HttpClient _http; // VIOLATION
+  final DatabaseClient _db; // VIOLATION  
+}
+
+// ✅ CORRECT - Use Case depends on Repository interface
+class MyUseCase {
+  final MyRepository _repository; // CORRECT - Interface only
+}
+```
+
+## Routing
+
+### Auto Route
+- **Code Generation**: Automatically generates route code
+- **Type Safety**: Type-safe navigation
+- **Nested Routes**: Supports nested navigation
+
+```dart
+@MaterialAutoRouter(
+  routes: <AutoRoute>[
+    AutoRoute(page: SplashPage, initial: true),
+    AutoRoute(page: MainPage, children: [
+      AutoRoute(page: DeariyaMainPage),
+      AutoRoute(page: FastDeliveryPage),
+    ]),
+  ],
+)
+```
+
+## UI/UX Principles
+
+### Responsive Design
+- **ScreenUtil**: Responsive sizing for all devices
+- **Flexible Layout**: Uses Flex, Expanded, Flexible
+- **MediaQuery**: Adaptive UI based on screen size
+
+### Component Reusability
+- **Custom Widgets**: Create reusable components
+- **Consistent Design**: Uses design system
+- **Accessibility**: Supports accessibility features
+
+## Testing Strategy
+
+### Unit Tests
+- **BLoC Testing**: Test business logic
+- **Repository Testing**: Test data layer
+- **Use Case Testing**: Test business rules
+
+### Widget Tests
+- **Component Testing**: Test individual widgets
+- **Integration Testing**: Test feature flows
+- **Golden Tests**: Visual regression testing
+
+## Performance Optimization
+
+### Code Level
+- **const Constructors**: Use when possible
+- **ListView.builder**: Lazy loading for lists
+- **Image Caching**: Cached network images
+
+### App Level
+- **Lazy Loading**: Load data when needed
+- **Memory Management**: Proper disposal
+- **Background Processing**: Isolate heavy tasks
+
+## Security
+
+### Data Protection
+- **API Security**: HTTPS, authentication
+- **Local Storage**: Encrypted sensitive data
+- **Input Validation**: Validate user inputs
+
+### Code Security
+- **No Hardcoded Secrets**: Use environment variables
+- **Secure Dependencies**: Regular security updates
+- **Code Review**: Security-focused code review
+
+## Best Practices
+
+### Code Organization
+- **Feature-first**: Organize by feature, not by layer
+- **Consistent Naming**: Follow naming conventions
+- **Documentation**: Comment complex logic
+
+### Error Handling
+- **Centralized Error Handling**: AppException class
+- **User-friendly Messages**: Localized error messages
+- **Graceful Degradation**: App continues working when errors occur
+
+### State Management
+- **Single Source of Truth**: Each data has only one source
+- **Immutable States**: States cannot be changed directly
+- **Predictable Updates**: State changes follow a consistent pattern

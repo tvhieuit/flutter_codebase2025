@@ -1,0 +1,167 @@
+---
+alwaysApply: true
+---
+
+# Flutter Assets Management Rules
+
+## Asset Structure
+- **Root directory**: `assets/` in project root
+- **Organize by type**: 
+  - `assets/icon/` - Icons and UI elements
+  - `assets/image/` - Images and photos
+  - `assets/animation/` - Lottie animations
+  - `assets/fonts/` - Font files
+  - `assets/image/bank/` - Bank logos and specific images
+
+## Asset Naming Rules
+- **Icons**: `snake_case` (e.g., `arrow_down.svg`, `home_selected.svg`)
+- **Images**: `snake_case` (e.g., `home_title_image.png`)
+- **Animations**: `snake_case` (e.g., `logo.json`)
+- **Fonts**: `PascalCase` (e.g., `Pretendard-Regular.otf`)
+
+## Using Generated Assets
+- **Always use**: `AppAsset` class generated from `flutter_gen`
+- **Import**: `import 'package:chauffeur/assets/assets.gen.dart';`
+- **Access pattern**: `AppAsset.icon.assetName` or `AppAsset.image.assetName`
+
+## Asset Usage Examples
+```dart
+// ✅ CORRECT - Using generated assets
+import 'package:chauffeur/assets/assets.gen.dart';
+
+// SVG Icons
+AppAsset.icon.home.svg()
+AppAsset.icon.arrowDown.svg()
+
+// PNG Images
+AppAsset.image.homeTitleImage.image()
+
+// Lottie Animations
+AppAsset.animation.logo.lottie()
+
+// Bank Images
+AppAsset.image.bank.kookmin.image()
+```
+
+## pubspec.yaml Rules
+- **Assets declaration**: Must declare all assets in `pubspec.yaml`
+- **Flutter_gen config**: Use `flutter_gen` to generate code
+- **Output directory**: `lib/assets/` for generated files
+
+```yaml
+flutter:
+  assets:
+    - assets/icon/
+    - assets/image/
+    - assets/animation/
+    - assets/image/bank/
+
+flutter_gen:
+  output: lib/assets/
+  assets:
+    outputs:
+      class_name: AppAsset
+```
+
+## Performance Rules
+- **SVG for icons**: Use SVG for scalable icons
+- **PNG for photos**: Use PNG for complex images
+- **Lottie for animations**: Use Lottie for complex animations
+- **Font optimization**: Only include necessary fonts
+
+## Organization Rules
+- **Group by feature**: Group assets by feature when needed
+- **Consistent naming**: Use consistent naming throughout the project
+- **Version control**: Commit assets with meaningful commit messages
+
+## Best Practices
+1. **Always use generated assets** - Never hardcode asset paths
+2. **Consistent naming** - Follow snake_case convention
+3. **Proper organization** - Group assets by type and feature
+4. **Performance optimization** - Choose the right format for each asset type
+5. **Version control** - Track asset changes properly
+6. **Security** - Only include public, non-sensitive assets
+# Flutter Assets Management Rules
+
+## Asset Structure
+- **Root directory**: `assets/` in project root
+- **Organize by type**: 
+  - `assets/icon/` - Icons and UI elements
+  - `assets/image/` - Images and photos
+  - `assets/animation/` - Lottie animations
+  - `assets/fonts/` - Font files
+  - `assets/image/bank/` - Bank logos and specific images
+
+## Asset Naming Rules
+- **Icons**: `snake_case` (e.g., `arrow_down.svg`, `home_selected.svg`)
+- **Images**: `snake_case` (e.g., `home_title_image.png`)
+- **Animations**: `snake_case` (e.g., `logo.json`)
+- **Fonts**: `PascalCase` (e.g., `Pretendard-Regular.otf`)
+
+## Using Generated Assets
+- **Always use**: `AppAsset` class generated from `flutter_gen`
+- **Import**: `import 'package:chauffeur/assets/assets.gen.dart';`
+- **Access pattern**: `AppAsset.icon.assetName` or `AppAsset.image.assetName`
+
+## Asset Usage Examples
+```dart
+// ✅ CORRECT - Using generated assets
+import 'package:chauffeur/assets/assets.gen.dart';
+
+// SVG Icons
+AppAsset.icon.home.svg()
+AppAsset.icon.arrowDown.svg()
+
+// PNG Images
+AppAsset.image.homeTitleImage.image()
+
+// Lottie Animations
+AppAsset.animation.logo.lottie()
+
+// Bank Images
+AppAsset.image.bank.kookmin.image()
+```
+
+## pubspec.yaml Rules
+- **Assets declaration**: Must declare all assets in `pubspec.yaml`
+- **Flutter_gen config**: Use `flutter_gen` to generate code
+- **Output directory**: `lib/assets/` for generated files
+
+```yaml
+flutter:
+  assets:
+    - assets/icon/
+    - assets/image/
+    - assets/animation/
+    - assets/image/bank/
+
+flutter_gen:
+  output: lib/assets/
+  assets:
+    outputs:
+      class_name: AppAsset
+```
+
+## Performance Rules
+- **SVG for icons**: Use SVG for scalable icons
+- **PNG for photos**: Use PNG for complex images
+- **Lottie for animations**: Use Lottie for complex animations
+- **Font optimization**: Only include necessary fonts
+
+## Organization Rules
+- **Group by feature**: Group assets by feature when needed
+- **Consistent naming**: Use consistent naming throughout the project
+- **Version control**: Commit assets with meaningful commit messages
+
+## Security Rules
+- **No sensitive data**: Don't store sensitive data in assets
+- **Public assets only**: Only store public assets
+- **Proper licensing**: Ensure proper licensing for third-party assets
+
+## Best Practices
+1. **Always use generated assets** - Never hardcode asset paths
+2. **Consistent naming** - Follow snake_case convention
+3. **Proper organization** - Group assets by type and feature
+4. **Performance optimization** - Choose the right format for each asset type
+5. **Version control** - Track asset changes properly
+6. **Security** - Only include public, non-sensitive assets

@@ -1,0 +1,392 @@
+---
+alwaysApply: true
+---
+# Code Quality & Formatting Rules - Project Chauffeur
+
+## 📏 Code Formatting Standards (REQUIRED)
+
+### Line Length and Structure
+- **Maximum line length**: 120 characters (configured in `analysis_options.yaml`)
+- **Indentation**: 2 spaces (no tabs)
+- **Trailing commas**: REQUIRED for multi-line parameter lists, collections
+- **Import organization**: Flutter → Dart → Third-party → Local
+
+### Required Formatting Command
+```bash
+# MUST run before every commit
+fvm dart run melos exec -- fvm dart format .
+
+# Verify formatting
+fvm dart run melos exec -- fvm dart format --set-exit-if-changed .
+```
+
+## 🎨 Code Style Guidelines
+
+### Naming Conventions (REQUIRED)
+```dart
+// ✅ CORRECT - Class names: PascalCase
+class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> {}
+class AddressModel with _$AddressModel {}
+abstract class ApiRepository {}
+
+// ✅ CORRECT - Variable/Method names: camelCase
+String userName = 'john';
+List<String> userAddresses = [];
+Future<void> getUserData() async {}
+bool isUserLoggedIn = false;
+
+// ✅ CORRECT - File names: snake_case
+user_profile_bloc.dart
+address_model.dart
+api_repository.dart
+main_screen_page.dart
+
+// ✅ CORRECT - Constants: UPPER_SNAKE_CASE
+const String API_BASE_URL = 'https://api.example.com';
+const int MAX_RETRY_COUNT = 3;
+const Duration REQUEST_TIMEOUT = Duration(seconds: 30);
+
+// ✅ CORRECT - Private variables: leading underscore
+final ApiService _apiService;
+String? _cachedData;
+bool _isInitialized = false;
+```
+
+### Import Organization (REQUIRED)
+```dart
+// ✅ CORRECT - Import order
+// 1. Flutter imports
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+// 2. Dart core imports  
+import 'dart:async';
+import 'dart:convert';
+
+// 3. Third-party packages
+import 'package:dio/dio.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
+
+// 4. Local imports
+import '../entities/user_model.dart';
+import '../repository/api_repository.dart';
+import 'user_profile_event.dart';
+import 'user_profile_state.dart';
+```
+
+## 🔧 Analysis Options Configuration
+
+### Required `analysis_options.yaml` Settings
+```yaml
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+  
+  errors:
+    # Treat missing required parameters as errors
+    missing_required_param: error
+    # Treat unused imports as warnings
+    unused_import: warning
+    # Treat unused local variables as warnings
+    unused_local_variable: warning
+    
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "lib/generated_plugin_registrant.dart"
+
+linter:
+  rules:
+    # Enforce trailing commas for better formatting
+    require_trailing_commas: true
+    
+    # Enforce consistent naming
+    file_names: true
+    camel_case_types: true
+    non_constant_identifier_names: true
+    
+    # Enforce best practices
+    always_declare_return_types: true
+    prefer_final_fields: true
+    prefer_const_constructors: true
+    prefer_const_literals_to_create_immutables: true
+    
+    # Enforce Flutter best practices  
+    use_key_in_widget_constructors: true
+    sized_box_for_whitespace: true
+    avoid_unnecessary_containers: true
+    
+    # Enforce null safety
+    always_require_non_null_named_parameters: true
+    avoid_null_checks_in_equality_operators: true
+```
+
+## 📝 Code Documentation Standards
+
+### Required Documentation
+```dart
+/// A BLoC that manages user profile state and operations.
+/// 
+/// Handles user profile loading, updating, and validation.
+/// Uses [UserProfileUseCase] for business logic operations.
+@injectable
+class UserProfileBloc extends Bloc<UserProfileEvent, UserProfileState> 
+    with SafetyNetworkMixin {
+  /// The use case for handling user profile operations.
+  final UserProfileUseCase _useCase;
+  
+  /// Creates a new [UserProfileBloc] instance.
+  /// 
+  /// Requires a [UserProfileUseCase] for handling business operations.
+  UserProfileBloc(this._useCase) : super(UserProfileState.initial()) {
+    on<UserProfileEventLoad>(_onLoad);
+    on<UserProfileEventUpdate>(_onUpdate);
+  }
+  
+  /// Loads user profile data from the repository.
+  /// 
+  /// Emits loading state, then either success with data or error state.
+  Future<void> _onLoad(
+    UserProfileEventLoad event,
+    Emitter<UserProfileState> emit,
+  ) async {
+    // Implementation
+  }
+}
+```
+
+### Code Comments Guidelines
+```dart
+// ✅ CORRECT - Explain complex business logic
+Future<List<AddressModel>> getFilteredAddresses() async {
+  // Filter out addresses that don't have valid coordinates
+  // This is required for map integration with KakaoMap
+  final validAddresses = addresses.where((address) => 
+    address.lat != null && 
+    address.lng != null &&
+    address.lat! >= -90 && address.lat! <= 90 &&
+    address.lng! >= -180 && address.lng! <= 180
+  ).toList();
+  
+  return validAddresses;
+}
+
+// ✅ CORRECT - Explain API integration specifics
+@JsonKey(name: 'y')
+double? lat; // API returns latitude as 'y' coordinate
+
+@JsonKey(name: 'x')  
+double? lng; // API returns longitude as 'x' coordinate
+
+// ❌ WRONG - Don't comment obvious code
+final String name = user.name; // Gets the user name
+if (isLoading) { // If loading is true
+  return CircularProgressIndicator(); // Show loading indicator
+}
+```
+
+## 🚨 Code Quality Rules
+
+### Required Checks Before Commit
+1. **Formatting**: `fvm dart run melos exec -- fvm dart format .`
+2. **Build verification**: App must build without errors
+3. **Generated files**: All `.g.dart` and `.freezed.dart` files updated
+4. **Localization**: All `.arb` files generated if UI changes
+
+### Forbidden Patterns
+```dart
+// ❌ NEVER - Magic numbers without constants
+if (user.age > 18) {} // Use const int ADULT_AGE = 18;
+
+// ❌ NEVER - Hardcoded strings in UI
+Text('Welcome to Chauffeur') // Use l10n strings
+
+// ❌ NEVER - Direct API calls in BLoCs
+final result = await apiService.getData(); // Use UseCase
+
+// ❌ NEVER - Non-nullable fields without defaults in Freezed
+@freezed
+class UserModel with _$UserModel {
+  const factory UserModel({
+    String name, // Should be String? name or @Default('') String name
+  }) = _UserModel;
+}
+
+// ❌ NEVER - BlocBuilder without buildWhen
+BlocBuilder<MyBloc, MyState>(
+  builder: (context, state) => Widget(), // Missing buildWhen
+)
+
+// ❌ NEVER - Repository injection in BLoC
+class MyBloc extends Bloc {
+  final MyRepository _repository; // Should be MyUseCase
+}
+```
+
+### Required Patterns
+```dart
+// ✅ REQUIRED - Constants for magic values
+class AppConstants {
+  static const int ADULT_AGE = 18;
+  static const Duration API_TIMEOUT = Duration(seconds: 30);
+  static const double DEFAULT_PADDING = 16.0;
+}
+
+// ✅ REQUIRED - Localized strings
+Text(AppLocalizations.of(context).welcomeMessage)
+
+// ✅ REQUIRED - UseCase for business logic
+@injectable
+class MyBloc extends Bloc<MyEvent, MyState> with SafetyNetworkMixin {
+  final MyUseCase _useCase; // Correct
+  
+  Future<void> _handleEvent() async {
+    await safeNetworkCall(() async {
+      final result = await _useCase.getData(); // Correct
+    });
+  }
+}
+
+// ✅ REQUIRED - Proper Freezed models
+@freezed
+abstract class UserModel with _$UserModel {
+  const factory UserModel({
+    @Default('') String name,
+    @Default(0) int age,
+    String? email, // Nullable for optional fields
+  }) = _UserModel;
+  
+  factory UserModel.fromJson(Map<String, dynamic> json) =>
+      _$UserModelFromJson(json);
+}
+
+// ✅ REQUIRED - BlocBuilder with buildWhen
+BlocBuilder<MyBloc, MyState>(
+  buildWhen: (previous, current) => previous.data != current.data,
+  builder: (context, state) => Widget(),
+)
+```
+
+## 🔍 Pre-Commit Quality Checks
+
+### Automated Check Script
+```bash
+#!/bin/bash
+# File: .scripts/quality_check.sh
+
+echo "🔍 Running code quality checks..."
+
+# 1. Check formatting
+echo "📏 Checking code formatting..."
+if ! fvm dart run melos exec -- fvm dart format --set-exit-if-changed .; then
+    echo "❌ Code formatting failed. Run: fvm dart run melos exec -- fvm dart format ."
+    exit 1
+fi
+
+# 2. Check for missing buildWhen
+echo "🏗️  Checking BLoC buildWhen usage..."
+if grep -r "BlocBuilder<" lib/ | grep -v "buildWhen:"; then
+    echo "❌ Found BlocBuilder without buildWhen"
+    exit 1
+fi
+
+# 3. Check for direct repository injection in BLoCs
+echo "🏛️  Checking clean architecture violations..."
+if grep -r "Repository.*_repository" lib/screen/; then
+    echo "❌ Found direct repository injection in BLoC (use UseCase instead)"
+    exit 1
+fi
+
+# 4. Check for hardcoded strings in UI
+echo "📝 Checking for hardcoded strings..."
+if grep -r "Text('" lib/screen/ | grep -v "AppLocalizations"; then
+    echo "⚠️  Found potential hardcoded strings in UI"
+fi
+
+# 5. Check for missing @freezed annotations
+echo "🧊 Checking entity annotations..."
+if find lib/entities -name "*.dart" ! -name "*.g.dart" ! -name "*.freezed.dart" | xargs grep -L "@freezed"; then
+    echo "❌ Found entities without @freezed annotation"
+    exit 1
+fi
+
+# 6. Verify generated files are up to date
+echo "🔧 Checking generated files..."
+if [ $(find lib -name "*.dart" -newer $(find lib -name "*.g.dart" | head -1) | wc -l) -gt 0 ]; then
+    echo "❌ Generated files may be outdated. Run: fvm dart run melos exec -- fvm dart run build_runner build -d"
+    exit 1
+fi
+
+echo "✅ All code quality checks passed!"
+```
+
+## 🎯 Code Quality Metrics
+
+### Maintainability Standards
+- **Cyclomatic complexity**: Maximum 10 per method
+- **Class length**: Maximum 300 lines (excluding generated code)
+- **Method length**: Maximum 50 lines
+- **Parameter count**: Maximum 5 parameters per method
+
+### Test Coverage Requirements
+- **Unit tests**: All use cases must have tests
+- **Widget tests**: All custom widgets must have tests  
+- **BLoC tests**: All BLoCs must have event/state tests
+- **Integration tests**: Critical user flows must be tested
+
+### Performance Guidelines
+```dart
+// ✅ CORRECT - Use const constructors
+const AppBar(
+  title: const Text('Chauffeur'),
+  backgroundColor: AppColors.primary,
+)
+
+// ✅ CORRECT - Use ListView.builder for long lists
+ListView.builder(
+  itemCount: items.length,
+  itemBuilder: (context, index) => ListTile(
+    title: Text(items[index].name),
+  ),
+)
+
+// ✅ CORRECT - Dispose controllers and streams
+class _MyWidgetState extends State<MyWidget> {
+  late TextEditingController _controller;
+  
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+  
+  @override
+  void dispose() {
+    _controller.dispose(); // REQUIRED
+    super.dispose();
+  }
+}
+```
+
+## 📊 Quality Assurance Process
+
+### Development Workflow
+1. **Before coding**: Run `fvm dart run melos exec -- fvm dart pub get --no-example`
+2. **During coding**: Follow naming conventions and architecture rules
+3. **After coding**: Run formatting and build verification
+4. **Before commit**: Run complete quality check script
+5. **In PR review**: Verify all rules followed and tests pass
+
+### Continuous Integration
+- **Format check**: Verify code formatting in CI
+- **Build check**: Ensure app builds for all flavors
+- **Test execution**: Run all unit, widget, and integration tests
+- **Code generation**: Verify all generated files are current
+- **Architecture compliance**: Check for clean architecture violations
+
+Remember: Quality is not negotiable. These rules ensure maintainable, readable, and robust Flutter applications.

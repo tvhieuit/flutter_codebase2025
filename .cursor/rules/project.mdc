@@ -1,0 +1,294 @@
+# Flutter/Dart Project Cursor Rules - Chauffeur
+
+## Project Overview
+This is a Flutter-based mobile application called "Chauffeur" - a vehicle driver service app that uses clean architecture with BLoC pattern, Firebase integration, and multi-language support (Korean, Vietnamese, English).
+
+### Key Technologies
+- **Flutter Version**: 3.35.2 (managed via FVM in `.fvmrc`)
+- **Dart SDK**: >=3.9.0
+- **State Management**: flutter_bloc with BLoC pattern
+- **Architecture**: Clean Architecture with Feature-Based organization
+- **Dependency Injection**: get_it + injectable
+- **Data Models**: freezed + json_annotation
+- **HTTP Client**: dio + retrofit
+- **Navigation**: auto_route
+- **Maps**: kakao_map_sdk
+- **Firebase**: firebase_core/messaging/crashlytics
+- **Build Management**: melos for monorepo-style management
+
+## MDC File Management Rules
+
+### MDC File Creation and Multi-language Management
+- **Default Language**: MDC files are written in English
+- **Multi-language Files**: Language distinction by extension in the same folder
+  - Korean: `{filename}.mdc.ko`
+  - Vietnamese: `{filename}.mdc.vn`
+- **File Structure**:
+  ```
+  folder/
+  ├── example.mdc          # English (default)
+  ├── example.mdc.ko       # Korean
+  └── example.mdc.vn       # Vietnamese
+  ```
+
+### MDC File Work Rules
+1. **When Creating New MDC Files**:
+   - Write the basic MDC file in English
+   - Create `.ko` and `.vn` files by translating the same content into Korean and Vietnamese
+   
+2. **When Modifying MDC Files**:
+   - Update Korean and Vietnamese files identically after modifying the English file
+   - Provide appropriate translations when needed
+   
+3. **When Deleting MDC Files**:
+   - Delete all language version files together
+   - Remove `.mdc`, `.mdc.ko`, `.mdc.vn` files
+
+### Translation Guidelines
+- **Korean Translation**: Use natural Korean expressions
+- **Vietnamese Translation**: Translate according to Vietnamese grammar and expressions
+- **Technical Terms**: Use consistent translation terms
+- **Cultural Considerations**: Reflect cultural characteristics of each language region
+
+## Essential Development Commands
+
+### FVM Commands (Always use fvm prefix)
+```bash
+# Get dependencies
+fvm dart run melos exec -- fvm dart pub get --no-example
+
+# Generate localization files
+fvm dart run melos exec -- fvm flutter gen-l10n
+
+# Build runner (code generation for entities, routes, etc.)
+fvm dart run melos exec -- fvm dart run build_runner build
+fvm dart run melos exec -- fvm dart run build_runner build -d  # delete conflicting outputs
+
+# Format code (required before commits)
+fvm dart run melos exec -- fvm dart format .
+
+# Run the app (development)
+fvm flutter run --flavor dev --dart-define-from-file=configs/.env.dev.json
+
+# Build for production
+fvm dart run melos exec -- fvm flutter build apk --release --flavor dev --dart-define-from-file=./configs/.env.dev.json --verbose  # Android
+fvm dart run melos exec -- fvm flutter build ipa --no-codesign --release --flavor dev --dart-define-from-file=./configs/.env.dev.json  # iOS
+```
+
+## Coding Style and Conventions
+
+### Dart/Flutter Code
+- **Language**: Respond in Korean and write code comments in Korean
+- **Naming**: Use camelCase (variables, functions, methods)
+- **Class Names**: Use PascalCase
+- **Constants**: Use UPPER_SNAKE_CASE
+- **File Names**: Use snake_case
+- **Indentation**: Use 2 spaces
+- **Line Length**: Keep within 120 characters (configured in analysis_options.yaml)
+- **Font**: Custom Pretendard font family with multiple weights
+
+### BLoC Pattern (REQUIRED)
+- **MUST** use flutter_bloc for all state management
+- **MUST** separate bloc, event, state files for each screen
+- File names: `{feature}_bloc.dart`, `{feature}_event.dart`, `{feature}_state.dart`
+- **MUST** use SafetyNetworkMixin for all API calls in BLoCs
+- **MUST** use buildWhen for all BlocBuilder instances
+- **MUST** use listenWhen for all BlocListener instances
+- Initialize DI in main.dart with getItInitial()
+
+### Directory Structure (Clean Architecture)
+```
+lib/
+├── app/           # App routing and navigation (auto_route)
+├── entities/      # Data models with freezed/json_serializable  
+│   ├── *.dart     # Freezed models with JSON serialization
+│   ├── *.freezed.dart   # Generated freezed files
+│   └── *.g.dart   # Generated JSON files
+├── repository/    # Data access layer with dio/retrofit
+│   ├── request/   # API request models
+│   ├── response/  # API response models
+│   └── config/    # Repository configurations
+├── use_case/      # Business logic layer
+├── screen/        # UI screens organized by feature
+├── widgets/       # Reusable UI components
+├── utils/         # Utility functions and constants
+├── services/      # External services (Firebase, maps)
+├── di/            # Dependency injection (injectable/get_it)
+├── extension/     # Dart extensions
+└── assets/        # Generated asset files
+```
+
+## Development Guidelines
+
+### Clean Architecture with Dependency Injection (REQUIRED)
+- **MUST** use @injectable, @lazySingleton, @singleton annotations for DI
+- **MUST** implement abstract interfaces for all repositories and use cases
+- **MUST** register factory parameters with @factoryParam for runtime BLoC parameters
+- **NEVER** inject repositories directly into BLoCs - use use cases
+- **MUST** use @module classes for third-party dependency registration
+
+### Freezed Data Models (REQUIRED)
+- **ALL** data models MUST use @freezed for immutability
+- **MUST** include JSON serialization with @JsonSerializable
+- **MUST** use @JsonKey for custom field mapping
+- **MUST** run `fvm dart run build_runner build -d` after modifying annotations
+- **MUST** use union types for error handling and state management
+
+### State Management
+- **MUST** use BLoC pattern consistently with flutter_bloc
+- **MUST** use SafetyNetworkMixin for all API calls
+- State changes only through events
+- Use `async/await` for asynchronous operations
+- **MUST** use buildWhen and listenWhen for all BLoC widgets
+
+### Error Handling
+- Include appropriate error handling for all network requests
+- Provide user-friendly error messages
+- Support debugging through logging
+
+### Performance Optimization
+- Prevent unnecessary widget rebuilds
+- Image caching and optimization
+- Implement dispose methods to prevent memory leaks
+
+### Accessibility
+- Add semantic labels
+- Support keyboard navigation
+- Screen reader compatibility
+
+## File Creation and Modification Rules
+
+### When Adding New Screens
+1. Create appropriate subdirectories in `screen/` directory
+2. Create bloc, event, state files
+3. Create page widgets
+4. Add routing settings
+
+### When Adding New Widgets
+1. Place in `widgets/` directory
+2. Design for reusability
+3. Provide appropriate parameters and callback functions
+
+### When Adding New API Endpoints
+1. Add related files in `repository/` directory
+2. Define request/response models
+3. Implement business logic in use_case layer
+
+## Code Quality
+
+### Requirements
+- Add documentation comments to all public APIs
+- Comply with null safety
+- Ensure type safety
+- Write testable code
+
+### Recommendations
+- Functions should follow single responsibility principle
+- Use constants instead of magic numbers
+- Use meaningful variable names
+- Minimize code duplication
+
+## External Libraries
+
+### Main Dependencies
+- **flutter_bloc**: State management
+- **dio**: HTTP client
+- **firebase_core**: Firebase core functionality
+- **google_maps_flutter**: Map functionality
+- **flutter_localizations**: Multi-language support
+
+### When Adding Libraries
+- Add to `pubspec.yaml`
+- Specify appropriate versions
+- Check for dependency conflicts
+
+## Testing
+
+### Test Writing
+- Unit tests: Business logic
+- Widget tests: UI components
+- Integration tests: Complete functionality
+
+### Test Naming
+- File names: `{test_target}_test.dart`
+- Test groups: Group by functionality
+- Test cases: Clear descriptions
+
+## Deployment and Build
+
+### Environment Settings
+- Separate development/staging/production environments
+- Manage configuration files by environment
+- Separate API endpoints by environment
+
+### Build Optimization
+- Code optimization for release builds
+- Image and asset optimization
+- Minimize bundle size
+
+## Security
+
+### Data Security
+- Manage sensitive information with environment variables
+- Store API keys safely
+- Encrypt user data
+
+### Code Security
+- Prohibit hardcoded passwords
+- Prohibit output of sensitive information in logs
+- Validate input data
+
+## Documentation
+
+### Code Documentation
+- Add documentation comments to all public classes and methods
+- Inline comments for complex logic
+- Maintain README files
+
+### API Documentation
+- API endpoint descriptions
+- Request/response examples
+- Error code explanations
+
+## Git Workflow
+
+### Branch Strategy
+- `main`: Production code
+- `develop`: Development code
+- `feature/*`: Feature development
+- `hotfix/*`: Emergency fixes
+
+### Commit Messages
+- Clear descriptions in Korean
+- Types: feat, fix, docs, style, refactor, test, chore
+- Example: `feat: Add user authentication feature`
+
+## Debugging and Logging
+
+### Logging Strategy
+- Development environment: Detailed logs
+- Production environment: Error logs only
+- Use structured log format
+
+### Debugging Tools
+- Utilize Flutter Inspector
+- Output detailed information in debug mode
+- Use performance profiling tools
+
+## Performance Monitoring
+
+### Metric Tracking
+- App startup time
+- Screen transition time
+- Memory usage
+- Network request time
+
+### Optimization Points
+- Image loading optimization
+- Network request caching
+- Minimize widget rebuilds
+- Prevent memory leaks
+description:
+globs:
+alwaysApply: false
+---

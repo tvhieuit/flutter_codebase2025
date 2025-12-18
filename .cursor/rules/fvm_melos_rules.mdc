@@ -1,0 +1,300 @@
+---
+alwaysApply: true
+---
+# FVM & Melos Rules - Project Chauffeur
+
+## 🔧 Flutter Version Management (FVM)
+
+### Critical Rules
+- **NEVER** use `flutter` command directly
+- **ALWAYS** use `fvm flutter` prefix for all Flutter commands
+- **ALWAYS** use `fvm dart` prefix for all Dart commands
+- Flutter version is locked to **3.35.2** in `.fvmrc`
+
+### Required Command Patterns
+
+#### ❌ WRONG - Direct Flutter/Dart commands
+```bash
+flutter run                    # WRONG
+dart pub get                   # WRONG
+flutter build apk              # WRONG
+dart run build_runner build    # WRONG
+flutter gen-l10n               # WRONG
+```
+
+#### ✅ CORRECT - FVM prefixed commands
+```bash
+fvm flutter run                        # CORRECT
+fvm dart pub get                       # CORRECT
+fvm flutter build apk                  # CORRECT
+fvm dart run build_runner build        # CORRECT
+fvm flutter gen-l10n                   # CORRECT
+```
+
+## 📦 Melos Build Management
+
+### Melos Command Structure
+All dependency and build commands MUST use melos execution pattern:
+```bash
+fvm dart run melos exec -- fvm dart pub get --no-example
+fvm dart run melos exec -- fvm flutter gen-l10n
+fvm dart run melos exec -- fvm dart run build_runner build
+fvm dart run melos exec -- fvm dart format .
+```
+
+### Why Melos?
+- Ensures consistent execution across the entire project structure
+- Manages dependencies in a monorepo-style approach
+- Provides unified build and execution environment
+- Handles complex project structures with multiple packages
+
+## 🚫 Forbidden Commands
+
+### Direct Package Commands
+```bash
+# ❌ NEVER use these
+flutter pub get
+dart pub get
+flutter packages get
+
+# ✅ ALWAYS use this instead
+fvm dart run melos exec -- fvm dart pub get --no-example
+```
+
+### Direct Build Commands
+```bash
+# ❌ NEVER use these
+flutter build apk
+flutter build ipa
+dart run build_runner build
+
+# ✅ ALWAYS use these instead
+fvm dart run melos exec -- fvm flutter build apk --release --flavor dev --dart-define-from-file=./configs/.env.dev.json --verbose
+fvm dart run melos exec -- fvm flutter build ipa --no-codesign --release --flavor dev --dart-define-from-file=./configs/.env.dev.json
+fvm dart run melos exec -- fvm dart run build_runner build
+```
+
+### Direct Formatting Commands
+```bash
+# ❌ NEVER use this
+dart format .
+flutter format .
+
+# ✅ ALWAYS use this instead
+fvm dart run melos exec -- fvm dart format .
+```
+
+## 📋 Essential Command Reference
+
+### 1. Project Setup Commands
+```bash
+# Initial dependency installation
+fvm dart run melos exec -- fvm dart pub get --no-example
+
+# Generate all necessary files
+fvm dart run melos exec -- fvm flutter gen-l10n
+fvm dart run melos exec -- fvm dart run build_runner build
+
+# Verify installation
+fvm flutter --version
+fvm dart --version
+```
+
+### 2. Daily Development Commands
+```bash
+# Get updated dependencies
+fvm dart run melos exec -- fvm dart pub get --no-example
+
+# Code generation (after modifying @freezed, @JsonSerializable, @auto_route)
+fvm dart run melos exec -- fvm dart run build_runner build -d
+
+# Localization generation (after adding new strings)
+fvm dart run melos exec -- fvm flutter gen-l10n
+
+# Code formatting (REQUIRED before commit)
+fvm dart run melos exec -- fvm dart format .
+```
+
+### 3. Running the Application
+```bash
+# Development run
+fvm flutter run --flavor dev --dart-define-from-file=configs/.env.dev.json
+
+# Debug with specific device
+fvm flutter run --flavor dev --dart-define-from-file=configs/.env.dev.json -d <device-id>
+
+# Hot restart
+fvm flutter run --flavor dev --dart-define-from-file=configs/.env.dev.json --hot
+```
+
+### 4. Build Commands
+```bash
+# Android Debug Build
+fvm flutter build apk --debug --flavor dev --dart-define-from-file=configs/.env.dev.json
+
+# Android Release Build
+fvm dart run melos exec -- fvm flutter build apk --release --flavor dev --dart-define-from-file=./configs/.env.dev.json --verbose
+
+# iOS Release Build
+fvm dart run melos exec -- fvm flutter build ipa --no-codesign --release --flavor dev --dart-define-from-file=./configs/.env.dev.json
+
+# Web Build (if supported)
+fvm dart run melos exec -- fvm flutter build web --release
+```
+
+## 🔍 Environment Verification
+
+### Check FVM Installation
+```bash
+# Verify FVM is installed
+fvm --version
+
+# Check Flutter version (should be 3.35.2)
+fvm flutter --version
+
+# Check Dart SDK version (should be >=3.9.0)
+fvm dart --version
+
+# List available Flutter versions
+fvm releases
+
+# Check current project Flutter version
+cat .fvmrc
+```
+
+### Check Melos Configuration
+```bash
+# Verify melos is available
+fvm dart run melos --version
+
+# Check melos configuration
+cat melos.yaml
+
+# List melos packages
+fvm dart run melos list
+```
+
+## 🚨 Troubleshooting Common Issues
+
+### 1. FVM Not Found
+```bash
+# Install FVM globally
+dart pub global activate fvm
+
+# Add to PATH (add to your shell profile)
+export PATH="$PATH":"$HOME/.pub-cache/bin"
+
+# Install Flutter version for project
+fvm install 3.35.2
+fvm use 3.35.2
+```
+
+### 2. Melos Commands Failing
+```bash
+# Ensure melos is installed
+fvm dart pub global activate melos
+
+# Clean and reinstall dependencies
+fvm dart run melos clean
+fvm dart run melos exec -- fvm dart pub get --no-example
+```
+
+### 3. Build Runner Issues
+```bash
+# Clean generated files
+fvm dart run melos exec -- fvm dart run build_runner clean
+
+# Force regeneration
+fvm dart run melos exec -- fvm dart run build_runner build --delete-conflicting-outputs
+
+# Check for conflicts
+find lib -name "*.g.dart" -o -name "*.freezed.dart" | xargs grep -l "conflicts"
+```
+
+### 4. Version Conflicts
+```bash
+# Check Flutter version consistency
+fvm flutter --version
+cat .fvmrc
+
+# Switch to project version if different
+fvm use 3.35.2
+
+# Verify all tools use correct version
+fvm which flutter
+fvm which dart
+```
+
+## 📝 Pre-Commit Validation Script
+
+### Check Commands Usage
+```bash
+#!/bin/bash
+# File: .scripts/check_commands.sh
+
+echo "🔍 Checking for forbidden direct Flutter/Dart commands..."
+
+# Check for direct flutter commands
+if grep -r "flutter " . --include="*.sh" --include="*.md" --include="*.yml" --exclude-dir=.git | grep -v "fvm flutter"; then
+    echo "❌ Found direct 'flutter' commands. Use 'fvm flutter' instead."
+    exit 1
+fi
+
+# Check for direct dart commands
+if grep -r "dart " . --include="*.sh" --include="*.md" --include="*.yml" --exclude-dir=.git | grep -v "fvm dart"; then
+    echo "❌ Found direct 'dart' commands. Use 'fvm dart' instead."
+    exit 1
+fi
+
+# Check FVM version
+if [ "$(cat .fvmrc)" != "3.35.2" ]; then
+    echo "❌ FVM version mismatch. Expected: 3.35.2, Found: $(cat .fvmrc)"
+    exit 1
+fi
+
+echo "✅ FVM and Melos command usage check passed"
+```
+
+## 🎯 Best Practices
+
+### 1. Consistent Environment
+- Always work within the FVM-managed Flutter environment
+- Never mix FVM and system Flutter commands
+- Use same FVM version across all team members
+
+### 2. Melos Workflow
+- Use melos for all multi-package operations
+- Consistent dependency management across project
+- Unified build and test execution
+
+### 3. Command Automation
+- Create shell aliases for frequently used commands:
+```bash
+# Add to ~/.bashrc or ~/.zshrc
+alias fp="fvm dart run melos exec -- fvm dart pub get --no-example"
+alias fg="fvm dart run melos exec -- fvm flutter gen-l10n"
+alias fb="fvm dart run melos exec -- fvm dart run build_runner build -d"
+alias ff="fvm dart run melos exec -- fvm dart format ."
+alias fr="fvm flutter run --flavor dev --dart-define-from-file=configs/.env.dev.json"
+```
+
+### 4. Team Collaboration
+- Document FVM setup in README
+- Include .fvmrc in version control
+- Share melos.yaml configuration
+- Maintain consistent command usage across team
+
+## 📊 Command Frequency Reference
+
+### Most Used Commands (in order of frequency)
+1. `fvm dart run melos exec -- fvm dart pub get --no-example`
+2. `fvm flutter run --flavor dev --dart-define-from-file=configs/.env.dev.json`
+3. `fvm dart run melos exec -- fvm dart format .`
+4. `fvm dart run melos exec -- fvm dart run build_runner build -d`
+5. `fvm dart run melos exec -- fvm flutter gen-l10n`
+
+### Build Commands (less frequent but critical)
+1. `fvm dart run melos exec -- fvm flutter build apk --release --flavor dev --dart-define-from-file=./configs/.env.dev.json --verbose`
+2. `fvm dart run melos exec -- fvm flutter build ipa --no-codesign --release --flavor dev --dart-define-from-file=./configs/.env.dev.json`
+
+Remember: The goal is consistency and reproducibility across all development environments. FVM and Melos ensure that everyone works with the exact same tools and versions.

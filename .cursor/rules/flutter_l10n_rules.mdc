@@ -1,0 +1,186 @@
+---
+alwaysApply: true
+---
+# Flutter L10n (Localization) Rules for Cursor
+
+Goal: maintain consistent, maintainable, and scalable internationalization following Flutter's official l10n approach with ARB files and code generation.
+
+## L10n Tech Stack
+- Flutter's official l10n package (`flutter_localizations`)
+- ARB (Application Resource Bundle) files for translations
+- `intl` package for formatting and pluralization
+- Code generation via `flutter gen-l10n`
+- Generated classes: `S` (main), `SEn`, `S[Locale]` (per locale)
+
+## Directory Structure (must remain)
+- `l10n/`: ARB files for all locales
+  - `lang_en.arb`: Template/primary ARB file (English)
+  - `lang_[locale].arb`: Additional locale files (e.g., `lang_es.arb`, `lang_fr.arb`)
+- `lib/l10n/`: Generated localization files (DO NOT EDIT MANUALLY)
+  - `app_localization.dart`: Main generated class
+  - `app_localization_[locale].dart`: Per-locale implementations
+
+## ARB File Rules
+- **Template file**: `l10n/lang_en.arb` is the primary template
+- **Key naming**: Use snake_case with descriptive prefixes
+  - Screen-specific: `{screen}_{element}_{action}` (e.g., `note_screen_add_tag`)
+  - Common actions: `{action}` (e.g., `save`, `cancel`, `delete`)
+  - UI elements: `{element}_{type}` (e.g., `button_analytic`, `todo_header`)
+- **Value format**: 
+  - Use proper English grammar and punctuation
+  - Escape quotes with `\"` in ARB files
+  - Use `{variable}` for placeholders (e.g., `"welcome_user": "Welcome, {name}!"`)
+- **Metadata**: Add `@description` and `@placeholder` when needed
+  ```json
+  {
+    "welcome_user": "Welcome, {name}!",
+    "@welcome_user": {
+      "description": "Welcome message with user name",
+      "placeholders": {
+        "name": {
+          "type": "String"
+        }
+      }
+    }
+  }
+  ```
+
+## Generated Code Usage
+- **Access translations**: Always use `S.of(context).keyName`
+- **Never hardcode strings**: All user-facing text must be localized
+- **Context requirement**: `S.of(context)` requires BuildContext
+- **Null safety**: Generated getters are non-nullable by default
+
+## L10n Configuration (`l10n.yaml`)
+- **Template**: `lang_en.arb` (must exist)
+- **Output**: `lib/l10n/` directory
+- **Class name**: `S` (customizable but keep consistent)
+- **Nullable getters**: `false` (recommended for type safety)
+- **Synthetic package**: `false` (use app package)
+
+## Adding New Translations
+1. **Add to template**: Update `l10n/lang_en.arb` with new key-value pairs
+2. **Add to other locales**: Update corresponding `lang_[locale].arb` files
+3. **Run codegen**: `flutter gen-l10n` or `dart run build_runner build`
+4. **Use in code**: `S.of(context).newKeyName`
+
+## Pluralization Rules
+- Use `intl` plural forms for count-dependent strings
+- ARB format for plurals:
+  ```json
+  {
+    "item_count": "{count, plural, =0{No items} =1{One item} other{{count} items}}",
+    "@item_count": {
+      "placeholders": {
+        "count": {
+          "type": "int"
+        }
+      }
+    }
+  }
+  ```
+
+## Locale Management
+- **Supported locales**: Define in `l10n.yaml` and `app_localization.dart`
+- **Fallback**: Always falls back to English (`en`) if translation missing
+- **Adding new locale**:
+  1. Create `l10n/lang_[locale].arb`
+  2. Update `l10n.yaml` preferred-supported-locales
+  3. Run codegen
+  4. Update `app_localization.dart` supportedLocales
+
+## Code Integration
+- **MaterialApp setup**: Use `S.localizationsDelegates` and `S.supportedLocales`
+- **Context access**: Always pass BuildContext to access translations
+- **Widget usage**: 
+  ```dart
+  Text(l10n.welcome_message)
+  ```
+- **Button labels**: 
+  ```dart
+  ElevatedButton(
+    onPressed: () {},
+    child: Text(l10n.save),
+  )
+  ```
+
+## Quality Rules
+- **No hardcoded strings**: All user-facing text must be in ARB files
+- **Consistent naming**: Follow established key naming conventions
+- **Complete translations**: All locales must have all keys from template
+- **Proper escaping**: Escape quotes and special characters in ARB files
+- **Descriptive keys**: Use clear, descriptive key names
+
+## Common Patterns
+- **Screen titles**: `{screen}_title` (e.g., `home_screen_title`)
+- **Button actions**: `{action}` (e.g., `save`, `cancel`, `delete`)
+- **Empty states**: `{screen}_empty_{item}` (e.g., `home_screen_empty_note`)
+- **Input hints**: `{screen}_input_{field}_hint` (e.g., `note_screen_input_title_hint`)
+- **Headers**: `{item}_header` (e.g., `note_header`, `todo_header`)
+
+## Error Handling
+- **Missing translations**: App falls back to English
+- **Missing keys**: Runtime error if key doesn't exist
+- **Invalid ARB**: Codegen will fail with clear error messages
+
+## Codegen Commands
+- **Generate l10n**: `flutter gen-l10n`
+- **Full build**: `dart run build_runner build --delete-conflicting-outputs`
+- **Watch mode**: `flutter gen-l10n --watch` (for development)
+
+## Constraints for AI (Cursor)
+- **Never edit generated files**: `lib/l10n/*.dart` files are generated
+- **Always use S.of(context)**: Never hardcode strings in UI
+- **Update all locales**: When adding new keys, update all ARB files
+- **Run codegen**: Always run codegen after ARB changes
+- **Follow naming**: Use established key naming conventions
+- **Escape properly**: Handle quotes and special characters in ARB files
+
+## File Examples
+
+### ARB File Structure
+```json
+{
+  "save": "Save",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "note_screen_title": "Create new note",
+  "note_screen_add_tag": "Add",
+  "welcome_user": "Welcome, {name}!",
+  "@welcome_user": {
+    "description": "Welcome message with user name",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
+}
+```
+
+### Usage in Widgets
+```dart
+class MyWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(S.of(context).note_screen_title),
+        ElevatedButton(
+          onPressed: () {},
+          child: Text(l10n.save),
+        ),
+      ],
+    );
+  }
+}
+```
+
+## Troubleshooting
+- **Codegen fails**: Check ARB file syntax (valid JSON)
+- **Missing translations**: Ensure all locales have the key
+- **Context errors**: Make sure BuildContext is available
+- **Import issues**: Use `import 'package:ai_note/l10n/app_localization.dart';`
+
+## Utility commands
+- L10n gen: `flutter gen-l10n`

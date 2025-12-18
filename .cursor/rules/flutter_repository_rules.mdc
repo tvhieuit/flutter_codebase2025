@@ -1,0 +1,310 @@
+# Flutter Repository Rules
+
+## Repository Pattern Implementation
+
+### Abstract Interface Design
+All repositories must implement abstract interfaces to enable dependency injection and testing:
+
+```dart
+// Abstract interface
+abstract class RemoteRepository {
+  Future post(@Header('X-TOS') Xtos xtos, {
+    @CancelRequest() CancelToken? cancelToken,
+    @Body() Map<String, dynamic> body = const {},
+  });
+}
+
+// Concrete implementation with DI
+@lazySingleton
+class RemoteRepositoryImpl implements RemoteRepository {
+  @factoryMethod
+  factory RemoteRepositoryImpl(Dio dio) = _RemoteRepositoryImpl;
+}
+```
+
+### Repository Structure
+
+#### Repository Categories
+1. **Remote Repositories**: API communication using Retrofit + Dio
+2. **Local Repositories**: Local storage using SharedPreferences
+3. **Third-party Repositories**: External services (Firebase, Kakao Maps)
+
+#### Directory Organization
+```
+lib/repository/
+├── {feature}_repository.dart         # Main repository interfaces/implementations
+├── config/                           # Dio configuration and interceptors
+│   ├── dio_configuration.dart        # Main Dio setup
+│   ├── app_dio_logger.dart          # Logging interceptor
+│   ├── app_user_agent_interceptor.dart
+│   └── app_process_data_interceptor.dart
+├── request/                          # API request models
+│   ├── {feature}_request.dart
+│   └── xtos_enum.dart               # Request headers/enums
+└── response/                         # API response models
+    ├── base_response.dart           # Generic response wrapper
+    └── {feature}_response.dart
+```
+
+## Remote Repository Implementation
+
+### Retrofit + Dio Pattern
+```dart
+@RestApi(baseUrl: 'https://api.example.com')
+@lazySingleton
+abstract class FeatureRepository {
+  @factoryMethod
+  factory FeatureRepository(Dio dio) = _FeatureRepository;
+
+  @POST('/endpoint')
+  Future<BaseResponse<ResponseModel>> postData(
+    @Header('X-TOS') Xtos xtos,
+    @Body() RequestModel body,
+  );
+
+  @GET('/endpoint/{id}')
+  Future<ResponseModel> getData(@Path('id') String id);
+}
+```
+
+### Custom Dio Configuration
+For external APIs (like Kakao), create custom Dio instances:
+
+```dart
+@lazySingleton
+abstract class AddressRepository {
+  @factoryMethod
+  factory AddressRepository.create(DioLogger logger) {
+    final dio = Dio();
+    dio.interceptors.addAll([logger]);
+    dio.options.headers['Authorization'] = 'KakaoAK ${Constants.apiKey}';
+    return _AddressRepository(dio);
+  }
+}
+```
+
+### Required Annotations
+- `@RestApi()` for Retrofit API definition
+- `@lazySingleton` for dependency injection
+- `@factoryMethod` for factory constructors
+- `part 'filename.g.dart'` for code generation
+
+## Local Repository Implementation
+
+### SharedPreferences Pattern
+```dart
+abstract class LocalRepository {
+  Future<String?> getToken();
+  Future saveToken(String? token);
+  Future<UserEntity?> getUserInfo();
+  Future saveUserInfo(UserEntity? user);
+  Future clearData();
+}
+
+@Singleton(as: LocalRepository)
+class LocalRepositoryImpl implements LocalRepository {
+  final SharedPreferencesAsync prefs;
+  final Logger logger;
+
+  LocalRepositoryImpl(this.prefs, this.logger);
+
+  @override
+  Future<String?> getToken() => prefs.getString('token');
+
+  @override
+  Future saveToken(String? token) {
+    if (token == null) return prefs.remove('token');
+    return prefs.setString('token', token);
+  }
+}
+```
+
+### Local Storage Best Practices
+- Always handle null values in save methods
+- Use `remove()` for null values instead of storing null
+- Implement history management with size limits (max 10 items)
+- Use JSON encoding/decoding for complex objects
+- Implement proper error handling and logging
+
+## Request/Response Models
+
+### Request Models Structure
+```dart
+@freezed
+abstract class FeatureRequest with _$FeatureRequest {
+  const factory FeatureRequest({
+    required String name,
+    required String phone,
+    String? optionalField,
+  }) = _FeatureRequest;
+
+  factory FeatureRequest.fromJson(Map<String, dynamic> json) => 
+      _$FeatureRequestFromJson(json);
+}
+```
+
+### Response Models Structure
+```dart
+// Generic base response wrapper
+@Freezed(genericArgumentFactories: true)
+abstract class BaseResponse<T> with _$BaseResponse<T> {
+  const factory BaseResponse({
+    String? rc,    // Response code
+    String? rm,    // Response message
+    T? rs,         // Response data
+    dynamic tn,    // Transaction number
+  }) = _BaseResponse;
+
+  factory BaseResponse.fromJson(
+    Map<String, dynamic> json, 
+    T Function(Object? json) fromJsonT
+  ) => _$BaseResponseFromJson(json, fromJsonT);
+}
+
+// Specific response model
+@freezed
+abstract class FeatureResponse with _$FeatureResponse {
+  const factory FeatureResponse({
+    String? id,
+    String? name,
+    @JsonKey(name: 'api_field') String? mappedField,
+  }) = _FeatureResponse;
+
+  factory FeatureResponse.fromJson(Map<String, dynamic> json) => 
+      _$FeatureResponseFromJson(json);
+}
+```
+
+## Dio Configuration
+
+### Main Dio Setup
+```dart
+@Injectable(as: Dio)
+class AppDio extends DioForNative {
+  AppDio(
+    DioOptions options,
+    DioLogger logger,
+    AppUserAgentInterceptor userAgentInterceptor,
+    AppProcessDataInterceptor processDataInterceptor,
+  ) {
+    interceptors.add(userAgentInterceptor);
+    interceptors.add(logger);
+    interceptors.add(processDataInterceptor);
+  }
+}
+```
+
+### Required Interceptors
+1. **DioLogger**: Request/response logging
+2. **AppUserAgentInterceptor**: User agent headers
+3. **AppProcessDataInterceptor**: Data processing and transformation
+
+## Error Handling
+
+### Repository Error Patterns
+```dart
+abstract class RepositoryResult<T> {
+  const factory RepositoryResult.success(T data) = Success<T>;
+  const factory RepositoryResult.error(String message) = Error<T>;
+}
+
+// In repository implementation
+Future<RepositoryResult<UserEntity>> getUser(String id) async {
+  try {
+    final response = await remoteRepository.getUser(id);
+    return RepositoryResult.success(response.data);
+  } catch (e) {
+    return RepositoryResult.error(e.toString());
+  }
+}
+```
+
+## Dependency Injection Rules
+
+### Repository Registration
+```dart
+// Abstract interface
+abstract class FeatureRepository {
+  // Define methods
+}
+
+// Implementation with DI
+@LazySingleton(as: FeatureRepository)
+class FeatureRepositoryImpl implements FeatureRepository {
+  final RemoteRepository _remoteRepository;
+  final LocalRepository _localRepository;
+  
+  FeatureRepositoryImpl(this._remoteRepository, this._localRepository);
+}
+```
+
+### Multi-Source Repository Pattern
+```dart
+@LazySingleton(as: UserRepository)
+class UserRepositoryImpl implements UserRepository {
+  final RemoteRepository _remote;
+  final LocalRepository _local;
+  
+  UserRepositoryImpl(this._remote, this._local);
+  
+  @override
+  Future<UserEntity?> getUser() async {
+    // Try local first
+    final localUser = await _local.getUserInfo();
+    if (localUser != null) return localUser;
+    
+    // Fallback to remote
+    final remoteUser = await _remote.getUser();
+    if (remoteUser != null) {
+      await _local.saveUserInfo(remoteUser);
+    }
+    return remoteUser;
+  }
+}
+```
+
+## Code Generation Requirements
+
+### Required Files and Annotations
+- `part 'filename.g.dart'` for JSON serialization
+- `part 'filename.freezed.dart'` for freezed models
+- `@freezed` for all request/response models
+- `@JsonKey(name: 'api_field')` for field mapping
+- Run `fvm dart run build_runner build -d` after changes
+
+### Generated File Management
+- Include `.g.dart` and `.freezed.dart` files in git
+- Exclude from analysis in `analysis_options.yaml`
+- Always regenerate after model changes
+
+## Testing Considerations
+
+### Repository Testing Pattern
+```dart
+// Use abstract interfaces for easy mocking
+class MockRemoteRepository extends Mock implements RemoteRepository {}
+
+void main() {
+  late MockRemoteRepository mockRemote;
+  late FeatureRepository repository;
+  
+  setUp(() {
+    mockRemote = MockRemoteRepository();
+    repository = FeatureRepositoryImpl(mockRemote);
+  });
+}
+```
+
+## Performance and Caching
+
+### Local Caching Strategy
+- Cache frequently accessed data locally
+- Implement cache invalidation logic
+- Use history management for user inputs
+- Limit cached items (max 10 for lists)
+
+### Network Optimization
+- Use appropriate HTTP methods (GET, POST, PUT, DELETE)
+- Implement request cancellation with `CancelToken`
+- Add retry logic for failed requests
+- Use multipart for file uploads with `@MultiPart()`

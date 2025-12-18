@@ -1,0 +1,122 @@
+# Cursor Rules for Chauffeur Flutter App
+
+## Creating Screens
+
+When creating a new screen in this Flutter app, follow these patterns:
+
+### 1. Directory Structure
+```
+lib/screen/{feature_name}/
+├── {feature_name}_screen.dart
+├── bloc/
+│   ├── {feature_name}_bloc.dart
+│   ├── {feature_name}_event.dart
+│   └── {feature_name}_state.dart
+└── widgets/ (optional)
+    └── {feature_name}_widget.dart
+```
+
+### 2. Screen Implementation Pattern
+- Use `StatelessWidget` for screens with BLoC state management
+- Inject BLoC via `context.read<{Feature}Bloc>()` or `BlocProvider`
+- Wrap screen content with `BlocBuilder` or `BlocConsumer`
+- Handle loading, success, and error states explicitly
+
+### 3. BLoC Implementation
+- **State**: Use `@freezed` for immutable state classes with union types
+- **Events**: Use `@freezed` for event classes
+- **Bloc**: Inject use cases via constructor, use factory parameters if needed
+- Register BLoC with `@injectable` and appropriate scope
+
+### 4. Use Case Integration
+- Screens should depend on use cases, not repositories directly
+- Use cases handle business logic and data transformation
+- Inject use cases into BLoCs via dependency injection
+
+### 5. Navigation Setup
+- Add route to `app/app_router.dart` using `@AutoRoute()`
+- Use `context.router.push()` for navigation
+- Follow existing route naming conventions
+
+### 6. Code Generation Requirements
+After creating screens with freezed/injectable annotations:
+```bash
+fvm dart run build_runner build -d
+```
+
+### 7. Required Imports
+```dart
+// Common screen imports
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:auto_route/auto_route.dart';
+import 'package:injectable/injectable.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+// Generated imports (after build_runner)
+part '{file_name}.freezed.dart';
+part '{file_name}.g.dart'; // for JsonSerializable if needed
+```
+
+### 8. Dependency Injection
+- Register BLoCs with appropriate lifecycle (`@injectable`, `@lazySingleton`)
+- Use `@factoryParam` for runtime parameters
+- Ensure use cases are properly injected
+
+### 9. Error Handling
+- Handle network errors, validation errors, and loading states
+- Use freezed union types for error representation
+- Display user-friendly error messages with localization
+
+### 10. Localization
+- Use `context.l10n.{key}` for translated strings
+- Add new keys to `lib/l10n/arb/app_en.arb`
+- Generate localization after adding keys: `fvm flutter gen-l10n`
+
+### Example Screen Structure:
+```dart
+@AutoRoute()
+class ExampleScreen extends StatelessWidget {
+  const ExampleScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => getIt<ExampleBloc>(),
+      child: const _ExampleView(),
+    );
+  }
+}
+
+class _ExampleView extends StatelessWidget {
+  const _ExampleView();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text(context.l10n.exampleTitle)),
+      body: BlocConsumer<ExampleBloc, ExampleState>(
+        listener: (context, state) {
+          state.whenOrNull(
+            error: (message) => ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(message))),
+          );
+        },
+        builder: (context, state) {
+          return state.when(
+            loading: () => const Center(child: CircularProgressIndicator()),
+            success: (data) => _SuccessView(data: data),
+            error: (message) => _ErrorView(message: message),
+          );
+        },
+      ),
+    );
+  }
+}
+```
+
+## Architecture Compliance
+- Follow clean architecture: Screen → BLoC → Use Case → Repository
+- Use dependency injection for all dependencies
+- Keep screens focused on UI, business logic in use cases
+- Use freezed for all data models and state classes

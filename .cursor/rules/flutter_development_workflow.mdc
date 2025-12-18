@@ -1,0 +1,353 @@
+---
+alwaysApply: true
+---
+# Flutter Development Workflow - Project Chauffeur
+
+## 🔧 Prerequisites and Environment Setup
+
+### Required Tools
+- **FVM (Flutter Version Management)**: Version 3.35.2 configured in `.fvmrc`
+- **Melos**: Monorepo-style build management
+- **VS Code Extensions**: Flutter, Dart, Bloc
+- **Git**: Version control with proper branch strategy
+
+### Environment Verification
+Before starting development, verify your environment:
+```bash
+# Check FVM is properly installed and Flutter version
+fvm --version
+fvm flutter --version
+
+# Should show Flutter 3.35.2
+# Dart SDK >=3.9.0
+```
+
+## 📋 Pre-Development Checklist
+
+### 1. Initial Setup (New Contributors)
+```bash
+# Clone repository
+git clone <repository-url>
+cd chauffeur
+
+# Install dependencies
+fvm dart run melos exec -- fvm dart pub get --no-example
+
+# Generate necessary files
+fvm dart run melos exec -- fvm flutter gen-l10n
+fvm dart run melos exec -- fvm dart run build_runner build
+
+# Verify app runs
+fvm flutter run --flavor dev --dart-define-from-file=configs/.env.dev.json
+```
+
+### 2. Daily Development Routine
+```bash
+# Pull latest changes
+git pull origin develop
+
+# Update dependencies if needed
+fvm dart run melos exec -- fvm dart pub get --no-example
+
+# Regenerate files if .dart_tool is clean
+fvm dart run melos exec -- fvm flutter gen-l10n
+fvm dart run melos exec -- fvm dart run build_runner build
+```
+
+## 🚀 Development Workflow
+
+### 1. Feature Development Process
+
+#### Step 1: Create Feature Branch
+```bash
+# Branch from develop
+git checkout develop
+git pull origin develop
+git checkout -b feature/your-feature-name
+```
+
+#### Step 2: Implement Feature
+Follow this order:
+1. **Create Entity Models** (if needed)
+2. **Define Repository Interfaces** 
+3. **Implement Use Cases**
+4. **Create BLoC (Event, State, BLoC)**
+5. **Build UI Components**
+6. **Add Routing** (if new screen)
+
+#### Step 3: Code Generation (CRITICAL)
+After modifying any files with annotations:
+```bash
+# MUST run after any @freezed, @JsonSerializable, or @auto_route changes
+fvm dart run melos exec -- fvm dart run build_runner build -d
+
+# MUST run after adding new localization strings
+fvm dart run melos exec -- fvm flutter gen-l10n
+```
+
+#### Step 4: Code Quality Check
+```bash
+# Format code (REQUIRED before commit)
+fvm dart run melos exec -- fvm dart format .
+
+# Verify app still runs
+fvm flutter run --flavor dev --dart-define-from-file=configs/.env.dev.json
+```
+
+### 2. Entity Creation Workflow
+
+#### Required Pattern for All Entities
+```dart
+@freezed
+abstract class YourEntityName with _$YourEntityName {
+  const factory YourEntityName({
+    @JsonKey(name: 'api_field_name') String? fieldName,
+    @JsonKey(name: 'y') double? lat,  // Coordinate mapping
+    @JsonKey(name: 'x') double? lng,  // Coordinate mapping
+    int? id,
+    // ... other fields
+  }) = _YourEntityName;
+
+  factory YourEntityName.fromJson(Map<String, dynamic> json) => 
+      _$YourEntityNameFromJson(json);
+}
+```
+
+#### After Creating Entity
+```bash
+# CRITICAL: Generate freezed and JSON code
+fvm dart run melos exec -- fvm dart run build_runner build -d
+```
+
+### 3. BLoC Implementation Workflow
+
+#### Required BLoC Structure
+```dart
+@injectable
+class YourFeatureBloc extends Bloc<YourFeatureEvent, YourFeatureState> 
+    with SafetyNetworkMixin {
+  final YourFeatureUseCase _useCase;
+  
+  YourFeatureBloc(this._useCase) : super(YourFeatureState.initial()) {
+    on<YourFeatureEventStart>(_onStart);
+  }
+  
+  Future<void> _onStart(
+    YourFeatureEventStart event,
+    Emitter<YourFeatureState> emit,
+  ) async {
+    await safeNetworkCall(
+      () async {
+        emit(state.copyWith(isLoading: true));
+        final result = await _useCase.getData();
+        emit(state.copyWith(
+          data: result,
+          isLoading: false,
+        ));
+      },
+      onError: (error) {
+        emit(state.copyWith(
+          error: error.toString(),
+          isLoading: false,
+        ));
+      },
+    );
+  }
+}
+```
+
+#### Required UI BLoC Usage
+```dart
+// MUST use buildWhen
+BlocBuilder<YourFeatureBloc, YourFeatureState>(
+  buildWhen: (previous, current) => 
+      previous.data != current.data ||
+      previous.isLoading != current.isLoading,
+  builder: (context, state) {
+    // UI implementation
+  },
+)
+
+// MUST use listenWhen
+BlocListener<YourFeatureBloc, YourFeatureState>(
+  listenWhen: (previous, current) => 
+      previous.error != current.error,
+  listener: (context, state) {
+    if (state.error != null) {
+      // Handle error
+    }
+  },
+)
+```
+
+## 🧪 Testing and Validation Workflow
+
+### 1. Code Quality Checks
+```bash
+# Format check (run before every commit)
+fvm dart run melos exec -- fvm dart format .
+
+# Build verification
+fvm flutter run --flavor dev --dart-define-from-file=configs/.env.dev.json
+```
+
+### 2. Build Generation Verification
+```bash
+# Verify no conflicts
+fvm dart run melos exec -- fvm dart run build_runner build -d
+
+# Check for missing generated files
+find lib -name "*.freezed.dart" -o -name "*.g.dart" | wc -l
+```
+
+### 3. Multi-language Support Check
+```bash
+# Generate and verify localization
+fvm dart run melos exec -- fvm flutter gen-l10n
+
+# Check if all MDC files have language variants
+find . -name "*.mdc" | while read file; do
+  echo "Checking: $file"
+  if [ ! -f "${file}.ko" ]; then echo "Missing Korean: ${file}.ko"; fi
+  if [ ! -f "${file}.vn" ]; then echo "Missing Vietnamese: ${file}.vn"; fi
+done
+```
+
+## 📦 Build and Release Workflow
+
+### 1. Development Build
+```bash
+# Android Debug
+fvm flutter run --flavor dev --dart-define-from-file=configs/.env.dev.json
+
+# iOS Debug  
+fvm flutter run --flavor dev --dart-define-from-file=configs/.env.dev.json
+```
+
+### 2. Release Build
+```bash
+# Android Release
+fvm dart run melos exec -- fvm flutter build apk --release --flavor dev --dart-define-from-file=./configs/.env.dev.json --verbose
+
+# iOS Release
+fvm dart run melos exec -- fvm flutter build ipa --no-codesign --release --flavor dev --dart-define-from-file=./configs/.env.dev.json
+```
+
+## 🔄 Git Workflow
+
+### 1. Commit Standards
+```bash
+# Stage changes
+git add .
+
+# Format code before commit (REQUIRED)
+fvm dart run melos exec -- fvm dart format .
+
+# Commit with Korean message
+git commit -m "feat: Add user authentication feature"
+# Types: feat, fix, docs, style, refactor, test, chore
+```
+
+### 2. Pre-Commit Checklist
+- [ ] Code formatted with `fvm dart format .`
+- [ ] Generated files updated (`build_runner build -d`)
+- [ ] Localization generated (`flutter gen-l10n`)
+- [ ] App builds and runs successfully
+- [ ] All BLoCs use SafetyNetworkMixin
+- [ ] All BlocBuilder/BlocListener have buildWhen/listenWhen
+- [ ] All entities use @freezed
+- [ ] MDC files updated in all languages (if applicable)
+
+### 3. Branch Management
+- `main`: Production code
+- `develop`: Development integration
+- `feature/*`: Feature development
+- `hotfix/*`: Emergency fixes
+
+## ❌ Common Mistakes to Avoid
+
+### 1. Dependency Injection Violations
+```dart
+// ❌ WRONG - Direct repository injection to BLoC
+class MyBloc extends Bloc<MyEvent, MyState> {
+  final MyRepository _repository; // WRONG
+}
+
+// ✅ CORRECT - Use case injection
+class MyBloc extends Bloc<MyEvent, MyState> {
+  final MyUseCase _useCase; // CORRECT
+}
+```
+
+### 2. Missing Safety Network
+```dart
+// ❌ WRONG - Direct API call
+Future<void> _getData() async {
+  final result = await apiService.getData(); // WRONG
+}
+
+// ✅ CORRECT - Safety network
+Future<void> _getData() async {
+  await safeNetworkCall(() async {
+    final result = await useCase.getData(); // CORRECT
+  });
+}
+```
+
+### 3. Missing buildWhen/listenWhen
+```dart
+// ❌ WRONG - No buildWhen
+BlocBuilder<MyBloc, MyState>(
+  builder: (context, state) { ... }, // WRONG
+)
+
+// ✅ CORRECT - With buildWhen
+BlocBuilder<MyBloc, MyState>(
+  buildWhen: (prev, curr) => prev.data != curr.data, // CORRECT
+  builder: (context, state) { ... },
+)
+```
+
+### 4. Forgetting Code Generation
+```bash
+# ❌ WRONG - Forgetting to run after @freezed changes
+# Edit entity → Commit immediately (WRONG)
+
+# ✅ CORRECT - Always run code generation
+# Edit entity → Run build_runner → Commit (CORRECT)
+fvm dart run melos exec -- fvm dart run build_runner build -d
+```
+
+## 🎯 Success Criteria
+
+### Development Feature Complete Checklist
+- [ ] Clean architecture layers properly implemented
+- [ ] All entities use @freezed with JSON serialization
+- [ ] Repository interfaces defined and implemented
+- [ ] Use cases handle business logic
+- [ ] BLoCs use SafetyNetworkMixin for API calls
+- [ ] All BloC widgets use buildWhen/listenWhen
+- [ ] DI properly configured with abstract interfaces
+- [ ] Code formatted and builds successfully
+- [ ] Multi-language support (if UI changes)
+- [ ] Navigation properly integrated (if new screen)
+
+### Code Quality Standards Met
+- [ ] No direct repository injection in BLoCs
+- [ ] No direct API calls without SafetyNetworkMixin
+- [ ] No BlocBuilder/BlocListener without conditions
+- [ ] No mutable data models (all @freezed)
+- [ ] No missing generated files
+- [ ] No hardcoded strings (use localization)
+- [ ] No missing FVM prefix in commands
+- [ ] Code follows 120-character line limit
+
+### Ready for Review/Merge
+- [ ] Feature branch up to date with develop
+- [ ] All pre-commit checks passed
+- [ ] App builds and runs on both platforms
+- [ ] All required files generated and committed
+- [ ] Commit messages follow Korean standards
+- [ ] MDC files updated in all languages (if needed)
+
+This workflow ensures consistent, high-quality Flutter development following the Chauffeur project's clean architecture principles.
