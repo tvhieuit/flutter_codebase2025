@@ -32,3 +32,96 @@ linter:
     always_require_non_null_named_parameters: true
     avoid_null_checks_in_equality_operators: true
 
+# This file configures the analyzer, which statically analyzes Dart code to
+# check for errors, warnings, and lints.
+#
+# The issues identified by the analyzer are surfaced in the UI of Dart-enabled
+# IDEs (https://dart.dev/tools#ides-and-editors). The analyzer can also be
+# invoked from the command line by running `flutter analyze`.
+
+# The following line activates a set of recommended lints for Flutter apps,
+# packages, and plugins designed to encourage good coding practices.
+include: package:flutter_lints/flutter.yaml
+
+formatter:
+  page_width: 120
+  trailing_commas: preserve
+
+linter:
+  rules:
+    # Critical architectural rules (must keep enabled)
+    avoid_relative_lib_imports: true
+    prefer_final_fields: true
+
+    # Code quality rules (important but manageable)
+    avoid_empty_else: true
+    avoid_null_checks_in_equality_operators: true
+    avoid_unnecessary_containers: true
+    prefer_is_empty: true
+    prefer_is_not_empty: true
+
+    # Naming conventions (important for maintainability)
+    file_names: true
+    camel_case_types: true
+    non_constant_identifier_names: true
+
+    # Flutter-specific rules (keep essential ones)
+    use_key_in_widget_constructors: true
+    sized_box_for_whitespace: true
+    avoid_print: true
+    avoid_web_libraries_in_flutter: true
+
+    # Performance rules (selective)
+    avoid_function_literals_in_foreach_calls: true
+
+    # Temporarily disable rules that create too much noise
+    # Enable these incrementally as codebase improves
+    prefer_const_constructors: true
+    prefer_const_literals_to_create_immutables: true
+    prefer_final_locals: true
+    require_trailing_commas: true
+    prefer_single_quotes: true
+
+    # Advanced rules (disable for now)
+    always_declare_return_types: false
+    always_require_non_null_named_parameters: false
+    avoid_redundant_argument_values: false
+    prefer_if_elements_to_conditional_expressions: false
+    avoid_catches_without_on_clauses: false
+    use_build_context_synchronously: false
+
+# Additional information about this file can be found at
+# https://dart.dev/guides/language/analysis-options
+
+dart_code_metrics:
+  extends:
+    - recommended
+
+
+analyzer:
+  enable-experiment:
+    - dot-shorthands
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "lib/generated_plugin_registrant.dart"
+    - "build/**"
+    - ".dart_tool/**"
+    - "*.md"
+
+  errors:
+    # Critical errors that should fail build
+    missing_required_param: error
+    missing_return: error
+
+    # Warnings that don't fail build but show up
+    unused_import: warning
+    unused_local_variable: warning
+    unused_element: warning
+
+    # Ignore common generated code issues
+    invalid_annotation_target: ignore
+    todo: ignore
+
+    # Ignore deprecated usage until migration is complete
+    deprecated_member_use_from_same_package: ignore
