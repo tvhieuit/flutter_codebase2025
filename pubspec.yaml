@@ -134,36 +134,27 @@ melos:
     aos:devapk:
       run: fvm dart run melos exec -- fvm flutter build apk --release --flavor dev --dart-define-from-file=./configs/dev.json
 
-    aos:leadersapk:
-      run: fvm dart run melos exec -- fvm flutter build apk --release --flavor leaders --dart-define-from-file=./configs/leaders.json
+    aos:stgapk:
+      run: fvm dart run melos exec -- fvm flutter build apk --release --flavor stg --dart-define-from-file=./configs/stg.json
 
-    aos:ganaapk:
-      run: fvm dart run melos exec -- fvm flutter build apk --release --flavor gana --dart-define-from-file=./configs/gana.json
-
-    aos:togetherapk:
-      run: fvm dart run melos exec -- fvm flutter build apk --release --flavor together --dart-define-from-file=./configs/together.json
+    aos:betaapk:
+      run: fvm dart run melos exec -- fvm flutter build apk --release --flavor beta --dart-define-from-file=./configs/beta.json
 
     aos:dev:
       run: fvm dart run melos exec -- fvm flutter build appbundle --release --flavor dev --dart-define-from-file=./configs/dev.json
 
-    aos:leaders:
-      run: fvm dart run melos exec -- fvm flutter build appbundle --release --flavor leaders --dart-define-from-file=./configs/leaders.json
+    aos:stg:
+      run: fvm dart run melos exec -- fvm flutter build appbundle --release --flavor stg --dart-define-from-file=./configs/stg.json
 
-    aos:gana:
-      run: fvm dart run melos exec -- fvm flutter build appbundle --release --flavor gana --dart-define-from-file=./configs/gana.json
-
-    aos:together:
-      run: fvm dart run melos exec -- fvm flutter build appbundle --release --flavor together --dart-define-from-file=./configs/together.json
+    aos:beta:
+      run: fvm dart run melos exec -- fvm flutter build appbundle --release --flavor beta --dart-define-from-file=./configs/beta.json
 
     ios:dev:
       run: fvm dart run melos exec -- fvm flutter build ipa --release --flavor dev --dart-define-from-file=./configs/dev.json
 
-    ios:leaders:
-      run: fvm dart run melos exec -- fvm flutter build ipa --release --flavor leaders --dart-define-from-file=./configs/leaders.json
+    ios:stg:
+      run: fvm dart run melos exec -- fvm flutter build ipa --release --flavor stg --dart-define-from-file=./configs/stg.json
 
-    ios:gana:
-      run: fvm dart run melos exec -- fvm flutter build ipa --release --flavor gana --dart-define-from-file=./configs/gana.json
-
-    ios:together:
-      run: fvm dart run melos exec -- fvm flutter build ipa --release --flavor together --dart-define-from-file=./configs/together.json
+    ios:beta:
+      run: fvm dart run melos exec -- fvm flutter build ipa --release --flavor beta --dart-define-from-file=./configs/beta.json
       

@@ -1,0 +1,58 @@
+# Cursor Rules - Flutter Project
+
+## Melos Scripts Reference
+
+This project uses Melos for managing commands. Always use `fvm dart run melos run <script-name>` for consistency.
+
+### Available Melos Scripts
+
+**Dependency Management:**
+- `pg` - Get dependencies (`fvm dart pub get --no-example`)
+- `po` - Check outdated packages
+- `pu` - Upgrade packages
+
+**Code Generation:**
+- `l10n` - Generate localization files (`fvm flutter gen-l10n`)
+- `br` - Build runner standard build
+- `brd` - Build runner with delete conflicts (`-d` flag)
+
+**Code Quality:**
+- `fm` - Format code (`fvm dart format .`)
+- `fm-check` - Format check for CI/CD
+- `fix` - Apply Dart fixes
+
+**Testing:**
+- `test` - Run tests
+- `test:coverage` - Run tests with coverage
+- `test:watch` - Run tests in watch mode
+
+**Builds:**
+- `aos:devapk`, `aos:stgapk`, `aos:betaapk` - Android APK builds
+- `aos:dev`, `aos:stg`, `aos:beta` - Android App Bundle builds
+- `ios:dev`, `ios:stg`, `ios:beta` - iOS IPA builds
+
+**Other:**
+- `icon` - Generate app icons
+
+### Command Pattern
+
+Always use:
+```bash
+fvm dart run melos run <script-name>
+```
+
+Or direct command:
+```bash
+fvm dart run melos exec -- <command>
+```
+
+### Common Workflow
+
+1. Get dependencies: `fvm dart run melos run pg`
+2. Generate code: `fvm dart run melos run brd`
+3. Generate localization: `fvm dart run melos run l10n`
+4. Format code: `fvm dart run melos run fm`
+5. Run app: `fvm flutter run --flavor dev --dart-define-from-file=configs/.env.dev.json`
+
+See COMMANDS.md for complete documentation.
+
