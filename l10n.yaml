@@ -3,5 +3,5 @@ template-arb-file: lang_en.arb
 preferred-supported-locales: [en]
 output-dir: lib/l10n
 output-localization-file: app_localization.dart
-output-class: S
+output-class: AppLocalizations
 nullable-getter: false

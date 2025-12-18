@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🚀 Setting up Chauffeur Flutter project..."
+echo "🚀 Setting up Flutter project..."
 
 # Check if FVM is installed
 if ! command -v fvm &> /dev/null; then

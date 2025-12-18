@@ -1,4 +1,4 @@
-name: chauffeur
+name: flutter_app
 description: A Flutter application following Clean Architecture principles
 publish_to: 'none'
 version: 1.0.0+1
@@ -44,6 +44,7 @@ dev_dependencies:
   injectable_generator: ^2.6.2
   auto_route_generator: ^7.3.2
   retrofit_generator: ^8.2.1
+  melos: ^7.3.0
 
 flutter:
   uses-material-design: true
@@ -62,3 +63,107 @@ flutter:
         - asset: assets/fonts/Pretendard-Bold.otf
           weight: 700
 
+flutter_gen:
+  line_length: 250
+  output: lib/assets/
+
+  assets:
+    outputs:
+      package_parameter_enabled: false
+      class_name: AppAsset
+  integrations:
+    flutter_svg: true
+    lottie: true
+
+melos:
+  sdkPath: .fvm/flutter_sdk
+  useRootAsPackage: true
+  categories:
+    app:
+      - "apps/*"
+      - "."
+    packages:
+      - "packages/**"
+  scripts:
+
+    pg:
+      run: fvm dart run melos exec -- fvm dart pub get --no-example
+
+    po:
+      run: fvm dart run melos exec -- fvm dart pub outdated
+
+    pu:
+      run: fvm dart run melos exec -- fvm dart pub upgrade --major-versions
+
+    l10n:
+      run: fvm dart run melos exec -- fvm flutter gen-l10n
+
+    br: # build_runner
+      run: fvm dart run melos exec -- fvm dart run build_runner build
+
+    brd: # build_runner
+      run: fvm dart run melos exec -- fvm dart run build_runner build -d
+
+    fm:
+      run: fvm dart run melos exec -- fvm dart format .
+
+    fm-check:
+      run: find lib -name "*.dart" ! -name "*.g.dart" ! -name "*.freezed.dart" -exec fvm dart format --set-exit-if-changed {} +
+
+    icon:
+      run: fvm dart run melos exec -- fvm dart run flutter_launcher_icons
+
+    fix:
+      run: fvm dart run melos exec -- fvm dart fix --apply
+
+    test:
+      run: fvm dart run melos exec -- fvm flutter test
+      select-packages:
+        - '.'
+
+    test:coverage:
+      run: fvm dart run melos exec -- fvm flutter test --coverage
+      select-packages:
+        - '.'
+
+    test:watch:
+      run: fvm dart run melos exec -- fvm flutter test --watch
+      select-packages:
+        - '.'
+
+    aos:devapk:
+      run: fvm dart run melos exec -- fvm flutter build apk --release --flavor dev --dart-define-from-file=./configs/dev.json
+
+    aos:leadersapk:
+      run: fvm dart run melos exec -- fvm flutter build apk --release --flavor leaders --dart-define-from-file=./configs/leaders.json
+
+    aos:ganaapk:
+      run: fvm dart run melos exec -- fvm flutter build apk --release --flavor gana --dart-define-from-file=./configs/gana.json
+
+    aos:togetherapk:
+      run: fvm dart run melos exec -- fvm flutter build apk --release --flavor together --dart-define-from-file=./configs/together.json
+
+    aos:dev:
+      run: fvm dart run melos exec -- fvm flutter build appbundle --release --flavor dev --dart-define-from-file=./configs/dev.json
+
+    aos:leaders:
+      run: fvm dart run melos exec -- fvm flutter build appbundle --release --flavor leaders --dart-define-from-file=./configs/leaders.json
+
+    aos:gana:
+      run: fvm dart run melos exec -- fvm flutter build appbundle --release --flavor gana --dart-define-from-file=./configs/gana.json
+
+    aos:together:
+      run: fvm dart run melos exec -- fvm flutter build appbundle --release --flavor together --dart-define-from-file=./configs/together.json
+
+    ios:dev:
+      run: fvm dart run melos exec -- fvm flutter build ipa --release --flavor dev --dart-define-from-file=./configs/dev.json
+
+    ios:leaders:
+      run: fvm dart run melos exec -- fvm flutter build ipa --release --flavor leaders --dart-define-from-file=./configs/leaders.json
+
+    ios:gana:
+      run: fvm dart run melos exec -- fvm flutter build ipa --release --flavor gana --dart-define-from-file=./configs/gana.json
+
+    ios:together:
+      run: fvm dart run melos exec -- fvm flutter build ipa --release --flavor together --dart-define-from-file=./configs/together.json
+      

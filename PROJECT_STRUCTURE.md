@@ -1,11 +1,11 @@
 # Project Structure
 
-This document describes the complete structure of the Chauffeur Flutter project.
+This document describes the complete structure of the Flutter project.
 
 ## Directory Structure
 
 ```
-chauffeur/
+flutter_app/
 ├── assets/                    # Asset files
 │   ├── icon/                 # SVG icons
 │   ├── image/                # Images

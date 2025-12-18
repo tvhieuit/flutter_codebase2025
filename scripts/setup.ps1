@@ -1,6 +1,6 @@
 # PowerShell setup script for Windows
 
-Write-Host "🚀 Setting up Chauffeur Flutter project..." -ForegroundColor Cyan
+Write-Host "🚀 Setting up Flutter project..." -ForegroundColor Cyan
 
 # Check if FVM is installed
 if (-not (Get-Command fvm -ErrorAction SilentlyContinue)) {

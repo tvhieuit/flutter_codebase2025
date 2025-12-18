@@ -1,6 +1,6 @@
-# Contributing to Chauffeur
+# Contributing
 
-Thank you for your interest in contributing to Chauffeur! This document provides guidelines and instructions for contributing.
+Thank you for your interest in contributing! This document provides guidelines and instructions for contributing.
 
 ## Development Setup
 

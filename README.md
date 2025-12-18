@@ -1,4 +1,4 @@
-# Chauffeur - Flutter Clean Architecture Project
+# Flutter Clean Architecture Project
 
 A Flutter application following Clean Architecture principles with Feature-Based Architecture.
 
