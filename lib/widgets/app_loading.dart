@@ -3,21 +3,21 @@ import 'package:flutter/material.dart';
 import '../app/app_router.dart';
 
 /// Global loading overlay widget
-/// 
+///
 /// Usage:
 /// ```dart
 /// // Show loading
 /// AppLoading.show();
-/// 
+///
 /// // Hide loading
 /// AppLoading.hide();
-/// 
+///
 /// // Multiple tasks
 /// AppLoading.show(); // Task 1
 /// AppLoading.show(); // Task 2
 /// AppLoading.hide(); // Task 1 done
 /// AppLoading.hide(); // Task 2 done - loading hidden
-/// 
+///
 /// // Force hide
 /// AppLoading.hide(force: true);
 /// ```
@@ -40,7 +40,8 @@ class AppLoading {
           child: Container(
             color: backgroundColor ?? const Color.fromRGBO(0, 0, 0, 0.5),
             alignment: Alignment.center,
-            child: loadingWidget ??
+            child:
+                loadingWidget ??
                 Container(
                   padding: const EdgeInsets.all(32),
                   decoration: BoxDecoration(
@@ -83,7 +84,7 @@ class AppLoading {
   }
 
   /// Toggle loading based on boolean value
-  /// 
+  ///
   /// Usage:
   /// ```dart
   /// AppLoading.loading(isLoading);
@@ -152,4 +153,3 @@ class AppLoadingWidget extends StatelessWidget {
     );
   }
 }
-

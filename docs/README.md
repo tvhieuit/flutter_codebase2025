@@ -14,6 +14,8 @@ This directory contains comprehensive documentation for the Flutter project.
 
 ### Development Guides
 - **[SCREEN_TEMPLATE.md](./SCREEN_TEMPLATE.md)** - Template for creating new screens
+- **[EXAMPLE_USER_FEATURE.md](./EXAMPLE_USER_FEATURE.md)** - Complete Clean Architecture example
+- **[SHARED_PREFERENCES_ASYNC.md](./SHARED_PREFERENCES_ASYNC.md)** - Local storage guide
 - **[CONTRIBUTING.md](./CONTRIBUTING.md)** - Contributing guidelines
 
 ## 🚀 Quick Navigation

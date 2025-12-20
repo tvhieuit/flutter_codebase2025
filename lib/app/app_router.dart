@@ -26,6 +26,11 @@ class AppRouter extends $AppRouter {
       initial: true,
     ),
 
+    // User screen
+    AutoRoute(
+      page: UserRoute.page,
+    ),
+
     // Dialog routes
     AppDialogRoute(
       page: PermissionDialogRoute.page,

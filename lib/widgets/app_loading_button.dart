@@ -130,4 +130,3 @@ class AppLoadingIconButton extends StatelessWidget {
     );
   }
 }
-
