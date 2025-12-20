@@ -4,9 +4,9 @@ import 'package:injectable/injectable.dart';
 
 import '../../app_mixin/safety_network_mixin.dart';
 
+part 'splash_bloc.freezed.dart';
 part 'splash_event.dart';
 part 'splash_state.dart';
-part 'splash_bloc.freezed.dart';
 
 /// BLoC for managing splash screen state and initialization
 @injectable
@@ -29,7 +29,7 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> with SafetyNetworkMixin 
     emit(state.copyWith(isLoading: true, error: null));
 
     // Simulate initialization delay
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 5));
 
     // Here you can add:
     // - Database initialization

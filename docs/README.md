@@ -26,6 +26,7 @@ This directory contains comprehensive documentation for the Flutter project.
 ### Daily Development
 - [COMMANDS.md](./COMMANDS.md) - For command reference
 - [SCREEN_TEMPLATE.md](./SCREEN_TEMPLATE.md) - For creating new screens
+- [ROUTING.md](./ROUTING.md) - For navigation and routing
 
 ### Rules & Standards
 See the [../rules](../rules/) directory for coding rules and standards.

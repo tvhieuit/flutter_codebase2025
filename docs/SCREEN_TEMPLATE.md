@@ -245,8 +245,11 @@ touch lib/screen/feature_name/feature_name_page.dart
 ### 2. Add Route
 ```dart
 // lib/app/app_router.dart
+import 'package:injectable/injectable.dart';
+
+@singleton  // IMPORTANT: Router must be singleton
 @AutoRouterConfig(replaceInRouteName: 'Page,Route')
-class AppRouter extends RootStackRouter {
+class AppRouter extends $AppRouter {  // IMPORTANT: Extend $AppRouter (generated)
   @override
   List<AutoRoute> get routes => [
     AutoRoute(page: SplashRoute.page, initial: true),

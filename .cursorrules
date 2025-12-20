@@ -149,6 +149,10 @@ fvm flutter run --flavor dev --dart-define-from-file=configs/dev.json
 4. Run: `fvm dart run melos run brd`
 5. Format: `fvm dart run melos run fm`
 
+**IMPORTANT**: 
+- `AppRouter` must be `@singleton` for dependency injection
+- `AppRouter` must extend `$AppRouter` (generated class), not `RootStackRouter`
+
 See `docs/SCREEN_TEMPLATE.md` for complete template.
 
 ## 🔍 Quick Checklist

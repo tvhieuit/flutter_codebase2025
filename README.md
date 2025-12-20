@@ -65,6 +65,7 @@ lib/
 
 ### For Development
 - [Screen Template](./docs/SCREEN_TEMPLATE.md) - Create new features
+- [Routing Guide](./docs/ROUTING.md) - Navigation and routing
 - [Splash Screen Setup](./docs/SPLASH_SCREEN_SETUP.md) - Implementation example
 - [Contributing Guidelines](./docs/CONTRIBUTING.md) - How to contribute
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/di/injection.dart';
 
 import '../l10n/app_localization.dart';
 import 'app_router.dart';
@@ -6,7 +7,7 @@ import 'app_router.dart';
 class MyApp extends StatelessWidget {
   MyApp({super.key});
 
-  final _appRouter = AppRouter();
+  final _appRouter = getIt<AppRouter>();
 
   @override
   Widget build(BuildContext context) {
