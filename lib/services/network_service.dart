@@ -10,8 +10,7 @@ class NetworkService {
   StreamSubscription<List<ConnectivityResult>>? _subscription;
 
   /// Stream of connectivity changes
-  Stream<List<ConnectivityResult>> get onConnectivityChanged =>
-      _connectivity.onConnectivityChanged;
+  Stream<List<ConnectivityResult>> get onConnectivityChanged => _connectivity.onConnectivityChanged;
 
   /// Check current connectivity status
   Future<bool> get isConnected async {
@@ -71,4 +70,3 @@ class NetworkService {
         result.contains(ConnectivityResult.ethernet);
   }
 }
-

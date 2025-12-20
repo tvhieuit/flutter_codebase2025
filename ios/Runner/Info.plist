@@ -45,5 +45,24 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!-- Permission Descriptions -->
+	<key>NSCameraUsageDescription</key>
+	<string>This app needs camera access to take photos</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs photo library access to select photos</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>This app needs photo library access to save photos</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app needs microphone access to record audio</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app needs location access to show nearby places</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This app needs location access to track your location</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app needs location access to track your location</string>
+	<key>NSContactsUsageDescription</key>
+	<string>This app needs contacts access to find friends</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>This app needs tracking permission to provide personalized experience</string>
 </dict>
 </plist>

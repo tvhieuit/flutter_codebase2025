@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 
+import 'app_custom_route.dart';
 import 'app_router.gr.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -23,6 +24,12 @@ class AppRouter extends $AppRouter {
     AutoRoute(
       page: SplashRoute.page,
       initial: true,
+    ),
+
+    // Dialog routes
+    AppDialogRoute(
+      page: PermissionDialogRoute.page,
+      barrierDismissible: false,
     ),
 
     // Add more routes here as you create them
