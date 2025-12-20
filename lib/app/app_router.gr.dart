@@ -21,7 +21,7 @@ abstract class $AppRouter extends _i2.RootStackRouter {
         routeData: routeData,
         child: _i2.WrappedRoute(child: const _i1.SplashPage()),
       );
-    }
+    },
   };
 }
 
@@ -29,10 +29,10 @@ abstract class $AppRouter extends _i2.RootStackRouter {
 /// [_i1.SplashPage]
 class SplashRoute extends _i2.PageRouteInfo<void> {
   const SplashRoute({List<_i2.PageRouteInfo>? children})
-      : super(
-          SplashRoute.name,
-          initialChildren: children,
-        );
+    : super(
+        SplashRoute.name,
+        initialChildren: children,
+      );
 
   static const String name = 'SplashRoute';
 

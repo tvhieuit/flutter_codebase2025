@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get app_name => '';
+  String get appName => 'Flutter App';
 
   @override
   String get welcome => 'Welcome';
@@ -31,7 +31,4 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get retry => 'Retry';
-
-  @override
-  String get splash_screen_title => '';
 }

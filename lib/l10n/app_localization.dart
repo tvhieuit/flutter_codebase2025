@@ -91,11 +91,11 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[Locale('en')];
 
-  /// No description provided for @app_name.
+  /// Application name
   ///
   /// In en, this message translates to:
-  /// **''**
-  String get app_name;
+  /// **'Flutter App'**
+  String get appName;
 
   /// No description provided for @welcome.
   ///
@@ -138,12 +138,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Retry'**
   String get retry;
-
-  /// No description provided for @splash_screen_title.
-  ///
-  /// In en, this message translates to:
-  /// **''**
-  String get splash_screen_title;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

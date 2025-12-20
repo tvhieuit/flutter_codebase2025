@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../di/injection.dart';
+import '../../extensions/l10n_extension.dart';
 import 'splash_bloc.dart';
 
 @RoutePage()
@@ -56,7 +57,7 @@ class SplashPage extends StatelessWidget implements AutoRouteWrapper {
 
                     // App Name
                     Text(
-                      'Flutter App',
+                      l10n.appName,
                       style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,

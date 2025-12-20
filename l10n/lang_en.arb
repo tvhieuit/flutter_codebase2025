@@ -1,13 +1,15 @@
 {
   "@@locale": "en",
-  "app_name": "",
+  "appName": "Flutter App",
+  "@appName": {
+    "description": "Application name"
+  },
   "welcome": "Welcome",
   "save": "Save",
   "cancel": "Cancel",
   "delete": "Delete",
   "loading": "Loading...",
   "error": "Error",
-  "retry": "Retry",
-  "splash_screen_title": ""
+  "retry": "Retry"
 }
 
