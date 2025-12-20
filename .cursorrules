@@ -1,58 +1,175 @@
-# Cursor Rules - Flutter Project
+# Flutter Clean Architecture - Cursor AI Rules
 
-## Melos Scripts Reference
+## 📋 Project Overview
 
-This project uses Melos for managing commands. Always use `fvm dart run melos run <script-name>` for consistency.
+This is a Flutter project following Clean Architecture with BLoC pattern.
 
-### Available Melos Scripts
+## 🎯 Core Principles
 
-**Dependency Management:**
-- `pg` - Get dependencies (`fvm dart pub get --no-example`)
-- `po` - Check outdated packages
-- `pu` - Upgrade packages
+### Architecture Layers
+- **Presentation** (BLoC) → **Business Logic** (Use Cases) → **Data** (Repositories)
+- NEVER inject Repositories directly in BLoCs - ALWAYS use Use Cases
 
-**Code Generation:**
-- `l10n` - Generate localization files (`fvm flutter gen-l10n`)
-- `br` - Build runner standard build
-- `brd` - Build runner with delete conflicts (`-d` flag)
+### Required Patterns
 
-**Code Quality:**
-- `fm` - Format code (`fvm dart format .`)
-- `fm-check` - Format check for CI/CD
-- `fix` - Apply Dart fixes
-
-**Testing:**
-- `test` - Run tests
-- `test:coverage` - Run tests with coverage
-- `test:watch` - Run tests in watch mode
-
-**Builds:**
-- `aos:devapk`, `aos:stgapk`, `aos:betaapk` - Android APK builds
-- `aos:dev`, `aos:stg`, `aos:beta` - Android App Bundle builds
-- `ios:dev`, `ios:stg`, `ios:beta` - iOS IPA builds
-
-**Other:**
-- `icon` - Generate app icons
-
-### Command Pattern
-
-Always use:
-```bash
-fvm dart run melos run <script-name>
+#### 1. BLoC Structure
+```dart
+@injectable
+class MyBloc extends Bloc<MyEvent, MyState> with SafetyNetworkMixin {
+  final MyUseCase _useCase;  // Inject Use Case, NOT Repository
+  
+  MyBloc(this._useCase) : super(MyState.initial()) {
+    on(_onEvent);  // No type parameter
+    add(const MyEvent.started());  // Auto-init
+  }
+  
+  Future<void> _onEvent(_EventType event, emit) async {  // No Emitter<State>
+    await safeNetworkCall(() async {
+      // API call here
+    });
+  }
+}
 ```
 
-Or direct command:
-```bash
-fvm dart run melos exec -- <command>
+#### 2. Event & State (Freezed)
+```dart
+@freezed
+class MyEvent with _$MyEvent {
+  const factory MyEvent.started() = _Started;
+}
+
+@freezed
+class MyState with _$MyState {
+  const factory MyState({
+    @Default(false) bool isLoading,
+  }) = _MyState;
+}
 ```
 
-### Common Workflow
+#### 3. Page (AutoRouteWrapper)
+```dart
+@RoutePage()
+class MyPage extends StatelessWidget implements AutoRouteWrapper {
+  const MyPage({super.key});
+  
+  @override
+  Widget wrappedRoute(BuildContext context) {
+    return BlocProvider(
+      create: (context) => getIt<MyBloc>(),
+      child: this,
+    );
+  }
+  
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<MyBloc, MyState>(
+      buildWhen: (previous, current) => /* conditions */,
+      builder: (context, state) {
+        return const Scaffold(/* UI */);
+      },
+    );
+  }
+}
+```
 
-1. Get dependencies: `fvm dart run melos run pg`
-2. Generate code: `fvm dart run melos run brd`
-3. Generate localization: `fvm dart run melos run l10n`
-4. Format code: `fvm dart run melos run fm`
-5. Run app: `fvm flutter run --flavor dev --dart-define-from-file=configs/.env.dev.json`
+## ✅ MUST DO
 
-See COMMANDS.md for complete documentation.
+1. **Use `@freezed` for Events and States**
+2. **Use `@injectable` for BLoCs**
+3. **Implement `AutoRouteWrapper` for Pages**
+4. **Auto-start BLoC with `add()` in constructor**
+5. **Use `buildWhen` and `listenWhen`**
+6. **Inject Use Cases only (not Repositories)**
+7. **Wrap API calls with `safeNetworkCall()`**
+8. **Use `const` for widgets when possible**
+9. **Remove `Emitter<State>` type - use `emit` only**
+10. **Remove type parameters in `on<Event>()` - use `on()` only**
 
+## ❌ NEVER DO
+
+1. Don't inject Repositories in BLoCs
+2. Don't skip `buildWhen`/`listenWhen`
+3. Don't use `Emitter<State>` type
+4. Don't use `on<Event>()` with type parameter
+5. Don't add events in `wrappedRoute()`
+6. Don't create separate View class (build in Page directly)
+7. Don't make direct API calls without `safeNetworkCall()`
+8. Don't forget `const` for static widgets
+
+## 🔧 Commands
+
+Always use FVM + Melos:
+
+```bash
+# Get dependencies
+fvm dart run melos run pg
+
+# Generate code
+fvm dart run melos run brd
+
+# Format code
+fvm dart run melos run fm
+
+# Run app
+fvm flutter run --flavor dev --dart-define-from-file=configs/dev.json
+```
+
+## 📝 Naming Conventions
+
+- **Classes**: PascalCase
+- **Variables/Methods**: camelCase
+- **Files**: snake_case
+- **Constants**: UPPER_SNAKE_CASE
+- **Private**: _leadingUnderscore
+
+## 📚 Documentation
+
+- **Rules**: See `rules/` directory
+  - `rules/clean_architecture.md` - Architecture principles
+  - `rules/bloc_pattern.md` - BLoC implementation
+  - `rules/code_style.md` - Code formatting
+
+- **Docs**: See `docs/` directory
+  - `docs/QUICK_START.md` - Getting started
+  - `docs/SCREEN_TEMPLATE.md` - Feature template
+  - `docs/COMMANDS.md` - Command reference
+
+## 🎨 Code Style
+
+- Line length: 120 characters
+- Indentation: 2 spaces
+- Trailing commas: REQUIRED
+- Format before commit: `fvm dart run melos run fm`
+
+## 🚀 Creating New Features
+
+1. Create BLoC files (event, state, bloc)
+2. Create Page with AutoRouteWrapper
+3. Add route to `app_router.dart`
+4. Run: `fvm dart run melos run brd`
+5. Format: `fvm dart run melos run fm`
+
+See `docs/SCREEN_TEMPLATE.md` for complete template.
+
+## 🔍 Quick Checklist
+
+When creating a new screen:
+- [ ] Event uses `@freezed`
+- [ ] State uses `@freezed`
+- [ ] BLoC uses `@injectable`
+- [ ] BLoC extends with `SafetyNetworkMixin`
+- [ ] BLoC auto-starts with `add()` in constructor
+- [ ] Page implements `AutoRouteWrapper`
+- [ ] Page uses `@RoutePage()` annotation
+- [ ] BlocBuilder has `buildWhen`
+- [ ] BlocListener has `listenWhen`
+- [ ] Uses `emit` instead of `Emitter<State>`
+- [ ] Uses `on()` instead of `on<Event>()`
+- [ ] Inject Use Case (not Repository)
+- [ ] All widgets use `const` where possible
+
+## 📖 References
+
+- Full rules: `rules/README.md`
+- Full docs: `docs/README.md`
+- Template: `docs/SCREEN_TEMPLATE.md`

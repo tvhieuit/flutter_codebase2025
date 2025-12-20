@@ -1,108 +1,171 @@
 # Flutter Clean Architecture Project
 
-A Flutter application following Clean Architecture principles with Feature-Based Architecture.
+A Flutter application following Clean Architecture principles with BLoC pattern, dependency injection, and auto routing.
 
-## Architecture
+## 🚀 Quick Start
 
-This project follows Clean Architecture with the following layers:
+### Prerequisites
+- Flutter 3.38.5 (managed by FVM)
+- Dart SDK >=3.9.0
 
-- **Presentation Layer** (`lib/screen/`): BLoC pattern for state management
-- **Business Logic Layer** (`lib/use_case/`): Use cases for business logic
-- **Data Layer** (`lib/repository/`): Repository pattern for data access
-- **Domain Layer** (`lib/entities/`): Domain models using Freezed
+### Setup
+```bash
+# Install FVM and use project Flutter version
+fvm use
 
-## Project Structure
+# Get dependencies
+fvm dart run melos run pg
+
+# Generate code
+fvm dart run melos run brd
+
+# Run app
+fvm flutter run --flavor dev --dart-define-from-file=configs/dev.json
+```
+
+👉 **Full setup guide**: [docs/QUICK_START.md](./docs/QUICK_START.md)
+
+## 📁 Project Structure
 
 ```
 lib/
-├── app/                    # App configuration & routing
-├── app_mixin/             # Shared mixins
-├── assets/                # Asset utilities
-├── converter/             # Data converters
-├── di/                    # Dependency Injection
-├── entities/              # Data models & entities
-├── extension/             # Extension methods
-├── l10n/                  # Localization
-├── map/                   # Map related features
-├── repository/            # Data layer
-├── screen/                # UI screens & features
-├── services/              # External services
-├── use_case/              # Business logic
-├── utils/                 # Utility classes
-└── widgets/               # Reusable UI components
+├── app/              # App configuration & routing
+├── app_mixin/        # Shared mixins (SafetyNetworkMixin)
+├── di/               # Dependency Injection (GetIt + Injectable)
+├── screen/           # Feature screens (BLoC + UI)
+├── use_case/         # Business logic layer
+├── repository/       # Data layer
+├── entities/         # Data models (Freezed)
+└── main.dart         # Entry point
 ```
 
-## Getting Started
+👉 **Detailed structure**: [docs/PROJECT_STRUCTURE.md](./docs/PROJECT_STRUCTURE.md)
 
-### Prerequisites
+## 🏗️ Architecture
 
-- Flutter SDK 3.38.5 (managed via FVM)
-- FVM (Flutter Version Management)
-- Melos (for monorepo management)
+### Clean Architecture Layers
+- **Presentation** (BLoC) → **Business Logic** (Use Cases) → **Data** (Repositories)
+- Dependency flow: UI → Use Cases → Repositories → Data Sources
 
-### Setup
+### Key Technologies
+- **State Management**: BLoC Pattern with `flutter_bloc`
+- **Dependency Injection**: GetIt + Injectable
+- **Routing**: Auto Route
+- **Code Generation**: Freezed, Build Runner
+- **Network**: Dio + Retrofit
 
-1. Install FVM:
+👉 **Architecture rules**: [rules/clean_architecture.md](./rules/clean_architecture.md)
+
+## 📚 Documentation
+
+### For New Contributors
+- [Quick Start Guide](./docs/QUICK_START.md) - Get up and running
+- [Project Structure](./docs/PROJECT_STRUCTURE.md) - Understand the codebase
+- [Commands Reference](./docs/COMMANDS.md) - Available commands
+
+### For Development
+- [Screen Template](./docs/SCREEN_TEMPLATE.md) - Create new features
+- [Splash Screen Setup](./docs/SPLASH_SCREEN_SETUP.md) - Implementation example
+- [Contributing Guidelines](./docs/CONTRIBUTING.md) - How to contribute
+
+### Rules & Standards
+- [Clean Architecture](./rules/clean_architecture.md) - Architecture principles
+- [BLoC Pattern](./rules/bloc_pattern.md) - State management rules
+- [Code Style](./rules/code_style.md) - Formatting and naming conventions
+
+## 🔧 Common Commands
+
 ```bash
-dart pub global activate fvm
+# Get dependencies
+fvm dart run melos run pg
+
+# Generate code (freezed, injectable, auto_route)
+fvm dart run melos run brd
+
+# Format code
+fvm dart run melos run fm
+
+# Generate localization
+fvm dart run melos run l10n
+
+# Run tests
+fvm dart run melos run test
+
+# Build APK
+fvm dart run melos run aos:devapk
 ```
 
-2. Install Flutter version:
-```bash
-fvm install 3.38.5
-fvm use 3.38.5
-```
+👉 **All commands**: [docs/COMMANDS.md](./docs/COMMANDS.md)
 
-3. Install dependencies:
-```bash
-fvm dart run melos exec -- fvm dart pub get --no-example
-```
+## 🎯 Creating a New Feature
 
-4. Generate code:
-```bash
-fvm dart run melos exec -- fvm dart run build_runner build -d
-fvm dart run melos exec -- fvm flutter gen-l10n
-```
+Follow the standard pattern:
 
-5. Run the app:
-```bash
-fvm flutter run --flavor dev --dart-define-from-file=configs/.env.dev.json
-```
+1. **Create BLoC** with `@injectable` and `SafetyNetworkMixin`
+2. **Create Events & State** with `@freezed`
+3. **Create Page** with `@RoutePage()` and `AutoRouteWrapper`
+4. **Add Route** to `app_router.dart`
+5. **Run Code Generation**: `fvm dart run melos run brd`
 
-## Development Rules
+👉 **Full template**: [docs/SCREEN_TEMPLATE.md](./docs/SCREEN_TEMPLATE.md)
 
-### Code Formatting
+## 📋 Project Features
 
-Always format code before committing:
-```bash
-fvm dart run melos exec -- fvm dart format .
-```
+### ✅ Implemented
+- Splash screen with BLoC
+- Auto Route navigation
+- Dependency injection setup
+- SafetyNetworkMixin for API calls
+- Freezed for immutable models
+- Clean Architecture structure
+
+### 🚧 To Be Implemented
+- Authentication flow
+- Home screen
+- API integration
+- Local storage
+- Error handling UI
+- Loading states
+
+## 🛠️ Tech Stack
+
+### Core
+- Flutter 3.38.5
+- Dart 3.10.4
+
+### State Management & Architecture
+- flutter_bloc ^9.1.1
+- get_it ^9.2.0
+- injectable ^2.7.1+2
 
 ### Code Generation
+- freezed ^2.5.2
+- build_runner ^2.4.13
+- auto_route_generator ^7.3.2
 
-After modifying files with annotations (@freezed, @injectable, etc.):
-```bash
-fvm dart run melos exec -- fvm dart run build_runner build -d
-```
+### Networking
+- dio ^5.9.0
+- retrofit ^4.9.1
 
-### Architecture Rules
+### Local Storage
+- shared_preferences ^2.5.4
 
-- **NEVER** inject repositories directly into BLoCs - use Use Cases instead
-- **ALWAYS** use abstract interfaces for repositories and use cases
-- **ALWAYS** use @injectable annotations for dependency injection
-- **ALWAYS** use SafetyNetworkMixin for network calls in BLoCs
-- **ALWAYS** use buildWhen/listenWhen in BlocBuilder/BlocListener
+## 📖 Learning Resources
 
-## Dependencies
+- [Flutter BLoC Documentation](https://bloclibrary.dev/)
+- [Auto Route Documentation](https://pub.dev/packages/auto_route)
+- [Injectable Documentation](https://pub.dev/packages/injectable)
+- [Freezed Documentation](https://pub.dev/packages/freezed)
+- [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
 
-- **State Management**: flutter_bloc
-- **Dependency Injection**: get_it + injectable
-- **Code Generation**: freezed, json_serializable, build_runner
-- **Networking**: dio
-- **Local Storage**: shared_preferences
-- **UI**: flutter_screenutil for responsive design
+## 🤝 Contributing
 
-## License
+Please read [CONTRIBUTING.md](./docs/CONTRIBUTING.md) before submitting pull requests.
 
-[Your License Here]
+## 📝 License
 
+This project is licensed under the MIT License.
+
+---
+
+**Need Help?** Check the [docs](./docs/) folder for comprehensive guides.
