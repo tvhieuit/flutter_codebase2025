@@ -1,12 +1,12 @@
 # Flutter Clean Architecture Project
 
-A Flutter application following Clean Architecture principles with BLoC pattern, dependency injection, and auto routing.
+A Flutter application in a Melos-managed monorepo, following Clean Architecture principles with BLoC pattern, dependency injection, and auto routing.
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Flutter 3.38.5 (managed by FVM)
-- Dart SDK >=3.9.0
+- Flutter SDK managed by FVM (see `.fvmrc` for the exact version)
+- Dart SDK compatible with the Flutter version in this workspace
 
 ### Setup
 ```bash
@@ -25,18 +25,26 @@ fvm flutter run --flavor dev --dart-define-from-file=configs/dev.json
 
 👉 **Full setup guide**: [docs/QUICK_START.md](./docs/QUICK_START.md)
 
-## 📁 Project Structure
+## 📁 Project Structure (Monorepo)
 
 ```
-lib/
-├── app/              # App configuration & routing
-├── app_mixin/        # Shared mixins (SafetyNetworkMixin)
-├── di/               # Dependency Injection (GetIt + Injectable)
-├── screen/           # Feature screens (BLoC + UI)
-├── use_case/         # Business logic layer
-├── repository/       # Data layer
-├── entities/         # Data models (Freezed)
-└── main.dart         # Entry point
+.
+├── lib/                     # Main application
+│   ├── app/                 # App configuration & routing
+│   ├── app_mixin/           # Shared mixins (SafetyNetworkMixin)
+│   ├── di/                  # Dependency Injection (GetIt + Injectable)
+│   ├── screen/              # Feature screens (BLoC + UI)
+│   ├── use_case/            # Business logic layer
+│   ├── repository/          # Data layer
+│   ├── entities/            # Data models (Freezed)
+│   ├── extensions/          # App-wide extensions
+│   ├── services/            # External services
+│   ├── widgets/             # Reusable UI components
+│   └── main.dart            # Entry point
+└── packages/                # Workspace packages (Melos)
+    └── app_utility/         # Shared utilities used by the app
+        └── lib/
+            └── src/         # Extensions, helpers, and types
 ```
 
 👉 **Detailed structure**: [docs/PROJECT_STRUCTURE.md](./docs/PROJECT_STRUCTURE.md)
@@ -131,8 +139,8 @@ Follow the standard pattern:
 ## 🛠️ Tech Stack
 
 ### Core
-- Flutter 3.38.5
-- Dart 3.10.4
+- Flutter (managed by FVM)
+- Dart (version aligned with Flutter SDK)
 
 ### State Management & Architecture
 - flutter_bloc ^9.1.1

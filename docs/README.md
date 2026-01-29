@@ -1,10 +1,10 @@
 # Project Documentation
 
-This directory contains comprehensive documentation for the Flutter project.
+This directory contains comprehensive documentation for the Flutter workspace and all packages in the monorepo.
 
 ## 📚 Available Documentation
 
-### Getting Started
+### Getting Started (Workspace)
 - **[QUICK_START.md](./QUICK_START.md)** - Quick start guide to get up and running
 - **[COMMANDS.md](./COMMANDS.md)** - Common commands and melos scripts reference
 

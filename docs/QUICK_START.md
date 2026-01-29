@@ -4,14 +4,17 @@
 
 Your splash screen is fully implemented and ready to use!
 
-## 🚀 Run the App
+## 🚀 Run the App (Workspace)
 
 ```bash
-# Run in development mode
-fvm flutter run --flavor dev --dart-define-from-file=configs/dev.json
+# 1) Install all dependencies for the app + workspace packages
+fvm dart run melos run pg
 
-# Or for quick testing (if flavors not fully configured)
-fvm flutter run
+# 2) Generate code (freezed, injectable, auto_route, etc.)
+fvm dart run melos run brd
+
+# 3) Run in development mode (root app)
+fvm flutter run --flavor dev --dart-define-from-file=configs/dev.json
 ```
 
 ## 📁 What You Have Now

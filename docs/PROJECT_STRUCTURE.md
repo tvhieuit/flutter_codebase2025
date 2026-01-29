@@ -2,78 +2,87 @@
 
 This document describes the complete structure of the Flutter project.
 
-## Directory Structure
+## Directory Structure (Monorepo / Workspace)
+
+The repository is a single Flutter workspace that also embeds Melos configuration in `pubspec.yaml`.  
+The root package is the main app, and additional shared code lives under `packages/`.
 
 ```
-flutter_app/
-├── assets/                    # Asset files
-│   ├── icon/                 # SVG icons
-│   ├── image/                # Images
-│   │   └── bank/            # Bank logos
-│   ├── animation/           # Lottie animations
-│   └── fonts/               # Font files
-├── configs/                  # Environment configuration files
-├── lib/
-│   ├── app/                 # App configuration
-│   │   ├── app.dart        # Main app widget
-│   │   └── routes/         # Auto route configuration
-│   ├── app_mixin/          # Shared mixins
+.
+├── configs/                  # Environment configuration files (dev/stg/beta)
+├── lib/                      # Main application
+│   ├── app/                  # App configuration & routing
+│   │   ├── app.dart          # Main app widget
+│   │   ├── app_router.dart   # Auto Route configuration
+│   │   └── app_router.gr.dart# Generated routes
+│   ├── app_mixin/            # Shared mixins
 │   │   └── safety_network_mixin.dart
-│   ├── assets/              # Asset utilities (generated)
-│   ├── converter/           # Data converters
-│   │   └── date_converter.dart
-│   ├── di/                  # Dependency Injection
-│   │   ├── di.dart         # DI configuration
-│   │   ├── di.config.dart  # Generated DI config
-│   │   └── modules/        # DI modules
-│   │       ├── network_module.dart
-│   │       └── storage_module.dart
-│   ├── entities/            # Domain models (Freezed)
-│   │   ├── user_model.dart
-│   │   └── address_model.dart
-│   ├── extension/           # Extension methods
-│   │   └── string_extension.dart
-│   ├── l10n/                # Localization (generated)
-│   ├── map/                 # Map-related features
-│   ├── repository/          # Data layer
+│   ├── di/                   # Dependency Injection
+│   │   ├── di_module.dart    # DI modules / external dependencies
+│   │   └── injection.dart    # GetIt configuration (generated config lives in injection.config.dart)
+│   ├── entities/             # Domain models (Freezed)
+│   │   └── user_model.dart
+│   ├── extensions/           # Extension methods
+│   │   └── l10n_extension.dart
+│   ├── l10n/                 # Localization (generated)
+│   ├── repository/           # Data layer
 │   │   ├── remote_repository.dart
 │   │   └── local_repository.dart
-│   ├── screen/              # UI screens (Feature-based)
-│   │   └── splash/
-│   │       ├── splash_bloc.dart
-│   │       ├── splash_event.dart
-│   │       ├── splash_page.dart
-│   │       ├── splash_route.dart
-│   │       └── splash_state.dart
-│   ├── services/            # External services
-│   │   └── api_service.dart
-│   ├── use_case/            # Business logic layer
-│   │   ├── address_use_case.dart
-│   │   └── auth_use_case.dart
-│   ├── utils/               # Utility classes
-│   │   ├── app_error.dart
-│   │   ├── constants.dart
-│   │   ├── environment.dart
-│   │   └── validators.dart
-│   ├── widgets/             # Reusable UI components
-│   │   ├── error_widget.dart
-│   │   └── loading_widget.dart
-│   └── main.dart            # App entry point
-├── l10n/                    # Localization ARB files
+│   ├── screen/               # UI screens (feature-based)
+│   │   ├── splash/
+│   │   │   ├── splash_bloc.dart
+│   │   │   ├── splash_event.dart
+│   │   │   ├── splash_page.dart
+│   │   │   └── splash_state.dart
+│   │   └── user/
+│   │       ├── user_bloc.dart
+│   │       ├── user_event.dart
+│   │       ├── user_page.dart
+│   │       └── user_state.dart
+│   ├── services/             # External services
+│   │   ├── network_service.dart
+│   │   └── permission_service.dart
+│   ├── use_case/             # Business logic layer
+│   │   └── user_use_case.dart
+│   ├── widgets/              # Reusable UI components
+│   │   ├── app_loading.dart
+│   │   ├── app_loading_button.dart
+│   │   ├── network_status_indicator.dart
+│   │   └── permission_dialog.dart
+│   └── main.dart             # App entry point
+├── packages/                 # Workspace / monorepo packages
+│   └── app_utility/
+│       ├── lib/
+│       │   ├── app_utility.dart
+│       │   └── src/
+│       │       ├── extensions/
+│       │       │   ├── context_extension.dart
+│       │       │   ├── date_time_extension.dart
+│       │       │   ├── iterable_extension.dart
+│       │       │   ├── number_extension.dart
+│       │       │   └── string_extension.dart
+│       │       ├── helpers/
+│       │       │   ├── helpers.dart
+│       │       │   └── log_helper.dart
+│       │       └── types/
+│       │           ├── types.dart
+│       │           └── typedefs.dart
+│       └── pubspec.yaml      # Package-specific dependencies
+├── l10n/                     # Localization ARB files
 │   └── lang_en.arb
-├── scripts/                 # Setup and utility scripts
+├── scripts/                  # Setup and utility scripts
 │   ├── setup.sh
 │   └── setup.ps1
-├── .fvmrc                   # FVM Flutter version
-├── .gitignore              # Git ignore rules
-├── analysis_options.yaml    # Dart analyzer config
-├── build.yaml              # Build runner config
-├── l10n.yaml               # Localization config
-├── melos.yaml              # Melos monorepo config
-├── pubspec.yaml            # Flutter dependencies
-├── README.md               # Project documentation
-├── CONTRIBUTING.md         # Contribution guidelines
-└── PROJECT_STRUCTURE.md    # This file
+├── .fvmrc                    # FVM Flutter version
+├── .gitignore                # Git ignore rules
+├── analysis_options.yaml     # Dart analyzer config
+├── build.yaml                # Build runner config
+├── devtools_options.yaml     # DevTools configuration
+├── l10n.yaml                 # Localization config
+├── override_dependencies.yaml# Workspace overrides (if needed)
+├── pubspec.yaml              # Flutter workspace, app, and Melos configuration
+├── README.md                 # Project documentation
+└── docs/PROJECT_STRUCTURE.md # This file
 ```
 
 ## Layer Architecture
