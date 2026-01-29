@@ -106,80 +106,80 @@ melos:
   scripts:
 
     pg:
-      run: fvm dart run melos exec -- fvm dart pub get --no-example
+      run: fvm dart run melos exec --concurrency=1 -- fvm dart pub get --no-example
 
     po:
-      run: fvm dart run melos exec -- fvm dart pub outdated
+      run: fvm dart run melos exec --concurrency=1 -- fvm dart pub outdated
 
     pu:
-      run: fvm dart run melos exec -- fvm dart pub upgrade --major-versions
+      run: fvm dart run melos exec --concurrency=1 -- fvm dart pub upgrade --major-versions
 
     l10n:
-      run: fvm dart run melos exec -- fvm flutter gen-l10n
+      run: fvm dart run melos exec --concurrency=1 -- fvm flutter gen-l10n
       packageFilters:
         scope:
           - "flutter_app"
           - "feature_auth"
 
     br:
-      run: fvm dart run melos exec -- fvm dart run build_runner build
+      run: fvm dart run melos exec --concurrency=1 -- fvm dart run build_runner build
 
     brd:
-      run: fvm dart run melos exec -- fvm dart run build_runner build -d
+      run: fvm dart run melos exec --concurrency=1 -- fvm dart run build_runner build -d
 
     fm:
-      run: fvm dart run melos exec -- fvm dart format .
+      run: fvm dart run melos exec --concurrency=1 -- fvm dart format .
 
     fm-check:
       run: find lib -name "*.dart" ! -name "*.g.dart" ! -name "*.freezed.dart" -exec fvm dart format --set-exit-if-changed {} +
 
     icon:
-      run: fvm dart run melos exec -- fvm dart run flutter_launcher_icons
+      run: fvm dart run melos exec --concurrency=1 -- fvm dart run flutter_launcher_icons
 
     fix:
-      run: fvm dart run melos exec -- fvm dart fix --apply
+      run: fvm dart run melos exec --concurrency=1 -- fvm dart fix --apply
 
     test:
-      run: fvm dart run melos exec -- fvm flutter test
+      run: fvm dart run melos exec --concurrency=1 -- fvm flutter test
       select-packages:
         - '.'
 
     test:coverage:
-      run: fvm dart run melos exec -- fvm flutter test --coverage
+      run: fvm dart run melos exec --concurrency=1 -- fvm flutter test --coverage
       select-packages:
         - '.'
 
     test:watch:
-      run: fvm dart run melos exec -- fvm flutter test --watch
+      run: fvm dart run melos exec --concurrency=1 -- fvm flutter test --watch
       select-packages:
         - '.'
 
     aos:devapk:
-      run: fvm dart run melos exec -- fvm flutter build apk --release --flavor dev --dart-define-from-file=./configs/dev.json
+      run: fvm dart run melos exec --concurrency=1 -- fvm flutter build apk --release --flavor dev --dart-define-from-file=./configs/dev.json
 
     aos:stgapk:
-      run: fvm dart run melos exec -- fvm flutter build apk --release --flavor stg --dart-define-from-file=./configs/stg.json
+      run: fvm dart run melos exec --concurrency=1 -- fvm flutter build apk --release --flavor stg --dart-define-from-file=./configs/stg.json
 
     aos:betaapk:
-      run: fvm dart run melos exec -- fvm flutter build apk --release --flavor beta --dart-define-from-file=./configs/beta.json
+      run: fvm dart run melos exec --concurrency=1 -- fvm flutter build apk --release --flavor beta --dart-define-from-file=./configs/beta.json
 
     aos:dev:
-      run: fvm dart run melos exec -- fvm flutter build appbundle --release --flavor dev --dart-define-from-file=./configs/dev.json
+      run: fvm dart run melos exec --concurrency=1 -- fvm flutter build appbundle --release --flavor dev --dart-define-from-file=./configs/dev.json
 
     aos:stg:
-      run: fvm dart run melos exec -- fvm flutter build appbundle --release --flavor stg --dart-define-from-file=./configs/stg.json
+      run: fvm dart run melos exec --concurrency=1 -- fvm flutter build appbundle --release --flavor stg --dart-define-from-file=./configs/stg.json
 
     aos:beta:
-      run: fvm dart run melos exec -- fvm flutter build appbundle --release --flavor beta --dart-define-from-file=./configs/beta.json
+      run: fvm dart run melos exec --concurrency=1 -- fvm flutter build appbundle --release --flavor beta --dart-define-from-file=./configs/beta.json
 
     ios:dev:
-      run: fvm dart run melos exec -- fvm flutter build ipa --release --flavor dev --dart-define-from-file=./configs/dev.json
+      run: fvm dart run melos exec --concurrency=1 -- fvm flutter build ipa --release --flavor dev --dart-define-from-file=./configs/dev.json
 
     ios:stg:
-      run: fvm dart run melos exec -- fvm flutter build ipa --release --flavor stg --dart-define-from-file=./configs/stg.json
+      run: fvm dart run melos exec --concurrency=1 -- fvm flutter build ipa --release --flavor stg --dart-define-from-file=./configs/stg.json
 
     ios:beta:
-      run: fvm dart run melos exec -- fvm flutter build ipa --release --flavor beta --dart-define-from-file=./configs/beta.json
+      run: fvm dart run melos exec --concurrency=1 -- fvm flutter build ipa --release --flavor beta --dart-define-from-file=./configs/beta.json
 
 # =============================================================================
 # DEPENDENCY OVERRIDES
