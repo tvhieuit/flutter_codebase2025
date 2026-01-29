@@ -116,11 +116,14 @@ melos:
 
     l10n:
       run: fvm dart run melos exec -- fvm flutter gen-l10n
+      packageFilters:
+        scope:
+          - "flutter_app"
 
-    br: # build_runner
+    br:
       run: fvm dart run melos exec -- fvm dart run build_runner build
 
-    brd: # build_runner
+    brd:
       run: fvm dart run melos exec -- fvm dart run build_runner build -d
 
     fm:
