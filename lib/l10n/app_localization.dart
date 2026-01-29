@@ -91,7 +91,7 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[Locale('en')];
 
-  /// Application name
+  /// No description provided for @appName.
   ///
   /// In en, this message translates to:
   /// **'Flutter App'**

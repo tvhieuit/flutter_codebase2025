@@ -48,7 +48,8 @@ abstract class $AppRouter extends _i4.RootStackRouter {
 
 /// generated route for
 /// [_i1.PermissionDialogPage]
-class PermissionDialogRoute extends _i4.PageRouteInfo<PermissionDialogRouteArgs> {
+class PermissionDialogRoute
+    extends _i4.PageRouteInfo<PermissionDialogRouteArgs> {
   PermissionDialogRoute({
     _i5.Key? key,
     required String title,
@@ -56,19 +57,20 @@ class PermissionDialogRoute extends _i4.PageRouteInfo<PermissionDialogRouteArgs>
     bool isSettingsDialog = false,
     List<_i4.PageRouteInfo>? children,
   }) : super(
-         PermissionDialogRoute.name,
-         args: PermissionDialogRouteArgs(
-           key: key,
-           title: title,
-           message: message,
-           isSettingsDialog: isSettingsDialog,
-         ),
-         initialChildren: children,
-       );
+          PermissionDialogRoute.name,
+          args: PermissionDialogRouteArgs(
+            key: key,
+            title: title,
+            message: message,
+            isSettingsDialog: isSettingsDialog,
+          ),
+          initialChildren: children,
+        );
 
   static const String name = 'PermissionDialogRoute';
 
-  static const _i4.PageInfo<PermissionDialogRouteArgs> page = _i4.PageInfo<PermissionDialogRouteArgs>(name);
+  static const _i4.PageInfo<PermissionDialogRouteArgs> page =
+      _i4.PageInfo<PermissionDialogRouteArgs>(name);
 }
 
 class PermissionDialogRouteArgs {
@@ -97,10 +99,10 @@ class PermissionDialogRouteArgs {
 /// [_i2.SplashPage]
 class SplashRoute extends _i4.PageRouteInfo<void> {
   const SplashRoute({List<_i4.PageRouteInfo>? children})
-    : super(
-        SplashRoute.name,
-        initialChildren: children,
-      );
+      : super(
+          SplashRoute.name,
+          initialChildren: children,
+        );
 
   static const String name = 'SplashRoute';
 
@@ -111,10 +113,10 @@ class SplashRoute extends _i4.PageRouteInfo<void> {
 /// [_i3.UserPage]
 class UserRoute extends _i4.PageRouteInfo<void> {
   const UserRoute({List<_i4.PageRouteInfo>? children})
-    : super(
-        UserRoute.name,
-        initialChildren: children,
-      );
+      : super(
+          UserRoute.name,
+          initialChildren: children,
+        );
 
   static const String name = 'UserRoute';
 

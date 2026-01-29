@@ -1,9 +1,6 @@
 {
   "@@locale": "en",
   "appName": "Flutter App",
-  "@appName": {
-    "description": "Application name"
-  },
   "welcome": "Welcome",
   "save": "Save",
   "cancel": "Cancel",

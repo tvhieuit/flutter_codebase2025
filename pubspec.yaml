@@ -38,6 +38,10 @@ dependencies:
   # Permissions
   permission_handler: ^11.3.1
 
+  # Internal Packages
+  app_utility:
+    path: packages/app_utility
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
