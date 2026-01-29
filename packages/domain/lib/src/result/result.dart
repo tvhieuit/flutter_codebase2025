@@ -40,18 +40,22 @@ sealed class Result<T> with _$Result<T> {
   bool get isFailure => this is ResultFailure<T>;
 
   /// Gets the data if success, otherwise returns null
-  T? get dataOrNull => whenOrNull(success: (data) => data);
+  T? get data => switch (this) {
+    ResultSuccess(:final data) => data,
+    ResultFailure() => null,
+  };
+
+  /// Alias for [data] - Gets the data if success, otherwise returns null
+  T? get dataOrNull => data;
 
   /// Gets the failure if failure, otherwise returns null
   Failure? get failureOrNull => whenOrNull(failure: (failure) => failure);
 
   /// Gets the data if success, otherwise throws the failure
-  T get dataOrThrow {
-    return when(
-      success: (data) => data,
-      failure: (failure) => throw Exception(failure.message),
-    );
-  }
+  T get dataOrThrow => when(
+    success: (data) => data,
+    failure: (failure) => throw Exception(failure.message),
+  );
 
   /// Maps the success value to a new type
   Result<R> map<R>(R Function(T data) mapper) {
