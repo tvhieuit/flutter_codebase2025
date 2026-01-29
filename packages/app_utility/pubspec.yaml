@@ -3,6 +3,8 @@ description: Shared utility extensions, helpers, and types for flutter_app
 publish_to: 'none'
 version: 0.0.1
 
+resolution: workspace
+
 environment:
   sdk: '>=3.9.0 <4.0.0'
   flutter: '>=3.29.0'

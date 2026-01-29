@@ -2,7 +2,7 @@ part of 'splash_bloc.dart';
 
 /// Events for Splash screen
 @freezed
-class SplashEvent with _$SplashEvent {
+sealed class SplashEvent with _$SplashEvent {
   /// Event to start splash screen initialization
   const factory SplashEvent.start() = SplashEventStart;
 

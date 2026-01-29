@@ -11,7 +11,7 @@ BuildContext get globalContext =>
 
 @singleton
 @AutoRouterConfig(replaceInRouteName: 'Page,Route')
-class AppRouter extends $AppRouter {
+class AppRouter extends RootStackRouter {
   AppRouter() : super(navigatorKey: rootNavigatorKey);
 
   // Helper getters for accessing context globally

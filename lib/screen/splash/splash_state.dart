@@ -2,7 +2,7 @@ part of 'splash_bloc.dart';
 
 /// State for Splash screen
 @freezed
-class SplashState with _$SplashState {
+sealed class SplashState with _$SplashState {
   const factory SplashState({
     @Default(false) bool isLoading,
     @Default(false) bool isInitialized,
