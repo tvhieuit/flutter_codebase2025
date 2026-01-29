@@ -10,6 +10,7 @@ environment:
 workspace:
   - packages/app_utility
   - packages/app_widget
+  - packages/domain
 
 dependencies:
   flutter:

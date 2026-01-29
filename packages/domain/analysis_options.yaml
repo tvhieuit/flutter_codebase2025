@@ -1,0 +1,17 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+  errors:
+    # Freezed uses @JsonKey on constructor parameters which is valid for code generation
+    # but the analyzer warns about it. These are safe to ignore.
+    invalid_annotation_target: ignore
+
+linter:
+  rules:
+    require_trailing_commas: true
+    prefer_const_constructors: true
+    prefer_final_fields: true
+    always_declare_return_types: true
