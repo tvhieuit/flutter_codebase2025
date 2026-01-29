@@ -51,22 +51,29 @@ The root package is the main app, and additional shared code lives under `packag
 │   │   └── permission_dialog.dart
 │   └── main.dart             # App entry point
 ├── packages/                 # Workspace / monorepo packages
-│   └── app_utility/
+│   ├── app_utility/
+│   │   ├── lib/
+│   │   │   ├── app_utility.dart
+│   │   │   └── src/
+│   │   │       ├── extensions/
+│   │   │       │   ├── context_extension.dart
+│   │   │       │   ├── date_time_extension.dart
+│   │   │       │   ├── iterable_extension.dart
+│   │   │       │   ├── number_extension.dart
+│   │   │       │   └── string_extension.dart
+│   │   │       ├── helpers/
+│   │   │       │   ├── helpers.dart
+│   │   │       │   └── log_helper.dart
+│   │   │       └── types/
+│   │   │           ├── types.dart
+│   │   │           └── typedefs.dart
+│   │   └── pubspec.yaml      # Package-specific dependencies
+│   └── app_widget/
 │       ├── lib/
-│       │   ├── app_utility.dart
+│       │   ├── app_widget.dart
 │       │   └── src/
-│       │       ├── extensions/
-│       │       │   ├── context_extension.dart
-│       │       │   ├── date_time_extension.dart
-│       │       │   ├── iterable_extension.dart
-│       │       │   ├── number_extension.dart
-│       │       │   └── string_extension.dart
-│       │       ├── helpers/
-│       │       │   ├── helpers.dart
-│       │       │   └── log_helper.dart
-│       │       └── types/
-│       │           ├── types.dart
-│       │           └── typedefs.dart
+│       │       └── buttons/
+│       │           └── app_primary_button.dart
 │       └── pubspec.yaml      # Package-specific dependencies
 ├── l10n/                     # Localization ARB files
 │   └── lang_en.arb

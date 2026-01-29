@@ -42,9 +42,16 @@ fvm flutter run --flavor dev --dart-define-from-file=configs/dev.json
 │   ├── widgets/             # Reusable UI components
 │   └── main.dart            # Entry point
 └── packages/                # Workspace packages (Melos)
-    └── app_utility/         # Shared utilities used by the app
+    ├── app_utility/         # Shared extensions, helpers, and types
+    │   └── lib/
+    │       └── src/
+    │           ├── extensions/  # Context, string, number extensions, etc.
+    │           ├── helpers/     # Logging, helpers
+    │           └── types/       # Shared typedefs and types
+    └── app_widget/          # Shared UI widgets
         └── lib/
-            └── src/         # Extensions, helpers, and types
+            └── src/
+                └── buttons/     # Common button widgets, etc.
 ```
 
 👉 **Detailed structure**: [docs/PROJECT_STRUCTURE.md](./docs/PROJECT_STRUCTURE.md)
