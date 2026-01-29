@@ -12,6 +12,9 @@ This directory contains comprehensive documentation for the Flutter workspace an
 - **[PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md)** - Project structure overview
 - **[SPLASH_SCREEN_SETUP.md](./SPLASH_SCREEN_SETUP.md)** - Splash screen implementation details
 
+### Packages
+- **[DOMAIN_PACKAGE.md](./DOMAIN_PACKAGE.md)** - Domain layer (entities, use cases, repositories, local storage)
+
 ### Development Guides
 - **[SCREEN_TEMPLATE.md](./SCREEN_TEMPLATE.md)** - Template for creating new screens
 - **[EXAMPLE_USER_FEATURE.md](./EXAMPLE_USER_FEATURE.md)** - Complete Clean Architecture example
@@ -23,7 +26,8 @@ This directory contains comprehensive documentation for the Flutter workspace an
 ### New Contributors
 1. Start with [QUICK_START.md](./QUICK_START.md)
 2. Review [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md)
-3. Use [SCREEN_TEMPLATE.md](./SCREEN_TEMPLATE.md) when creating features
+3. Learn [DOMAIN_PACKAGE.md](./DOMAIN_PACKAGE.md) for business logic
+4. Use [SCREEN_TEMPLATE.md](./SCREEN_TEMPLATE.md) when creating features
 
 ### Daily Development
 - [COMMANDS.md](./COMMANDS.md) - For command reference

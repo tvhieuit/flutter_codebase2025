@@ -51,6 +51,35 @@ The root package is the main app, and additional shared code lives under `packag
 │   │   └── permission_dialog.dart
 │   └── main.dart             # App entry point
 ├── packages/                 # Workspace / monorepo packages
+│   ├── domain/               # Domain layer (Clean Architecture)
+│   │   ├── lib/
+│   │   │   ├── domain.dart   # Main export
+│   │   │   └── src/
+│   │   │       ├── annotations/      # Custom Freezed annotations
+│   │   │       │   └── annotations.dart
+│   │   │       ├── di/               # Dependency Injection
+│   │   │       │   └── domain_module.dart
+│   │   │       ├── entities/         # Business models (@modelFreezed)
+│   │   │       │   ├── user_entity.dart
+│   │   │       │   └── product_entity.dart
+│   │   │       ├── failures/         # Error handling (@resultFreezed)
+│   │   │       │   └── failure.dart
+│   │   │       ├── repositories/     # Repository interfaces
+│   │   │       │   ├── user_repository.dart
+│   │   │       │   ├── product_repository.dart
+│   │   │       │   └── local/        # Local storage
+│   │   │       │       ├── local_storage.dart
+│   │   │       │       ├── local_storage_impl.dart
+│   │   │       │       ├── local_storage_keys.dart
+│   │   │       │       ├── user_local_repository.dart
+│   │   │       │       └── app_settings_repository.dart
+│   │   │       ├── result/           # Result type
+│   │   │       │   └── result.dart
+│   │   │       └── use_cases/        # Business logic
+│   │   │           ├── base_use_case.dart
+│   │   │           ├── user/
+│   │   │           └── product/
+│   │   └── pubspec.yaml
 │   ├── app_utility/
 │   │   ├── lib/
 │   │   │   ├── app_utility.dart
@@ -109,10 +138,15 @@ The root package is the main app, and additional shared code lives under `packag
 - **Multiple Sources**: Remote and local repositories
 - **Implementation**: Concrete implementations with @Injectable
 
-### Domain Layer (`lib/entities/`)
-- **Freezed**: Immutable data classes
-- **JSON Serialization**: Auto-generated from/to JSON
-- **Type Safety**: Strong typing with nullable support
+### Domain Layer (`packages/domain/`)
+- **Separate Package**: Clean separation of business logic
+- **Custom Freezed Annotations**: @eventFreezed, @stateFreezed, @modelFreezed
+- **Result Type**: Type-safe error handling without exceptions
+- **Failures**: Sealed failure types (ServerFailure, NetworkFailure, etc.)
+- **Local Storage**: SharedPreferencesAsync with type-safe keys
+- **Use Cases**: Single-responsibility business logic classes
+
+See [DOMAIN_PACKAGE.md](./DOMAIN_PACKAGE.md) for detailed documentation.
 
 ## Key Files
 

@@ -1,11 +1,15 @@
-# Shared Dependency Versions
+# =============================================================================
+# SHARED DEPENDENCY VERSIONS
+# =============================================================================
 # This file centralizes all dependency versions for the workspace.
 # All packages should use these versions to ensure consistency.
 #
 # Usage:
-# 1. Define versions here
-# 2. Reference in pubspec.yaml using dependency_overrides (if needed)
-# 3. Or use as reference when adding dependencies to packages
+# 1. Define versions here (reference only)
+# 2. Root pubspec.yaml defines actual versions
+# 3. Child packages use `resolution: workspace` + `any` to inherit
+#
+# =============================================================================
 
 # =============================================================================
 # FLUTTER SDK
@@ -64,3 +68,21 @@ permission_handler: ^12.0.1
 # =============================================================================
 flutter_lints: ^6.0.0
 melos: ^7.3.0
+
+# =============================================================================
+# WORKSPACE PACKAGES
+# =============================================================================
+# These packages use `resolution: workspace` and inherit versions from root.
+#
+# packages/domain:
+#   - freezed_annotation: any (inherits ^3.1.0)
+#   - json_annotation: any (inherits ^4.9.0)
+#   - get_it: any (inherits ^9.2.0)
+#   - injectable: any (inherits ^2.7.1+2)
+#   - shared_preferences: any (inherits ^2.5.4)
+#
+# packages/app_utility:
+#   - flutter_lints: any (inherits ^6.0.0)
+#
+# packages/app_widget:
+#   - flutter_lints: any (inherits ^6.0.0)

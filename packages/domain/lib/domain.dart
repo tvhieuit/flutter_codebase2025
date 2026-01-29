@@ -1,6 +1,9 @@
 // Annotations
 export 'src/annotations/annotations.dart';
 
+// DI
+export 'src/di/di.dart';
+
 // Entities
 export 'src/entities/entities.dart';
 
