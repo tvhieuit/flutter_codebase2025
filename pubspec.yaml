@@ -11,6 +11,7 @@ workspace:
   - packages/app_utility
   - packages/app_widget
   - packages/domain
+  - packages/feature/auth
 
 dependencies:
   flutter:
@@ -47,6 +48,8 @@ dependencies:
   # Internal Packages
   app_utility: ^0.0.1
   app_widget: ^0.0.1
+  domain: ^0.0.1
+  auth: ^0.0.1
 
 dev_dependencies:
   flutter_test:
