@@ -1,8 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-/// Module for third-party dependencies
+/// Module for third-party dependencies (app-level only)
+///
+/// Note: SharedPreferencesAsync is registered by domain package's DomainModule
 @module
 abstract class DiModule {
   /// Dio instance for network calls
@@ -43,9 +44,4 @@ abstract class DiModule {
 
     return dio;
   }
-
-  /// SharedPreferencesAsync instance for local storage
-  /// Uses async API which is more performant and doesn't require initialization
-  @lazySingleton
-  SharedPreferencesAsync get prefs => SharedPreferencesAsync();
 }

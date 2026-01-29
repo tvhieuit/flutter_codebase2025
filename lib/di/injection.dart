@@ -1,3 +1,4 @@
+import 'package:domain/domain.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 
@@ -10,6 +11,10 @@ final getIt = GetIt.instance;
   preferRelativeImports: true,
   asExtension: true,
 )
-Future<void> configureDependencies() async {
-  await getIt.init();
+void configureDependencies() {
+  // Initialize domain package dependencies first
+  initDomainPackage();
+
+  // Initialize main app dependencies
+  getIt.init();
 }

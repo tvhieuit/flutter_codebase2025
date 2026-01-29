@@ -1,4 +1,3 @@
-import 'package:domain/domain.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
@@ -6,13 +5,15 @@ import 'package:injectable/injectable.dart';
 import '../../app_mixin/safety_network_mixin.dart';
 
 part 'splash_bloc.freezed.dart';
+
 part 'splash_event.dart';
+
 part 'splash_state.dart';
 
 /// BLoC for managing splash screen state and initialization
 @injectable
 class SplashBloc extends Bloc<SplashEvent, SplashState> with SafetyNetworkMixin {
-  SplashBloc(this._storage) : super(SplashState.initial()) {
+  SplashBloc() : super(SplashState.initial()) {
     on(_onStart);
     on(_onCheckAuth);
     on(_onNavigate);
@@ -21,16 +22,12 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> with SafetyNetworkMixin 
     add(const SplashEvent.start());
   }
 
-  final LocalStorage _storage;
-
   /// Handles splash screen start event
   /// Initialize app, check dependencies, etc.
   Future<void> _onStart(
     SplashEventStart event,
     emit,
   ) async {
-    _storage.setString('test', 'test');
-
     emit(state.copyWith(isLoading: true, error: null));
 
     // Simulate initialization delay
