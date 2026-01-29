@@ -19,3 +19,6 @@ export 'src/navigation/navigation.dart';
 
 // DI
 export 'src/di/di.dart';
+
+// Localization
+export 'src/l10n/l10n.dart';

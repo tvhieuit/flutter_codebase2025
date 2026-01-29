@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
 import '../bloc/register_bloc.dart';
+import '../l10n/l10n.dart';
 import '../navigation/auth_navigation.dart';
 
 /// Register page
@@ -57,13 +58,14 @@ class _RegisterViewState extends State<_RegisterView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.authL10n;
+
     return BlocConsumer<RegisterBloc, RegisterState>(
       listenWhen: (previous, current) =>
           previous.isSuccess != current.isSuccess ||
           previous.error != current.error,
       listener: (context, state) {
         if (state.isSuccess) {
-          // Navigate to home screen
           _navigation.goToHome();
         }
 
@@ -78,7 +80,7 @@ class _RegisterViewState extends State<_RegisterView> {
           previous.fieldError != current.fieldError,
       builder: (context, state) {
         return Scaffold(
-          appBar: AppBar(title: const Text('Register')),
+          appBar: AppBar(title: Text(l10n.registerTitle)),
           body: SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(24.0),
@@ -102,8 +104,8 @@ class _RegisterViewState extends State<_RegisterView> {
                       textInputAction: TextInputAction.next,
                       textCapitalization: TextCapitalization.words,
                       decoration: InputDecoration(
-                        labelText: 'Full Name',
-                        hintText: 'Enter your full name',
+                        labelText: l10n.fullNameLabel,
+                        hintText: l10n.fullNameHint,
                         prefixIcon: const Icon(Icons.person_outline),
                         border: const OutlineInputBorder(),
                         errorText: state.fieldError == 'name'
@@ -112,7 +114,7 @@ class _RegisterViewState extends State<_RegisterView> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your name';
+                          return l10n.fullNameRequired;
                         }
                         return null;
                       },
@@ -125,8 +127,8 @@ class _RegisterViewState extends State<_RegisterView> {
                       keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.next,
                       decoration: InputDecoration(
-                        labelText: 'Email',
-                        hintText: 'Enter your email',
+                        labelText: l10n.emailLabel,
+                        hintText: l10n.emailHint,
                         prefixIcon: const Icon(Icons.email_outlined),
                         border: const OutlineInputBorder(),
                         errorText: state.fieldError == 'email'
@@ -135,7 +137,7 @@ class _RegisterViewState extends State<_RegisterView> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your email';
+                          return l10n.emailRequired;
                         }
                         return null;
                       },
@@ -148,8 +150,8 @@ class _RegisterViewState extends State<_RegisterView> {
                       keyboardType: TextInputType.phone,
                       textInputAction: TextInputAction.next,
                       decoration: InputDecoration(
-                        labelText: 'Phone (Optional)',
-                        hintText: 'Enter your phone number',
+                        labelText: l10n.phoneLabel,
+                        hintText: l10n.phoneHint,
                         prefixIcon: const Icon(Icons.phone_outlined),
                         border: const OutlineInputBorder(),
                         errorText: state.fieldError == 'phone'
@@ -165,8 +167,8 @@ class _RegisterViewState extends State<_RegisterView> {
                       obscureText: _obscurePassword,
                       textInputAction: TextInputAction.next,
                       decoration: InputDecoration(
-                        labelText: 'Password',
-                        hintText: 'Enter your password',
+                        labelText: l10n.passwordLabel,
+                        hintText: l10n.passwordHint,
                         prefixIcon: const Icon(Icons.lock_outline),
                         border: const OutlineInputBorder(),
                         errorText: state.fieldError == 'password'
@@ -184,12 +186,11 @@ class _RegisterViewState extends State<_RegisterView> {
                             });
                           },
                         ),
-                        helperText:
-                            'At least 8 characters with uppercase, lowercase, and number',
+                        helperText: l10n.passwordHelper,
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
+                          return l10n.passwordRequired;
                         }
                         return null;
                       },
@@ -202,8 +203,8 @@ class _RegisterViewState extends State<_RegisterView> {
                       obscureText: _obscureConfirmPassword,
                       textInputAction: TextInputAction.done,
                       decoration: InputDecoration(
-                        labelText: 'Confirm Password',
-                        hintText: 'Confirm your password',
+                        labelText: l10n.confirmPasswordLabel,
+                        hintText: l10n.confirmPasswordHint,
                         prefixIcon: const Icon(Icons.lock_outline),
                         border: const OutlineInputBorder(),
                         errorText: state.fieldError == 'confirmPassword'
@@ -225,10 +226,10 @@ class _RegisterViewState extends State<_RegisterView> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please confirm your password';
+                          return l10n.confirmPasswordRequired;
                         }
                         if (value != _passwordController.text) {
-                          return 'Passwords do not match';
+                          return l10n.passwordsDoNotMatch;
                         }
                         return null;
                       },
@@ -250,7 +251,7 @@ class _RegisterViewState extends State<_RegisterView> {
                                   color: Colors.white,
                                 ),
                               )
-                            : const Text('Register'),
+                            : Text(l10n.registerButton),
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -259,12 +260,12 @@ class _RegisterViewState extends State<_RegisterView> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text('Already have an account?'),
+                        Text(l10n.alreadyHaveAccount),
                         TextButton(
                           onPressed: () {
                             _navigation.goBack();
                           },
-                          child: const Text('Login'),
+                          child: Text(l10n.loginButton),
                         ),
                       ],
                     ),

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
 import '../bloc/login_bloc.dart';
+import '../l10n/l10n.dart';
 import '../navigation/auth_navigation.dart';
 
 /// Login page
@@ -50,13 +51,14 @@ class _LoginViewState extends State<_LoginView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.authL10n;
+
     return BlocConsumer<LoginBloc, LoginState>(
       listenWhen: (previous, current) =>
           previous.isSuccess != current.isSuccess ||
           previous.error != current.error,
       listener: (context, state) {
         if (state.isSuccess) {
-          // Navigate to home screen
           _navigation.goToHome();
         }
 
@@ -71,7 +73,7 @@ class _LoginViewState extends State<_LoginView> {
           previous.fieldError != current.fieldError,
       builder: (context, state) {
         return Scaffold(
-          appBar: AppBar(title: const Text('Login')),
+          appBar: AppBar(title: Text(l10n.loginTitle)),
           body: SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(24.0),
@@ -96,8 +98,8 @@ class _LoginViewState extends State<_LoginView> {
                       keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.next,
                       decoration: InputDecoration(
-                        labelText: 'Email',
-                        hintText: 'Enter your email',
+                        labelText: l10n.emailLabel,
+                        hintText: l10n.emailHint,
                         prefixIcon: const Icon(Icons.email_outlined),
                         border: const OutlineInputBorder(),
                         errorText: state.fieldError == 'email'
@@ -106,7 +108,7 @@ class _LoginViewState extends State<_LoginView> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your email';
+                          return l10n.emailRequired;
                         }
                         return null;
                       },
@@ -119,8 +121,8 @@ class _LoginViewState extends State<_LoginView> {
                       obscureText: _obscurePassword,
                       textInputAction: TextInputAction.done,
                       decoration: InputDecoration(
-                        labelText: 'Password',
-                        hintText: 'Enter your password',
+                        labelText: l10n.passwordLabel,
+                        hintText: l10n.passwordHint,
                         prefixIcon: const Icon(Icons.lock_outline),
                         border: const OutlineInputBorder(),
                         errorText: state.fieldError == 'password'
@@ -141,7 +143,7 @@ class _LoginViewState extends State<_LoginView> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
+                          return l10n.passwordRequired;
                         }
                         return null;
                       },
@@ -156,7 +158,7 @@ class _LoginViewState extends State<_LoginView> {
                         onPressed: () {
                           _navigation.goToForgotPassword();
                         },
-                        child: const Text('Forgot Password?'),
+                        child: Text(l10n.forgotPassword),
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -175,7 +177,7 @@ class _LoginViewState extends State<_LoginView> {
                                   color: Colors.white,
                                 ),
                               )
-                            : const Text('Login'),
+                            : Text(l10n.loginButton),
                       ),
                     ),
 
@@ -185,12 +187,12 @@ class _LoginViewState extends State<_LoginView> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text("Don't have an account?"),
+                        Text(l10n.noAccount),
                         TextButton(
                           onPressed: () {
                             _navigation.goToRegister();
                           },
-                          child: const Text('Register'),
+                          child: Text(l10n.registerButton),
                         ),
                       ],
                     ),

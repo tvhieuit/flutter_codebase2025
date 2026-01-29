@@ -1,0 +1,118 @@
+{
+  "@@locale": "en",
+  
+  "loginTitle": "Login",
+  "@loginTitle": {
+    "description": "Title for login page"
+  },
+  
+  "loginButton": "Login",
+  "@loginButton": {
+    "description": "Login button text"
+  },
+  
+  "registerTitle": "Register",
+  "@registerTitle": {
+    "description": "Title for register page"
+  },
+  
+  "registerButton": "Register",
+  "@registerButton": {
+    "description": "Register button text"
+  },
+  
+  "emailLabel": "Email",
+  "@emailLabel": {
+    "description": "Email field label"
+  },
+  
+  "emailHint": "Enter your email",
+  "@emailHint": {
+    "description": "Email field hint"
+  },
+  
+  "emailRequired": "Please enter your email",
+  "@emailRequired": {
+    "description": "Email required validation message"
+  },
+  
+  "passwordLabel": "Password",
+  "@passwordLabel": {
+    "description": "Password field label"
+  },
+  
+  "passwordHint": "Enter your password",
+  "@passwordHint": {
+    "description": "Password field hint"
+  },
+  
+  "passwordRequired": "Please enter your password",
+  "@passwordRequired": {
+    "description": "Password required validation message"
+  },
+  
+  "passwordHelper": "At least 8 characters with uppercase, lowercase, and number",
+  "@passwordHelper": {
+    "description": "Password requirements helper text"
+  },
+  
+  "confirmPasswordLabel": "Confirm Password",
+  "@confirmPasswordLabel": {
+    "description": "Confirm password field label"
+  },
+  
+  "confirmPasswordHint": "Confirm your password",
+  "@confirmPasswordHint": {
+    "description": "Confirm password field hint"
+  },
+  
+  "confirmPasswordRequired": "Please confirm your password",
+  "@confirmPasswordRequired": {
+    "description": "Confirm password required validation message"
+  },
+  
+  "passwordsDoNotMatch": "Passwords do not match",
+  "@passwordsDoNotMatch": {
+    "description": "Passwords mismatch validation message"
+  },
+  
+  "fullNameLabel": "Full Name",
+  "@fullNameLabel": {
+    "description": "Full name field label"
+  },
+  
+  "fullNameHint": "Enter your full name",
+  "@fullNameHint": {
+    "description": "Full name field hint"
+  },
+  
+  "fullNameRequired": "Please enter your name",
+  "@fullNameRequired": {
+    "description": "Full name required validation message"
+  },
+  
+  "phoneLabel": "Phone (Optional)",
+  "@phoneLabel": {
+    "description": "Phone field label"
+  },
+  
+  "phoneHint": "Enter your phone number",
+  "@phoneHint": {
+    "description": "Phone field hint"
+  },
+  
+  "forgotPassword": "Forgot Password?",
+  "@forgotPassword": {
+    "description": "Forgot password link text"
+  },
+  
+  "noAccount": "Don't have an account?",
+  "@noAccount": {
+    "description": "Text asking if user doesn't have account"
+  },
+  
+  "alreadyHaveAccount": "Already have an account?",
+  "@alreadyHaveAccount": {
+    "description": "Text asking if user already has account"
+  }
+}

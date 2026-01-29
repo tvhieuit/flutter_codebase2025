@@ -119,6 +119,7 @@ melos:
       packageFilters:
         scope:
           - "flutter_app"
+          - "feature_auth"
 
     br:
       run: fvm dart run melos exec -- fvm dart run build_runner build
