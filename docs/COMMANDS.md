@@ -1,52 +1,61 @@
-# Common Commands Reference
+# Commands Reference
+
+All commands use FVM + Melos for consistency across the monorepo workspace.
 
 ## Quick Reference
 
-All commands use Melos scripts for consistency. Use `fvm dart run melos run <script-name>` to execute them.
+| Command | Description |
+|---------|-------------|
+| `fvm dart run melos run pg` | Get dependencies for all packages |
+| `fvm dart run melos run brd` | Generate code (freezed, injectable, auto_route) |
+| `fvm dart run melos run l10n` | Generate localizations |
+| `fvm dart run melos run fm` | Format code |
+| `fvm flutter run --flavor dev --dart-define-from-file=configs/dev.json` | Run main app |
 
 ## Dependency Management
 
 ### Get Dependencies
 ```bash
 fvm dart run melos run pg
-# or direct command:
-fvm dart run melos exec -- fvm dart pub get --no-example
 ```
+Gets dependencies for all packages in the workspace.
 
 ### Check Outdated Packages
 ```bash
 fvm dart run melos run po
-# or direct command:
-fvm dart run melos exec -- fvm dart pub outdated
 ```
 
 ### Upgrade Packages
 ```bash
 fvm dart run melos run pu
-# or direct command:
-fvm dart run melos exec -- fvm dart pub upgrade --major-versions
 ```
 
 ## Code Generation
 
-### Localization Generation
-```bash
-fvm dart run melos run l10n
-# or direct command:
-fvm dart run melos exec -- fvm flutter gen-l10n
-```
-
-### Build Runner (Code Generation)
+### Build Runner (Freezed, Injectable, Auto Route)
 ```bash
 # Standard build
 fvm dart run melos run br
-# or direct command:
-fvm dart run melos exec -- fvm dart run build_runner build
 
-# Build with delete conflicting outputs
+# Build with delete conflicting outputs (recommended)
 fvm dart run melos run brd
-# or direct command:
-fvm dart run melos exec -- fvm dart run build_runner build -d
+```
+
+### Localization Generation
+```bash
+fvm dart run melos run l10n
+```
+Generates localizations for:
+- `flutter_app` (root app)
+- `feature_auth`
+- `customer_app`
+
+### Single Package Code Generation
+
+To run build_runner on a specific package:
+```bash
+cd packages/feature/auth && fvm dart run build_runner build -d
+cd apps/customer_app && fvm dart run build_runner build -d
 ```
 
 ## Code Quality
@@ -54,131 +63,198 @@ fvm dart run melos exec -- fvm dart run build_runner build -d
 ### Format Code
 ```bash
 fvm dart run melos run fm
-# or direct command:
-fvm dart run melos exec -- fvm dart format .
 ```
 
 ### Format Check (CI/CD)
 ```bash
 fvm dart run melos run fm-check
-# Checks formatting without modifying files
 ```
+Checks formatting without modifying files.
 
 ### Apply Dart Fixes
 ```bash
 fvm dart run melos run fix
-# or direct command:
-fvm dart run melos exec -- fvm dart fix --apply
+```
+
+### Analyze Code
+```bash
+fvm dart analyze lib/
+fvm dart analyze packages/domain/lib/
+fvm dart analyze apps/customer_app/lib/
+```
+
+## Running Applications
+
+### Main App (flutter_app)
+```bash
+# Development
+fvm flutter run --flavor dev --dart-define-from-file=configs/dev.json
+
+# Staging
+fvm flutter run --flavor stg --dart-define-from-file=configs/stg.json
+
+# Beta
+fvm flutter run --flavor beta --dart-define-from-file=configs/beta.json
+```
+
+### Customer App
+```bash
+cd apps/customer_app
+fvm flutter run
+```
+
+### With Specific Device
+```bash
+# List devices
+fvm flutter devices
+
+# Run on specific device
+fvm flutter run -d <device-id> --flavor dev --dart-define-from-file=configs/dev.json
 ```
 
 ## Testing
 
-### Run Tests
+### Run All Tests
 ```bash
 fvm dart run melos run test
-# or direct command:
-fvm dart run melos exec -- fvm flutter test
 ```
 
 ### Run Tests with Coverage
 ```bash
 fvm dart run melos run test:coverage
-# or direct command:
-fvm dart run melos exec -- fvm flutter test --coverage
 ```
 
 ### Run Tests in Watch Mode
 ```bash
 fvm dart run melos run test:watch
-# or direct command:
-fvm dart run melos exec -- fvm flutter test --watch
 ```
 
-## App Icons
-
-### Generate App Icons
+### Run Tests for Specific Package
 ```bash
-fvm dart run melos run icon
-# or direct command:
-fvm dart run melos exec -- fvm dart run flutter_launcher_icons
-```
-
-## Running the App
-
-### Development Run
-```bash
-fvm flutter run --flavor dev --dart-define-from-file=configs/.env.dev.json
+cd packages/domain && fvm flutter test
+cd packages/feature/auth && fvm flutter test
 ```
 
 ## Android Builds
 
 ### APK Builds
-
-#### Dev APK
 ```bash
+# Development
 fvm dart run melos run aos:devapk
-# or direct command:
-fvm dart run melos exec -- fvm flutter build apk --release --flavor dev --dart-define-from-file=./configs/dev.json
-```
 
-#### Staging APK
-```bash
+# Staging
 fvm dart run melos run aos:stgapk
-# or direct command:
-fvm dart run melos exec -- fvm flutter build apk --release --flavor stg --dart-define-from-file=./configs/stg.json
-```
 
-#### Beta APK
-```bash
+# Beta
 fvm dart run melos run aos:betaapk
-# or direct command:
-fvm dart run melos exec -- fvm flutter build apk --release --flavor beta --dart-define-from-file=./configs/beta.json
 ```
 
 ### App Bundle Builds
-
-#### Dev App Bundle
 ```bash
+# Development
 fvm dart run melos run aos:dev
-# or direct command:
-fvm dart run melos exec -- fvm flutter build appbundle --release --flavor dev --dart-define-from-file=./configs/dev.json
-```
 
-#### Staging App Bundle
-```bash
+# Staging
 fvm dart run melos run aos:stg
-# or direct command:
-fvm dart run melos exec -- fvm flutter build appbundle --release --flavor stg --dart-define-from-file=./configs/stg.json
-```
 
-#### Beta App Bundle
-```bash
+# Beta
 fvm dart run melos run aos:beta
-# or direct command:
-fvm dart run melos exec -- fvm flutter build appbundle --release --flavor beta --dart-define-from-file=./configs/beta.json
 ```
 
 ## iOS Builds
 
-### Dev IPA
 ```bash
+# Development
 fvm dart run melos run ios:dev
-# or direct command:
-fvm dart run melos exec -- fvm flutter build ipa --release --flavor dev --dart-define-from-file=./configs/dev.json
-```
 
-### Staging IPA
-```bash
+# Staging
 fvm dart run melos run ios:stg
-# or direct command:
-fvm dart run melos exec -- fvm flutter build ipa --release --flavor stg --dart-define-from-file=./configs/stg.json
+
+# Beta
+fvm dart run melos run ios:beta
 ```
 
-### Beta IPA
+## App Icons
+
 ```bash
-fvm dart run melos run ios:beta
-# or direct command:
-fvm dart run melos exec -- fvm flutter build ipa --release --flavor beta --dart-define-from-file=./configs/beta.json
+fvm dart run melos run icon
+```
+
+## Workspace Commands
+
+### List All Packages
+```bash
+fvm dart run melos list
+```
+
+### Clean All Packages
+```bash
+fvm dart run melos clean
+```
+
+### Bootstrap (Get + Link)
+```bash
+fvm dart run melos bootstrap
+```
+
+## Direct Commands (Without Melos)
+
+Sometimes you need to run commands directly:
+
+```bash
+# Get dependencies
+fvm dart pub get
+
+# Build runner
+fvm dart run build_runner build -d
+
+# Localization
+fvm flutter gen-l10n
+
+# Format
+fvm dart format lib/
+```
+
+## Common Workflows
+
+### Initial Setup
+```bash
+fvm use                                    # Use correct Flutter version
+fvm dart run melos run pg                  # Get dependencies
+fvm dart run melos run l10n                # Generate localizations
+fvm dart run melos run brd                 # Generate code
+fvm dart run melos run fm                  # Format code
+```
+
+### After Pulling Changes
+```bash
+fvm dart run melos run pg                  # Update dependencies
+fvm dart run melos run brd                 # Regenerate code
+```
+
+### After Modifying Models/BLoCs
+```bash
+fvm dart run melos run brd                 # Regenerate freezed/injectable
+```
+
+### After Adding Translations
+```bash
+fvm dart run melos run l10n                # Regenerate localizations
+```
+
+### Before Committing
+```bash
+fvm dart run melos run fm                  # Format code
+fvm dart analyze lib/                      # Check for issues
+```
+
+### Creating New Feature
+```bash
+# 1. Create files
+# 2. Generate code
+fvm dart run melos run brd
+# 3. Format
+fvm dart run melos run fm
 ```
 
 ## Melos Scripts Summary
@@ -210,18 +286,38 @@ fvm dart run melos exec -- fvm flutter build ipa --release --flavor beta --dart-
 
 ## Troubleshooting
 
-### If melos scripts don't work:
-Always use the direct `melos exec` pattern:
+### Command Not Found
+Ensure FVM is installed and Flutter version is set:
 ```bash
-fvm dart run melos exec -- <command>
+fvm install
+fvm use
 ```
 
-This ensures commands run correctly across all packages in the workspace.
+### Melos Not Found
+```bash
+fvm dart pub global activate melos
+```
 
-### Common Workflow
+### Build Runner Conflicts
+Use the `-d` flag to delete conflicting outputs:
+```bash
+fvm dart run build_runner build -d
+```
 
-1. **Get dependencies**: `fvm dart run melos run pg`
-2. **Generate code**: `fvm dart run melos run brd`
-3. **Generate localization**: `fvm dart run melos run l10n`
-4. **Format code**: `fvm dart run melos run fm`
-5. **Run app**: `fvm flutter run --flavor dev --dart-define-from-file=configs/.env.dev.json`
+### Package Resolution Issues
+```bash
+fvm dart run melos clean
+fvm dart run melos run pg
+```
+
+### Generated Files Out of Date
+```bash
+fvm dart run build_runner clean
+fvm dart run melos run brd
+```
+
+## See Also
+
+- [QUICK_START.md](./QUICK_START.md) - Setup guide
+- [MONOREPO_GUIDE.md](./MONOREPO_GUIDE.md) - Workspace overview
+- [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md) - File organization

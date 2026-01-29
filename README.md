@@ -1,57 +1,52 @@
-# Flutter Clean Architecture Project
+# Flutter Clean Architecture Monorepo
 
-A Flutter application in a Melos-managed monorepo, following Clean Architecture principles with BLoC pattern, dependency injection, and auto routing.
+A Flutter monorepo workspace following Clean Architecture principles with BLoC pattern, dependency injection, and shared packages.
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Flutter SDK managed by FVM (see `.fvmrc` for the exact version)
-- Dart SDK compatible with the Flutter version in this workspace
+- Flutter SDK managed by FVM (version 3.35.2 - see `.fvmrc`)
+- Dart SDK >= 3.9.0
 
 ### Setup
 ```bash
 # Install FVM and use project Flutter version
 fvm use
 
-# Get dependencies
+# Get dependencies for all packages
 fvm dart run melos run pg
 
-# Generate code
+# Generate code (freezed, injectable, auto_route)
 fvm dart run melos run brd
 
-# Run app
+# Generate localizations
+fvm dart run melos run l10n
+
+# Run main app
 fvm flutter run --flavor dev --dart-define-from-file=configs/dev.json
+
+# Run customer app
+cd apps/customer_app && fvm flutter run
 ```
 
 👉 **Full setup guide**: [docs/QUICK_START.md](./docs/QUICK_START.md)
 
-## 📁 Project Structure (Monorepo)
+## 📁 Project Structure
 
 ```
-.
-├── lib/                     # Main application
-│   ├── app/                 # App configuration & routing
-│   ├── app_mixin/           # Shared mixins (SafetyNetworkMixin)
-│   ├── di/                  # Dependency Injection (GetIt + Injectable)
-│   ├── screen/              # Feature screens (BLoC + UI)
-│   ├── use_case/            # Business logic layer
-│   ├── repository/          # Data layer
-│   ├── entities/            # Data models (Freezed)
-│   ├── extensions/          # App-wide extensions
-│   ├── services/            # External services
-│   ├── widgets/             # Reusable UI components
-│   └── main.dart            # Entry point
-└── packages/                # Workspace packages (Melos)
-    ├── app_utility/         # Shared extensions, helpers, and types
-    │   └── lib/
-    │       └── src/
-    │           ├── extensions/  # Context, string, number extensions, etc.
-    │           ├── helpers/     # Logging, helpers
-    │           └── types/       # Shared typedefs and types
-    └── app_widget/          # Shared UI widgets
-        └── lib/
-            └── src/
-                └── buttons/     # Common button widgets, etc.
+flutter_codebase2025/
+├── apps/                         # Additional Flutter apps
+│   └── customer_app/             # Customer-facing application
+├── packages/                     # Shared packages
+│   ├── domain/                   # Core business logic (entities, repos, use cases)
+│   ├── feature/                  # Feature packages
+│   │   └── auth/                 # Authentication (login, register)
+│   ├── app_utility/              # Shared extensions & helpers
+│   └── app_widget/               # Shared UI widgets
+├── lib/                          # Main/root app (flutter_app)
+├── configs/                      # Environment configs (dev, stg, beta)
+├── docs/                         # Documentation
+└── pubspec.yaml                  # Workspace + Melos configuration
 ```
 
 👉 **Detailed structure**: [docs/PROJECT_STRUCTURE.md](./docs/PROJECT_STRUCTURE.md)
@@ -59,95 +54,108 @@ fvm flutter run --flavor dev --dart-define-from-file=configs/dev.json
 ## 🏗️ Architecture
 
 ### Clean Architecture Layers
-- **Presentation** (BLoC) → **Business Logic** (Use Cases) → **Data** (Repositories)
-- Dependency flow: UI → Use Cases → Repositories → Data Sources
+```
+Presentation (BLoC) → Business Logic (Use Cases) → Data (Repositories)
+```
 
-### Key Technologies
-- **State Management**: BLoC Pattern with `flutter_bloc`
-- **Dependency Injection**: GetIt + Injectable
-- **Routing**: Auto Route
-- **Code Generation**: Freezed, Build Runner
-- **Network**: Dio + Retrofit
+### Monorepo Benefits
+- **Shared Code**: Domain logic, features, and widgets shared across apps
+- **Independent Apps**: Each app can have its own configuration and dependencies
+- **Feature Packages**: Self-contained features that can be reused
+- **Consistent Tooling**: Single Melos configuration for all packages
 
-👉 **Architecture rules**: [rules/clean_architecture.md](./rules/clean_architecture.md)
+👉 **Monorepo guide**: [docs/MONOREPO_GUIDE.md](./docs/MONOREPO_GUIDE.md)
 
-## 📚 Documentation
+## 📦 Packages
 
-### For New Contributors
-- [Quick Start Guide](./docs/QUICK_START.md) - Get up and running
-- [Project Structure](./docs/PROJECT_STRUCTURE.md) - Understand the codebase
-- [Commands Reference](./docs/COMMANDS.md) - Available commands
-
-### For Development
-- [Screen Template](./docs/SCREEN_TEMPLATE.md) - Create new features
-- [Routing Guide](./docs/ROUTING.md) - Navigation and routing
-- [Splash Screen Setup](./docs/SPLASH_SCREEN_SETUP.md) - Implementation example
-- [Contributing Guidelines](./docs/CONTRIBUTING.md) - How to contribute
-
-### Rules & Standards
-- [Clean Architecture](./rules/clean_architecture.md) - Architecture principles
-- [BLoC Pattern](./rules/bloc_pattern.md) - State management rules
-- [Code Style](./rules/code_style.md) - Formatting and naming conventions
+| Package | Description |
+|---------|-------------|
+| `domain` | Core business logic, entities, repositories, Result type |
+| `feature_auth` | Authentication feature (login, register, navigation) |
+| `app_utility` | Extensions, helpers, type definitions |
+| `app_widget` | Reusable UI components |
 
 ## 🔧 Common Commands
 
 ```bash
-# Get dependencies
-fvm dart run melos run pg
+# Dependencies
+fvm dart run melos run pg          # Get dependencies
+fvm dart run melos run pu          # Upgrade dependencies
 
-# Generate code (freezed, injectable, auto_route)
-fvm dart run melos run brd
+# Code Generation
+fvm dart run melos run brd         # Build runner (delete conflicts)
+fvm dart run melos run l10n        # Generate localizations
 
-# Format code
-fvm dart run melos run fm
+# Code Quality
+fvm dart run melos run fm          # Format code
+fvm dart run melos run fix         # Apply dart fixes
 
-# Generate localization
-fvm dart run melos run l10n
+# Testing
+fvm dart run melos run test        # Run tests
 
-# Run tests
-fvm dart run melos run test
-
-# Build APK
-fvm dart run melos run aos:devapk
+# Building
+fvm dart run melos run aos:devapk  # Build Android APK (dev)
+fvm dart run melos run ios:dev     # Build iOS (dev)
 ```
 
 👉 **All commands**: [docs/COMMANDS.md](./docs/COMMANDS.md)
 
-## 🎯 Creating a New Feature
+## 📚 Documentation
 
-Follow the standard pattern:
+### Getting Started
+- [Quick Start Guide](./docs/QUICK_START.md) - Setup and run
+- [Project Structure](./docs/PROJECT_STRUCTURE.md) - File organization
+- [Commands Reference](./docs/COMMANDS.md) - Available scripts
 
-1. **Create BLoC** with `@injectable` and `SafetyNetworkMixin`
-2. **Create Events & State** with `@freezed`
-3. **Create Page** with `@RoutePage()` and `AutoRouteWrapper`
-4. **Add Route** to `app_router.dart`
-5. **Run Code Generation**: `fvm dart run melos run brd`
+### Monorepo & Packages
+- [Monorepo Guide](./docs/MONOREPO_GUIDE.md) - Working with the workspace
+- [Feature Packages](./docs/FEATURE_PACKAGES.md) - Creating feature packages
+- [New App Guide](./docs/NEW_APP_GUIDE.md) - Adding new apps
+- [Domain Package](./docs/DOMAIN_PACKAGE.md) - Core business logic
+- [Auth Package](./docs/AUTH_PACKAGE.md) - Authentication feature
 
-👉 **Full template**: [docs/SCREEN_TEMPLATE.md](./docs/SCREEN_TEMPLATE.md)
+### Development
+- [Screen Template](./docs/SCREEN_TEMPLATE.md) - Creating new screens
+- [Routing Guide](./docs/ROUTING.md) - Navigation setup
+- [Localization](./docs/LOCALIZATION.md) - i18n implementation
+- [Services](./docs/SERVICES.md) - Network & permissions
 
-## 📋 Project Features
+### Architecture Rules
+- [Clean Architecture](./rules/clean_architecture.md)
+- [BLoC Pattern](./rules/bloc_pattern.md)
+- [Code Style](./rules/code_style.md)
 
-### ✅ Implemented
-- Splash screen with BLoC
-- Auto Route navigation
-- Dependency injection setup
-- SafetyNetworkMixin for API calls
-- Freezed for immutable models
-- Clean Architecture structure
+## 🎯 Creating New Features
 
-### 🚧 To Be Implemented
-- Authentication flow
-- Home screen
-- API integration
-- Local storage
-- Error handling UI
-- Loading states
+### In Root App
+```bash
+# Create BLoC, events, state, and page
+# Add to lib/screen/my_feature/
+fvm dart run melos run brd
+```
+
+### As Feature Package
+```bash
+# Create package structure
+mkdir -p packages/feature/my_feature/lib/src/{bloc,page,models,repository,di}
+# See docs/FEATURE_PACKAGES.md for full guide
+```
+
+### New App
+```bash
+# Create app in apps/
+mkdir -p apps/my_app/lib/{app,screen,di}
+# See docs/NEW_APP_GUIDE.md for full guide
+```
+
+👉 **Templates**: [docs/SCREEN_TEMPLATE.md](./docs/SCREEN_TEMPLATE.md)
 
 ## 🛠️ Tech Stack
 
 ### Core
-- Flutter (managed by FVM)
-- Dart (version aligned with Flutter SDK)
+- **Flutter**: 3.35.2 (via FVM)
+- **Dart**: >= 3.9.0
+- **Melos**: Monorepo management
 
 ### State Management & Architecture
 - flutter_bloc ^9.1.1
@@ -155,9 +163,9 @@ Follow the standard pattern:
 - injectable ^2.7.1+2
 
 ### Code Generation
-- freezed ^2.5.2
+- freezed ^3.2.4
 - build_runner ^2.4.13
-- auto_route_generator ^7.3.2
+- auto_route_generator ^10.4.0
 
 ### Networking
 - dio ^5.9.0
@@ -166,17 +174,39 @@ Follow the standard pattern:
 ### Local Storage
 - shared_preferences ^2.5.4
 
+## 📋 Architecture Rules
+
+### ✅ DO
+- Use `@injectable` for all BLoCs
+- Use `SafetyNetworkMixin` for API calls
+- Use `@freezed` for states and events
+- Use `buildWhen` and `listenWhen` in BLoC widgets
+- Inject Use Cases, not Repositories directly
+- Use `Result<T>` for error handling
+
+### ❌ DON'T
+- Inject Repositories directly in BLoCs
+- Skip `buildWhen`/`listenWhen`
+- Make direct API calls in BLoCs
+- Use mutable states
+- Throw exceptions (use Result type)
+
+## 🤝 Contributing
+
+1. Read [CONTRIBUTING.md](./docs/CONTRIBUTING.md)
+2. Follow architecture rules
+3. Add tests for new features
+4. Run code generation before committing
+5. Format code with `fvm dart run melos run fm`
+
 ## 📖 Learning Resources
 
 - [Flutter BLoC Documentation](https://bloclibrary.dev/)
 - [Auto Route Documentation](https://pub.dev/packages/auto_route)
 - [Injectable Documentation](https://pub.dev/packages/injectable)
 - [Freezed Documentation](https://pub.dev/packages/freezed)
+- [Melos Documentation](https://melos.invertase.dev/)
 - [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
-
-## 🤝 Contributing
-
-Please read [CONTRIBUTING.md](./docs/CONTRIBUTING.md) before submitting pull requests.
 
 ## 📝 License
 

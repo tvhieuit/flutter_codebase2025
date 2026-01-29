@@ -8,6 +8,7 @@ environment:
   flutter: '>=3.38.8 <4.0.0'
 
 workspace:
+  - apps/customer_app
   - packages/app_utility
   - packages/app_widget
   - packages/domain
@@ -120,6 +121,7 @@ melos:
         scope:
           - "flutter_app"
           - "feature_auth"
+          - "customer_app"
 
     br:
       run: fvm dart run melos exec --concurrency=1 -- fvm dart run build_runner build
