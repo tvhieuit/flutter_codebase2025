@@ -9,16 +9,21 @@ import 'injection.config.dart' as config;
 ///
 /// ```dart
 /// void configureDependencies() {
-///   initDomainPackage(getIt);  // Domain first
+///   initDomainPackage();  // Domain first
 ///   getIt.init();               // Then main app
 /// }
 /// ```
+@InjectableInit(
+  initializerName: 'initDomainPackageConfig',
+  preferRelativeImports: true,
+  asExtension: false,
+)
 GetIt initDomainPackage({
   GetIt? getIt,
   String? environment,
   EnvironmentFilter? environmentFilter,
 }) {
-  return config.initDomainPackage(
+  return config.initDomainPackageConfig(
     getIt ?? GetIt.instance,
     environment: environment,
     environmentFilter: environmentFilter,
