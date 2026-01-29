@@ -1,0 +1,93 @@
+{
+  "@@locale": "en",
+  
+  "appTitle": "Driver App",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  
+  "homeTitle": "Dashboard",
+  "@homeTitle": {
+    "description": "Title for home/dashboard page"
+  },
+  
+  "welcomeMessage": "Welcome, Driver!",
+  "@welcomeMessage": {
+    "description": "Welcome message on home page"
+  },
+  
+  "homeDescription": "You are ready to accept deliveries",
+  "@homeDescription": {
+    "description": "Description on home page"
+  },
+  
+  "goOnline": "Go Online",
+  "@goOnline": {
+    "description": "Button to go online"
+  },
+  
+  "goOffline": "Go Offline",
+  "@goOffline": {
+    "description": "Button to go offline"
+  },
+  
+  "currentDeliveries": "Current Deliveries",
+  "@currentDeliveries": {
+    "description": "Section title for current deliveries"
+  },
+  
+  "noDeliveries": "No deliveries at the moment",
+  "@noDeliveries": {
+    "description": "Message when there are no deliveries"
+  },
+  
+  "earnings": "Earnings",
+  "@earnings": {
+    "description": "Earnings section title"
+  },
+  
+  "todayEarnings": "Today's Earnings",
+  "@todayEarnings": {
+    "description": "Today's earnings label"
+  },
+  
+  "logout": "Logout",
+  "@logout": {
+    "description": "Logout button text"
+  },
+  
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings menu item"
+  },
+  
+  "profile": "Profile",
+  "@profile": {
+    "description": "Profile menu item"
+  },
+  
+  "loading": "Loading...",
+  "@loading": {
+    "description": "Loading indicator text"
+  },
+  
+  "error": "Error",
+  "@error": {
+    "description": "Error title"
+  },
+  
+  "retry": "Retry",
+  "@retry": {
+    "description": "Retry button text"
+  },
+  
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button text"
+  },
+  
+  "ok": "OK",
+  "@ok": {
+    "description": "OK button text"
+  }
+}
