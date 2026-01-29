@@ -173,4 +173,17 @@ melos:
 
     ios:beta:
       run: fvm dart run melos exec -- fvm flutter build ipa --release --flavor beta --dart-define-from-file=./configs/beta.json
-      
+
+# =============================================================================
+# DEPENDENCY OVERRIDES
+# =============================================================================
+# Use this section to force specific versions across all packages.
+# Useful for:
+# - Fixing version conflicts
+# - Testing new versions
+# - Ensuring all packages use exact same version
+#
+# Example:
+# dependency_overrides:
+#   freezed_annotation: 3.1.0
+#   json_annotation: 4.9.0
