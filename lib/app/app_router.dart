@@ -4,6 +4,7 @@ import 'package:injectable/injectable.dart';
 
 import 'app_custom_route.dart';
 import 'app_router.gr.dart';
+import 'auth_routes.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 BuildContext get globalContext =>
@@ -26,6 +27,10 @@ class AppRouter extends RootStackRouter {
       initial: true,
     ),
 
+    // Auth routes (from auth package)
+    AutoRoute(page: LoginRoute.page),
+    AutoRoute(page: RegisterRoute.page),
+
     // User screen
     AutoRoute(
       page: UserRoute.page,
@@ -36,10 +41,5 @@ class AppRouter extends RootStackRouter {
       page: PermissionDialogRoute.page,
       barrierDismissible: false,
     ),
-
-    // Add more routes here as you create them
-    // Example:
-    // AutoRoute(page: HomeRoute.page),
-    // AutoRoute(page: LoginRoute.page),
   ];
 }

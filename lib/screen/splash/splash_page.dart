@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../app/auth_routes.dart';
 import '../../di/injection.dart';
 import '../../extensions/l10n_extension.dart';
 import 'splash_bloc.dart';
@@ -23,10 +24,8 @@ class SplashPage extends StatelessWidget implements AutoRouteWrapper {
     return BlocListener<SplashBloc, SplashState>(
       listenWhen: (previous, current) => previous.isInitialized != current.isInitialized && current.isInitialized,
       listener: (context, state) {
-        // Navigate based on authentication status
-        // For now, we'll just show the result
-        // Later you can navigate to home or login
-        // context.router.replace(const HomeRoute());
+        // Navigate to login screen after initialization
+        context.router.replace(const LoginRoute());
       },
       child: Scaffold(
         body: BlocBuilder<SplashBloc, SplashState>(
