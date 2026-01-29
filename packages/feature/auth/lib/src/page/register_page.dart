@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
-import '../bloc/auth_bloc.dart';
-import '../bloc/auth_event.dart';
-import '../bloc/auth_state.dart';
+import '../bloc/register_bloc.dart';
 import '../navigation/auth_navigation.dart';
 
 /// Register page
@@ -16,7 +14,7 @@ class RegisterPage extends StatelessWidget implements AutoRouteWrapper {
   @override
   Widget wrappedRoute(BuildContext context) {
     return BlocProvider(
-      create: (context) => GetIt.instance<AuthBloc>(),
+      create: (context) => GetIt.instance<RegisterBloc>(),
       child: this,
     );
   }
@@ -59,11 +57,12 @@ class _RegisterViewState extends State<_RegisterView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AuthBloc, AuthState>(
+    return BlocConsumer<RegisterBloc, RegisterState>(
       listenWhen: (previous, current) =>
-          previous.status != current.status || previous.error != current.error,
+          previous.isSuccess != current.isSuccess ||
+          previous.error != current.error,
       listener: (context, state) {
-        if (state.isAuthenticated) {
+        if (state.isSuccess) {
           // Navigate to home screen
           _navigation.goToHome();
         }
@@ -281,8 +280,8 @@ class _RegisterViewState extends State<_RegisterView> {
 
   void _register() {
     if (_formKey.currentState?.validate() ?? false) {
-      context.read<AuthBloc>().add(
-        AuthEvent.register(
+      context.read<RegisterBloc>().add(
+        RegisterEvent.submit(
           name: _nameController.text,
           email: _emailController.text,
           password: _passwordController.text,

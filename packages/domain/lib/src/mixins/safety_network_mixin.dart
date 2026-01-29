@@ -1,11 +1,5 @@
-import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
-
 /// Mixin for safe network calls with error handling
 /// Use this in all BLoCs that make API calls
-///
-/// This extends the base SafetyNetworkMixin from domain package
-/// with Dio-specific error handling for the main app.
 mixin SafetyNetworkMixin {
   /// Executes a network call safely with error handling
   ///
@@ -19,17 +13,8 @@ mixin SafetyNetworkMixin {
   }) async {
     try {
       return await call();
-    } on DioException catch (e) {
-      debugPrint('DioException: ${e.message}');
-      debugPrint('Error type: ${e.type}');
-      debugPrint('Response: ${e.response?.data}');
-
-      if (onError != null) {
-        onError(e);
-      }
-      return null;
     } catch (e) {
-      debugPrint('Unexpected error: $e');
+      // Error logging removed - handle in onError callback
       if (onError != null) {
         onError(e);
       }

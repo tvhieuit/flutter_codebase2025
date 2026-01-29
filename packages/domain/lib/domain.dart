@@ -18,3 +18,6 @@ export 'src/failures/failures.dart';
 
 // Result
 export 'src/result/result.dart';
+
+// Mixins
+export 'src/mixins/mixins.dart';

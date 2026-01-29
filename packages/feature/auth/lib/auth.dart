@@ -1,7 +1,6 @@
 // BLoC
-export 'src/bloc/auth_bloc.dart';
-export 'src/bloc/auth_event.dart';
-export 'src/bloc/auth_state.dart';
+export 'src/bloc/login_bloc.dart';
+export 'src/bloc/register_bloc.dart';
 
 // Models
 export 'src/models/models.dart';

@@ -32,7 +32,7 @@ class UserBloc extends Bloc<UserEvent, UserState> with SafetyNetworkMixin {
     emit(state.copyWith(isLoading: true, error: null));
 
     await safeNetworkCall(
-      call: () async {
+      () async {
         // Try to load cached user
         final cachedUser = await _useCase.getCachedUser();
 
@@ -63,7 +63,7 @@ class UserBloc extends Bloc<UserEvent, UserState> with SafetyNetworkMixin {
     emit(state.copyWith(isLoading: true, error: null));
 
     await safeNetworkCall(
-      call: () async {
+      () async {
         final users = await _useCase.getUsers(forceRefresh: event.forceRefresh);
 
         emit(
@@ -89,7 +89,7 @@ class UserBloc extends Bloc<UserEvent, UserState> with SafetyNetworkMixin {
     emit(state.copyWith(isLoading: true, error: null));
 
     await safeNetworkCall(
-      call: () async {
+      () async {
         final user = await _useCase.getUserProfile(event.userId);
 
         emit(
@@ -115,7 +115,7 @@ class UserBloc extends Bloc<UserEvent, UserState> with SafetyNetworkMixin {
     emit(state.copyWith(isLoading: true, error: null));
 
     await safeNetworkCall(
-      call: () async {
+      () async {
         final updatedUser = await _useCase.updateUserProfile(
           event.userId,
           event.data,
@@ -144,7 +144,7 @@ class UserBloc extends Bloc<UserEvent, UserState> with SafetyNetworkMixin {
     emit(state.copyWith(isLoading: true, error: null));
 
     await safeNetworkCall(
-      call: () async {
+      () async {
         await _useCase.deleteUser(event.userId);
 
         emit(
@@ -170,7 +170,7 @@ class UserBloc extends Bloc<UserEvent, UserState> with SafetyNetworkMixin {
     emit(state.copyWith(isLoading: true, error: null));
 
     await safeNetworkCall(
-      call: () async {
+      () async {
         await _useCase.logout();
 
         emit(

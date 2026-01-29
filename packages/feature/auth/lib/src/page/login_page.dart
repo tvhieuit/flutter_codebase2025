@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
-import '../bloc/auth_bloc.dart';
-import '../bloc/auth_event.dart';
-import '../bloc/auth_state.dart';
+import '../bloc/login_bloc.dart';
 import '../navigation/auth_navigation.dart';
 
 /// Login page
@@ -16,7 +14,7 @@ class LoginPage extends StatelessWidget implements AutoRouteWrapper {
   @override
   Widget wrappedRoute(BuildContext context) {
     return BlocProvider(
-      create: (context) => GetIt.instance<AuthBloc>(),
+      create: (context) => GetIt.instance<LoginBloc>(),
       child: this,
     );
   }
@@ -52,11 +50,12 @@ class _LoginViewState extends State<_LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AuthBloc, AuthState>(
+    return BlocConsumer<LoginBloc, LoginState>(
       listenWhen: (previous, current) =>
-          previous.status != current.status || previous.error != current.error,
+          previous.isSuccess != current.isSuccess ||
+          previous.error != current.error,
       listener: (context, state) {
-        if (state.isAuthenticated) {
+        if (state.isSuccess) {
           // Navigate to home screen
           _navigation.goToHome();
         }
@@ -207,8 +206,8 @@ class _LoginViewState extends State<_LoginView> {
 
   void _login() {
     if (_formKey.currentState?.validate() ?? false) {
-      context.read<AuthBloc>().add(
-        AuthEvent.login(
+      context.read<LoginBloc>().add(
+        LoginEvent.submit(
           email: _emailController.text,
           password: _passwordController.text,
         ),
