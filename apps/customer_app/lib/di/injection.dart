@@ -10,10 +10,6 @@ final getIt = GetIt.instance;
 
 @InjectableInit()
 Future<void> configureDependencies() async {
-  // Initialize SharedPreferences first
-  final prefs = SharedPreferencesAsync();
-  getIt.registerSingleton<SharedPreferencesAsync>(prefs);
-
   // Configure domain package DI
   domain.initDomainPackage(getIt: getIt);
 
