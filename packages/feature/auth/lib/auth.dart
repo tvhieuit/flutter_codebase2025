@@ -15,5 +15,8 @@ export 'src/use_case/use_cases.dart';
 // Pages
 export 'src/page/pages.dart';
 
+// Navigation
+export 'src/navigation/navigation.dart';
+
 // DI
 export 'src/di/di.dart';

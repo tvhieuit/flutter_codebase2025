@@ -6,6 +6,7 @@ import 'package:get_it/get_it.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
+import '../navigation/auth_navigation.dart';
 
 /// Register page
 @RoutePage()
@@ -43,6 +44,9 @@ class _RegisterViewState extends State<_RegisterView> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
+  // Navigation
+  AuthNavigation get _navigation => GetIt.instance<AuthNavigation>();
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -60,8 +64,8 @@ class _RegisterViewState extends State<_RegisterView> {
           previous.status != current.status || previous.error != current.error,
       listener: (context, state) {
         if (state.isAuthenticated) {
-          // Navigate to home or main screen
-          // context.router.replace(const HomeRoute());
+          // Navigate to home screen
+          _navigation.goToHome();
         }
 
         if (state.hasError) {
@@ -259,8 +263,7 @@ class _RegisterViewState extends State<_RegisterView> {
                         const Text('Already have an account?'),
                         TextButton(
                           onPressed: () {
-                            // Navigate back to login
-                            // context.router.maybePop();
+                            _navigation.goBack();
                           },
                           child: const Text('Login'),
                         ),

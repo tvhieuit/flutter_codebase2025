@@ -6,6 +6,7 @@ import 'package:get_it/get_it.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
+import '../navigation/auth_navigation.dart';
 
 /// Login page
 @RoutePage()
@@ -39,6 +40,9 @@ class _LoginViewState extends State<_LoginView> {
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
 
+  // Navigation
+  AuthNavigation get _navigation => GetIt.instance<AuthNavigation>();
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -53,8 +57,8 @@ class _LoginViewState extends State<_LoginView> {
           previous.status != current.status || previous.error != current.error,
       listener: (context, state) {
         if (state.isAuthenticated) {
-          // Navigate to home or main screen
-          // context.router.replace(const HomeRoute());
+          // Navigate to home screen
+          _navigation.goToHome();
         }
 
         if (state.hasError) {
@@ -151,7 +155,7 @@ class _LoginViewState extends State<_LoginView> {
                       alignment: Alignment.centerRight,
                       child: TextButton(
                         onPressed: () {
-                          // Navigate to forgot password
+                          _navigation.goToForgotPassword();
                         },
                         child: const Text('Forgot Password?'),
                       ),
@@ -185,8 +189,7 @@ class _LoginViewState extends State<_LoginView> {
                         const Text("Don't have an account?"),
                         TextButton(
                           onPressed: () {
-                            // Navigate to register
-                            // context.router.push(const RegisterRoute());
+                            _navigation.goToRegister();
                           },
                           child: const Text('Register'),
                         ),
