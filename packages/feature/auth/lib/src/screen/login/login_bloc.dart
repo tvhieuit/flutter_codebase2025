@@ -1,8 +1,10 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:domain/domain.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:app_widget/app_widget.dart';
+
 import '../../models/auth_credentials.dart';
 import '../../models/auth_token.dart';
 import '../../navigation/auth_navigation.dart';
@@ -19,13 +21,15 @@ part 'login_state.dart';
 class LoginBloc extends Bloc<LoginEvent, LoginState> with SafetyNetworkMixin {
   final AuthRepository _authRepository;
   final UserLocalRepository _userLocalRepository;
-  final AuthNavigation _router;
+  final StackRouter _router;
+  final AppRoute _appRoute;
   final AppToast _toast;
 
   LoginBloc(
     this._authRepository,
     this._userLocalRepository,
     this._router,
+    this._appRoute,
     this._toast,
   ) : super(LoginState.initial()) {
     on(_onLogin);
@@ -36,16 +40,13 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> with SafetyNetworkMixin {
 
   /// Handles login event
   Future<void> _onLogin(LoginEventSubmit event, emit) async {
-    // Validate
     if (event.email.isEmpty) {
       emit(state.copyWith(error: 'Email is required', fieldError: 'email'));
       return;
     }
 
     if (event.password.isEmpty) {
-      emit(
-        state.copyWith(error: 'Password is required', fieldError: 'password'),
-      );
+      emit(state.copyWith(error: 'Password is required', fieldError: 'password'));
       return;
     }
 
@@ -62,8 +63,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> with SafetyNetworkMixin {
       assert(data == null, 'Data should be null');
       await _userLocalRepository.saveAccessToken(data!.accessToken);
       emit(state.copyWith(isLoading: false, isSuccess: true, token: data));
-      _router.goToHome();
-
+      _router.replaceAll([_appRoute.home]);
     } on Failure catch (e) {
       _toast.show(e.message, type: AppToastType.error);
     } catch (e) {
@@ -72,15 +72,14 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> with SafetyNetworkMixin {
   }
 
   Future<void> _onRegister(_LoginEventRegister event, emit) async {
-    _router.goToRegister();
+    _router.push(_appRoute.register);
   }
 
   Future<void> _onForgotPassword(_LoginEventForgotPassword event, emit) async {
-    _router.goToForgotPassword();
+    // TODO: Add forgot password route to AppRoute
   }
 
   Future<void> _onObscurePasswordToggle(_LoginEventObscurePasswordToggle event, emit) async {
     emit(state.copyWith(obscurePassword: !state.obscurePassword));
   }
-
 }

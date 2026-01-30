@@ -1,20 +1,28 @@
-/// Navigation interface for auth feature.
+import 'package:auto_route/auto_route.dart';
+
+/// Route configuration for auth feature.
 ///
-/// Implement this in your main app and register with GetIt.
-/// This decouples auth package from main app's routing.
-abstract class AuthNavigation {
-  /// Navigate to register screen
-  void goToRegister();
+/// Each app provides its own route instances via DI.
+///
+/// ```dart
+/// @module
+/// abstract class AuthModule {
+///   @lazySingleton
+///   AppRoute get appRoute => AppRoute(
+///     login: const LoginRoute(),
+///     register: const RegisterRoute(),
+///     home: const HomeRoute(),
+///   );
+/// }
+/// ```
+class AppRoute {
+  final PageRouteInfo login;
+  final PageRouteInfo register;
+  final PageRouteInfo home;
 
-  /// Navigate to login screen
-  void goToLogin();
-
-  /// Navigate to home/main screen after successful auth
-  void goToHome();
-
-  /// Navigate to forgot password screen
-  void goToForgotPassword();
-
-  /// Pop back to previous screen
-  void goBack();
+  const AppRoute({
+    required this.login,
+    required this.register,
+    required this.home,
+  });
 }

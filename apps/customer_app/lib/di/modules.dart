@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:dio/dio.dart';
 import 'package:domain/domain.dart';
 import 'package:feature_auth/auth.dart';
@@ -35,10 +36,20 @@ abstract class AuthModule {
   /// Provide AuthRepository implementation
   @LazySingleton(as: AuthRepository)
   AuthRepositoryImpl get authRepository;
+}
 
-  /// Provide AuthNavigation implementation
-  @LazySingleton(as: AuthNavigation)
-  AuthNavigationImpl get authNavigation;
+/// Module for registering routing dependencies
+@module
+abstract class RouteModule {
+  @lazySingleton
+  AppRoute get appRoute => const AppRoute(
+    login: LoginRoute(),
+    register: RegisterRoute(),
+    home: HomeRoute(),
+  );
+
+  @lazySingleton
+  StackRouter stackRouter(AppRouter appRouter) => appRouter;
 }
 
 /// AuthRepository implementation for the customer app
@@ -185,35 +196,3 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 }
 
-/// AuthNavigation implementation using auto_route
-@Injectable()
-class AuthNavigationImpl implements AuthNavigation {
-  final AppRouter _router;
-
-  AuthNavigationImpl(this._router);
-
-  @override
-  void goToRegister() {
-    _router.push(const RegisterRoute());
-  }
-
-  @override
-  void goToLogin() {
-    _router.push(const LoginRoute());
-  }
-
-  @override
-  void goToHome() {
-    _router.replaceAll([const HomeRoute()]);
-  }
-
-  @override
-  void goToForgotPassword() {
-    // TODO: Implement forgot password route
-  }
-
-  @override
-  void goBack() {
-    _router.maybePop();
-  }
-}

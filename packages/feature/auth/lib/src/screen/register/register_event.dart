@@ -1,7 +1,7 @@
 part of 'register_bloc.dart';
 
 /// Events for Register screen
-@freezed
+@eventFreezed
 sealed class RegisterEvent with _$RegisterEvent {
   /// Event to submit registration
   const factory RegisterEvent.submit({
@@ -12,6 +12,7 @@ sealed class RegisterEvent with _$RegisterEvent {
     String? phone,
   }) = RegisterEventSubmit;
 
-  /// Event to clear error state
-  const factory RegisterEvent.clearError() = RegisterEventClearError;
+  const factory RegisterEvent.login() = _RegisterEventLogin;
+  const factory RegisterEvent.obscurePasswordToggle() = _RegisterEventObscurePasswordToggle;
+  const factory RegisterEvent.obscureConfirmPasswordToggle() = _RegisterEventObscureConfirmPasswordToggle;
 }

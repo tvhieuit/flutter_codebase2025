@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:feature_auth/auth.dart';
 import 'package:injectable/injectable.dart';
 
@@ -5,40 +6,16 @@ import '../app/app_router.dart';
 import '../app/app_router.gr.dart';
 import '../app/auth_routes.dart';
 
-/// Implementation of AuthNavigation using auto_route.
-@LazySingleton(as: AuthNavigation)
-class AuthNavigationImpl implements AuthNavigation {
-  final AppRouter _router;
+/// Module for registering routing dependencies
+@module
+abstract class RouteModule {
+  @lazySingleton
+  AppRoute get appRoute => const AppRoute(
+    login: LoginRoute(),
+    register: RegisterRoute(),
+    home: UserRoute(),
+  );
 
-  AuthNavigationImpl(this._router);
-
-  @override
-  void goToRegister() {
-    _router.push(const RegisterRoute());
-  }
-
-  @override
-  void goToLogin() {
-    _router.push(const LoginRoute());
-  }
-
-  @override
-  void goToHome() {
-    // Replace with your home route
-    // _router.replace(const HomeRoute());
-
-    // For now, navigate to user screen as placeholder
-    _router.replaceAll([const UserRoute()]);
-  }
-
-  @override
-  void goToForgotPassword() {
-    // Add forgot password route when implemented
-    // _router.push(const ForgotPasswordRoute());
-  }
-
-  @override
-  void goBack() {
-    _router.maybePop();
-  }
+  @lazySingleton
+  StackRouter stackRouter(AppRouter appRouter) => appRouter;
 }

@@ -51,15 +51,13 @@ class _LoginViewState extends State<_LoginView> {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.loginTitle)),
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Spacer(),
-
                 // Logo or Title
                 const Icon(Icons.lock_outline, size: 80, color: Colors.blue),
                 const SizedBox(height: 32),
@@ -84,8 +82,7 @@ class _LoginViewState extends State<_LoginView> {
 
                 // Login button
                 SizedBox(height: 50, child: _loginButton(l10n)),
-
-                const Spacer(),
+                const SizedBox(height: 24),
 
                 // Register link
                 Row(
@@ -157,7 +154,9 @@ class _LoginViewState extends State<_LoginView> {
   Widget _passwordField(AuthLocalizations l10n) {
     return BlocBuilder<LoginBloc, LoginState>(
       buildWhen: (prev, curr) =>
-          prev.fieldError != curr.fieldError || prev.error != curr.error || prev.obscurePassword != curr.obscurePassword,
+          prev.fieldError != curr.fieldError ||
+          prev.error != curr.error ||
+          prev.obscurePassword != curr.obscurePassword,
       builder: (context, state) {
         return TextFormField(
           controller: _passwordController,

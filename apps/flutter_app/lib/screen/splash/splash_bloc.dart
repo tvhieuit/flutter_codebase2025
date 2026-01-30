@@ -1,3 +1,5 @@
+import 'package:flutter_app/app/app_router.dart';
+import 'package:flutter_app/app/auth_routes.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
@@ -13,7 +15,7 @@ part 'splash_state.dart';
 /// BLoC for managing splash screen state and initialization
 @injectable
 class SplashBloc extends Bloc<SplashEvent, SplashState> with SafetyNetworkMixin {
-  SplashBloc() : super(SplashState.initial()) {
+  SplashBloc(this._router) : super(SplashState.initial()) {
     on(_onStart);
     on(_onCheckAuth);
     on(_onNavigate);
@@ -21,6 +23,8 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> with SafetyNetworkMixin 
     // Auto-start initialization when BLoC is created
     add(const SplashEvent.start());
   }
+
+  final AppRouter _router;
 
   /// Handles splash screen start event
   /// Initialize app, check dependencies, etc.
@@ -31,7 +35,7 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> with SafetyNetworkMixin 
     emit(state.copyWith(isLoading: true, error: null));
 
     // Simulate initialization delay
-    await Future.delayed(const Duration(seconds: 5));
+    await Future.delayed(const Duration(seconds: 2));
 
     // Here you can add:
     // - Database initialization
@@ -85,5 +89,6 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> with SafetyNetworkMixin 
   ) async {
     // State is already set, UI will react to navigate
     // based on isAuthenticated flag
+    _router.replace(const LoginRoute());
   }
 }
