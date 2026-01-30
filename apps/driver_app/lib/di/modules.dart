@@ -1,3 +1,4 @@
+import 'package:app_core/app_core.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:dio/dio.dart';
 import 'package:domain/domain.dart';

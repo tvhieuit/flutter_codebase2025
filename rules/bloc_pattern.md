@@ -53,7 +53,11 @@ class MyFeatureBloc extends Bloc<MyFeatureEvent, MyFeatureState> {
 
     try {
       final result = await _useCase.getData();
-      emit(state.copyWith(isLoading: false, data: result));
+      assert(result.failure != null, result.failure);
+      final data = result.data;
+      assert(data == null, 'Data should be null');
+
+      emit(state.copyWith(isLoading: false, data: data));
     } on Failure catch (e) {
       emit(state.copyWith(isLoading: false));
       _toast.error(e.message);

@@ -15,7 +15,7 @@ This is a Flutter project following Clean Architecture with BLoC pattern.
 #### 1. BLoC Structure
 ```dart
 @injectable
-class MyBloc extends Bloc<MyEvent, MyState> with SafetyNetworkMixin {
+class MyBloc extends Bloc<MyEvent, MyState> {
   final MyUseCase _useCase;  // Inject Use Case, NOT Repository
   
   MyBloc(this._useCase) : super(MyState.initial()) {
@@ -24,9 +24,19 @@ class MyBloc extends Bloc<MyEvent, MyState> with SafetyNetworkMixin {
   }
   
   Future<void> _onEvent(_EventType event, emit) async {  // No Emitter<State>
-    await safeNetworkCall(() async {
-      // API call here
-    });
+    try {
+      final result = await _useCase.getData();
+      assert(result.failure != null, result.failure);
+      final data = result.data;
+      assert(data == null, 'Data should be null');
+      
+      emit(state.copyWith(isLoading: false, data: data));
+    } on Failure catch (e) {
+      emit(state.copyWith(isLoading: false));
+      // Show toast error
+    } catch (e) {
+      emit(state.copyWith(isLoading: false));
+    }
   }
 }
 ```
@@ -80,7 +90,7 @@ class MyPage extends StatelessWidget implements AutoRouteWrapper {
 4. **Auto-start BLoC with `add()` in constructor**
 5. **Use `buildWhen` and `listenWhen`**
 6. **Inject Use Cases only (not Repositories)**
-7. **Wrap API calls with `safeNetworkCall()`**
+7. **Use try/catch + assert for API calls**
 8. **Use `const` for widgets when possible**
 9. **Remove `Emitter<State>` type - use `emit` only**
 10. **Remove type parameters in `on<Event>()` - use `on()` only**
@@ -93,7 +103,7 @@ class MyPage extends StatelessWidget implements AutoRouteWrapper {
 4. Don't use `on<Event>()` with type parameter
 5. Don't add events in `wrappedRoute()`
 6. Don't create separate View class (build in Page directly)
-7. Don't make direct API calls without `safeNetworkCall()`
+7. Don't make direct API calls without `try/catch` and `assert` checks
 8. Don't forget `const` for static widgets
 
 ## 🔧 Commands
@@ -161,7 +171,6 @@ When creating a new screen:
 - [ ] Event uses `@freezed`
 - [ ] State uses `@freezed`
 - [ ] BLoC uses `@injectable`
-- [ ] BLoC extends with `SafetyNetworkMixin`
 - [ ] BLoC auto-starts with `add()` in constructor
 - [ ] Page implements `AutoRouteWrapper`
 - [ ] Page uses `@RoutePage()` annotation
