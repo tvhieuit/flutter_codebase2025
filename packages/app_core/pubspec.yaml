@@ -1,5 +1,5 @@
-name: app_widget
-description: Shared UI widgets for flutter_app
+name: app_core
+description: Shared core configuration
 publish_to: 'none'
 version: 0.0.1
 
@@ -13,7 +13,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  fluttertoast: any
   get_it: any
   injectable: any
 

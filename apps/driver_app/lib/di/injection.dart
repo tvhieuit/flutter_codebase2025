@@ -1,3 +1,4 @@
+import 'package:app_widget/app_widget.dart' as widget;
 import 'package:domain/domain.dart' as domain;
 import 'package:feature_auth/auth.dart' as auth;
 import 'package:get_it/get_it.dart';
@@ -10,6 +11,8 @@ final getIt = GetIt.instance;
 
 @InjectableInit()
 Future<void> configureDependencies() async {
+  // Configure widget package DI
+  widget.initWidgetPackage(getIt: getIt);
 
   // Configure domain package DI
   domain.initDomainPackage(getIt: getIt);

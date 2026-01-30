@@ -1,3 +1,4 @@
+import 'package:app_widget/app_widget.dart';
 import 'package:domain/domain.dart';
 import 'package:feature_auth/auth.dart';
 import 'package:get_it/get_it.dart';
@@ -13,7 +14,10 @@ final getIt = GetIt.instance;
   asExtension: true,
 )
 void configureDependencies() {
-  // Initialize domain package dependencies first
+  // Initialize widget package dependencies
+  initWidgetPackage();
+
+  // Initialize domain package dependencies
   initDomainPackage();
 
   // Initialize auth package dependencies
