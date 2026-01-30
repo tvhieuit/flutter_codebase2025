@@ -3,49 +3,33 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 
-import '../models/auth_credentials.dart';
-import '../models/auth_token.dart';
-import '../repository/auth_repository.dart';
+import '../../models/auth_credentials.dart';
+import '../../models/auth_token.dart';
+import '../../repository/auth_repository.dart';
 
-part 'register_bloc.freezed.dart';
+part 'login_bloc.freezed.dart';
 
-part 'register_event.dart';
+part 'login_event.dart';
 
-part 'register_state.dart';
+part 'login_state.dart';
 
-/// BLoC for managing register screen state
+/// BLoC for managing login screen state
 @injectable
-class RegisterBloc extends Bloc<RegisterEvent, RegisterState>
-    with SafetyNetworkMixin {
+class LoginBloc extends Bloc<LoginEvent, LoginState> with SafetyNetworkMixin {
   final AuthRepository _authRepository;
   final UserLocalRepository _userLocalRepository;
 
-  RegisterBloc(this._authRepository, this._userLocalRepository)
-    : super(RegisterState.initial()) {
-    on(_onRegister);
+  LoginBloc(this._authRepository, this._userLocalRepository)
+    : super(LoginState.initial()) {
+    on(_onLogin);
     on(_onClearError);
   }
 
-  /// Handles register event
-  Future<void> _onRegister(RegisterEventSubmit event, emit) async {
+  /// Handles login event
+  Future<void> _onLogin(LoginEventSubmit event, emit) async {
     // Validate
-    if (event.name.isEmpty) {
-      emit(state.copyWith(error: 'Name is required', fieldError: 'name'));
-      return;
-    }
-
     if (event.email.isEmpty) {
       emit(state.copyWith(error: 'Email is required', fieldError: 'email'));
-      return;
-    }
-
-    if (!_isValidEmail(event.email)) {
-      emit(
-        state.copyWith(
-          error: 'Please enter a valid email',
-          fieldError: 'email',
-        ),
-      );
       return;
     }
 
@@ -56,39 +40,16 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState>
       return;
     }
 
-    if (event.password.length < 8) {
-      emit(
-        state.copyWith(
-          error: 'Password must be at least 8 characters',
-          fieldError: 'password',
-        ),
-      );
-      return;
-    }
-
-    if (event.password != event.confirmPassword) {
-      emit(
-        state.copyWith(
-          error: 'Passwords do not match',
-          fieldError: 'confirmPassword',
-        ),
-      );
-      return;
-    }
-
     emit(state.copyWith(isLoading: true, error: null, fieldError: null));
 
     await safeNetworkCall(
       () async {
-        final credentials = RegisterCredentials(
-          name: event.name,
+        final credentials = LoginCredentials(
           email: event.email,
           password: event.password,
-          confirmPassword: event.confirmPassword,
-          phone: event.phone,
         );
 
-        final result = await _authRepository.register(credentials);
+        final result = await _authRepository.login(credentials);
 
         result.when(
           success: (token) async {
@@ -122,13 +83,8 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState>
   }
 
   /// Handles clear error event
-  Future<void> _onClearError(RegisterEventClearError event, emit) async {
+  Future<void> _onClearError(LoginEventClearError event, emit) async {
     emit(state.copyWith(error: null, fieldError: null));
-  }
-
-  /// Validates email format
-  bool _isValidEmail(String email) {
-    return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
   }
 
   /// Maps failure to user-friendly message

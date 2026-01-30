@@ -3,49 +3,56 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
-import '../bloc/login_bloc.dart';
-import '../l10n/l10n.dart';
-import '../navigation/auth_navigation.dart';
+import 'register_bloc.dart';
+import '../../l10n/l10n.dart';
+import '../../navigation/auth_navigation.dart';
 
-/// Login page
+/// Register page
 @RoutePage()
-class LoginPage extends StatelessWidget implements AutoRouteWrapper {
-  const LoginPage({super.key});
+class RegisterPage extends StatelessWidget implements AutoRouteWrapper {
+  const RegisterPage({super.key});
 
   @override
   Widget wrappedRoute(BuildContext context) {
     return BlocProvider(
-      create: (context) => GetIt.instance<LoginBloc>(),
+      create: (context) => GetIt.instance<RegisterBloc>(),
       child: this,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return const _LoginView();
+    return const _RegisterView();
   }
 }
 
-class _LoginView extends StatefulWidget {
-  const _LoginView();
+class _RegisterView extends StatefulWidget {
+  const _RegisterView();
 
   @override
-  State<_LoginView> createState() => _LoginViewState();
+  State<_RegisterView> createState() => _RegisterViewState();
 }
 
-class _LoginViewState extends State<_LoginView> {
+class _RegisterViewState extends State<_RegisterView> {
   final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   // Navigation
   AuthNavigation get _navigation => GetIt.instance<AuthNavigation>();
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
+    _phoneController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -53,7 +60,7 @@ class _LoginViewState extends State<_LoginView> {
   Widget build(BuildContext context) {
     final l10n = context.authL10n;
 
-    return BlocConsumer<LoginBloc, LoginState>(
+    return BlocConsumer<RegisterBloc, RegisterState>(
       listenWhen: (previous, current) =>
           previous.isSuccess != current.isSuccess ||
           previous.error != current.error,
@@ -73,24 +80,46 @@ class _LoginViewState extends State<_LoginView> {
           previous.fieldError != current.fieldError,
       builder: (context, state) {
         return Scaffold(
-          appBar: AppBar(title: Text(l10n.loginTitle)),
+          appBar: AppBar(title: Text(l10n.registerTitle)),
           body: SafeArea(
-            child: Padding(
+            child: SingleChildScrollView(
               padding: const EdgeInsets.all(24.0),
               child: Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Spacer(),
-
                     // Logo or Title
                     const Icon(
-                      Icons.lock_outline,
+                      Icons.person_add_outlined,
                       size: 80,
                       color: Colors.blue,
                     ),
                     const SizedBox(height: 32),
+
+                    // Name field
+                    TextFormField(
+                      controller: _nameController,
+                      keyboardType: TextInputType.name,
+                      textInputAction: TextInputAction.next,
+                      textCapitalization: TextCapitalization.words,
+                      decoration: InputDecoration(
+                        labelText: l10n.fullNameLabel,
+                        hintText: l10n.fullNameHint,
+                        prefixIcon: const Icon(Icons.person_outline),
+                        border: const OutlineInputBorder(),
+                        errorText: state.fieldError == 'name'
+                            ? state.error
+                            : null,
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return l10n.fullNameRequired;
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
 
                     // Email field
                     TextFormField(
@@ -115,11 +144,28 @@ class _LoginViewState extends State<_LoginView> {
                     ),
                     const SizedBox(height: 16),
 
+                    // Phone field (optional)
+                    TextFormField(
+                      controller: _phoneController,
+                      keyboardType: TextInputType.phone,
+                      textInputAction: TextInputAction.next,
+                      decoration: InputDecoration(
+                        labelText: l10n.phoneLabel,
+                        hintText: l10n.phoneHint,
+                        prefixIcon: const Icon(Icons.phone_outlined),
+                        border: const OutlineInputBorder(),
+                        errorText: state.fieldError == 'phone'
+                            ? state.error
+                            : null,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
                     // Password field
                     TextFormField(
                       controller: _passwordController,
                       obscureText: _obscurePassword,
-                      textInputAction: TextInputAction.done,
+                      textInputAction: TextInputAction.next,
                       decoration: InputDecoration(
                         labelText: l10n.passwordLabel,
                         hintText: l10n.passwordHint,
@@ -140,6 +186,7 @@ class _LoginViewState extends State<_LoginView> {
                             });
                           },
                         ),
+                        helperText: l10n.passwordHelper,
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -147,27 +194,54 @@ class _LoginViewState extends State<_LoginView> {
                         }
                         return null;
                       },
-                      onFieldSubmitted: (_) => _login(),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 16),
 
-                    // Forgot password
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () {
-                          _navigation.goToForgotPassword();
-                        },
-                        child: Text(l10n.forgotPassword),
+                    // Confirm Password field
+                    TextFormField(
+                      controller: _confirmPasswordController,
+                      obscureText: _obscureConfirmPassword,
+                      textInputAction: TextInputAction.done,
+                      decoration: InputDecoration(
+                        labelText: l10n.confirmPasswordLabel,
+                        hintText: l10n.confirmPasswordHint,
+                        prefixIcon: const Icon(Icons.lock_outline),
+                        border: const OutlineInputBorder(),
+                        errorText: state.fieldError == 'confirmPassword'
+                            ? state.error
+                            : null,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscureConfirmPassword
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscureConfirmPassword =
+                                  !_obscureConfirmPassword;
+                            });
+                          },
+                        ),
                       ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return l10n.confirmPasswordRequired;
+                        }
+                        if (value != _passwordController.text) {
+                          return l10n.passwordsDoNotMatch;
+                        }
+                        return null;
+                      },
+                      onFieldSubmitted: (_) => _register(),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 32),
 
-                    // Login button
+                    // Register button
                     SizedBox(
                       height: 50,
                       child: ElevatedButton(
-                        onPressed: state.isLoading ? null : _login,
+                        onPressed: state.isLoading ? null : _register,
                         child: state.isLoading
                             ? const SizedBox(
                                 width: 24,
@@ -177,22 +251,21 @@ class _LoginViewState extends State<_LoginView> {
                                   color: Colors.white,
                                 ),
                               )
-                            : Text(l10n.loginButton),
+                            : Text(l10n.registerButton),
                       ),
                     ),
+                    const SizedBox(height: 24),
 
-                    const Spacer(),
-
-                    // Register link
+                    // Login link
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(l10n.noAccount),
+                        Text(l10n.alreadyHaveAccount),
                         TextButton(
                           onPressed: () {
-                            _navigation.goToRegister();
+                            _navigation.goBack();
                           },
-                          child: Text(l10n.registerButton),
+                          child: Text(l10n.loginButton),
                         ),
                       ],
                     ),
@@ -206,12 +279,15 @@ class _LoginViewState extends State<_LoginView> {
     );
   }
 
-  void _login() {
+  void _register() {
     if (_formKey.currentState?.validate() ?? false) {
-      context.read<LoginBloc>().add(
-        LoginEvent.submit(
+      context.read<RegisterBloc>().add(
+        RegisterEvent.submit(
+          name: _nameController.text,
           email: _emailController.text,
           password: _passwordController.text,
+          confirmPassword: _confirmPasswordController.text,
+          phone: _phoneController.text.isEmpty ? null : _phoneController.text,
         ),
       );
     }

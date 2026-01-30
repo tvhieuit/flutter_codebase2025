@@ -31,7 +31,7 @@ class AppToast {
 
   /// Initialize FToast with context.
   /// Call this once from your app's root widget.
-  void init(BuildContext context) {
+  AppToast(BuildContext context) {
     _fToast = FToast()..init(context);
   }
 

@@ -1,6 +1,4 @@
 // BLoC
-export 'src/bloc/login_bloc.dart';
-export 'src/bloc/register_bloc.dart';
 
 // Models
 export 'src/models/models.dart';
@@ -12,7 +10,7 @@ export 'src/repository/repository.dart';
 export 'src/use_case/use_cases.dart';
 
 // Pages
-export 'src/page/pages.dart';
+export 'src/screen/pages.dart';
 
 // Navigation
 export 'src/navigation/navigation.dart';
