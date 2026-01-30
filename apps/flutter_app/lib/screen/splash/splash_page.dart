@@ -21,71 +21,64 @@ class SplashPage extends StatelessWidget implements AutoRouteWrapper {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<SplashBloc, SplashState>(
-      listenWhen: (previous, current) => previous.isInitialized != current.isInitialized && current.isInitialized,
-      listener: (context, state) {
-        // Navigate to login screen after initialization
-        context.router.replace(const LoginRoute());
-      },
-      child: Scaffold(
-        body: BlocBuilder<SplashBloc, SplashState>(
-          buildWhen: (previous, current) => previous.isLoading != current.isLoading || previous.error != current.error,
-          builder: (context, state) {
-            return Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Theme.of(context).colorScheme.primary,
-                    Theme.of(context).colorScheme.secondary,
-                  ],
-                ),
+    return Scaffold(
+      body: BlocBuilder<SplashBloc, SplashState>(
+        buildWhen: (previous, current) => previous.isLoading != current.isLoading || previous.error != current.error,
+        builder: (context, state) {
+          return Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Theme.of(context).colorScheme.primary,
+                  Theme.of(context).colorScheme.secondary,
+                ],
               ),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // App Logo/Icon
-                    const Icon(
-                      Icons.flutter_dash,
-                      size: 120,
+            ),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // App Logo/Icon
+                  const Icon(
+                    Icons.flutter_dash,
+                    size: 120,
+                    color: Colors.white,
+                  ),
+                  const SizedBox(height: 24),
+
+                  // App Name
+                  Text(
+                    l10n.appName,
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       color: Colors.white,
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(height: 24),
+                  ),
+                  const SizedBox(height: 48),
 
-                    // App Name
-                    Text(
-                      l10n.appName,
-                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
+                  // Loading Indicator
+                  if (state.isLoading)
+                    const CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+
+                  // Error Message
+                  if (state.error != null)
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(
+                        state.error!,
+                        style: const TextStyle(color: Colors.red),
+                        textAlign: TextAlign.center,
                       ),
                     ),
-                    const SizedBox(height: 48),
-
-                    // Loading Indicator
-                    if (state.isLoading)
-                      const CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      ),
-
-                    // Error Message
-                    if (state.error != null)
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Text(
-                          state.error!,
-                          style: const TextStyle(color: Colors.red),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                  ],
-                ),
+                ],
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
