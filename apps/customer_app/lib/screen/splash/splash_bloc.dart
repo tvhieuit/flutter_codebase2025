@@ -1,4 +1,6 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:domain/domain.dart';
+import 'package:feature_auth/auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
@@ -11,8 +13,14 @@ part 'splash_state.dart';
 class SplashBloc extends Bloc<SplashEvent, SplashState>
     with SafetyNetworkMixin {
   final UserLocalRepository _userLocalRepository;
+  final StackRouter _router;
+  final AppRoute _appRoute;
 
-  SplashBloc(this._userLocalRepository) : super(SplashState.initial()) {
+  SplashBloc(
+    this._userLocalRepository,
+    this._router,
+    this._appRoute,
+  ) : super(SplashState.initial()) {
     on<SplashEvent>(_onEvent);
 
     // Auto-start
@@ -36,38 +44,22 @@ class SplashBloc extends Bloc<SplashEvent, SplashState>
         tokenResult.when(
           success: (token) {
             if (token != null && token.isNotEmpty) {
-              emit(
-                state.copyWith(
-                  isLoading: false,
-                  authStatus: AuthStatus.authenticated,
-                ),
-              );
+              emit(state.copyWith(isLoading: false));
+              _router.replaceAll([_appRoute.home]);
             } else {
-              emit(
-                state.copyWith(
-                  isLoading: false,
-                  authStatus: AuthStatus.unauthenticated,
-                ),
-              );
+              emit(state.copyWith(isLoading: false));
+              _router.replaceAll([_appRoute.login]);
             }
           },
           failure: (_) {
-            emit(
-              state.copyWith(
-                isLoading: false,
-                authStatus: AuthStatus.unauthenticated,
-              ),
-            );
+            emit(state.copyWith(isLoading: false));
+            _router.replaceAll([_appRoute.login]);
           },
         );
       },
       onError: (error) {
-        emit(
-          state.copyWith(
-            isLoading: false,
-            authStatus: AuthStatus.unauthenticated,
-          ),
-        );
+        emit(state.copyWith(isLoading: false));
+        _router.replaceAll([_appRoute.login]);
       },
     );
   }

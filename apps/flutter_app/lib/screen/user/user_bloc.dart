@@ -1,3 +1,5 @@
+import 'package:app_widget/app_widget.dart';
+import 'package:domain/domain.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
@@ -12,10 +14,11 @@ part 'user_bloc.freezed.dart';
 
 /// BLoC for managing user state and operations
 @injectable
-class UserBloc extends Bloc<UserEvent, UserState> with SafetyNetworkMixin {
+class UserBloc extends Bloc<UserEvent, UserState> {
   final UserUseCase _useCase;
+  final AppToast _toast;
 
-  UserBloc(this._useCase) : super(UserState.initial()) {
+  UserBloc(this._useCase, this._toast) : super(UserState.initial()) {
     on(_onStarted);
     on(_onLoadUsers);
     on(_onLoadUserProfile);
@@ -29,7 +32,7 @@ class UserBloc extends Bloc<UserEvent, UserState> with SafetyNetworkMixin {
 
   /// Handle started event - load cached data
   Future<void> _onStarted(_Started event, emit) async {
-    emit(state.copyWith(isLoading: true, error: null));
+    emit(state.copyWith(isLoading: true));
 
     await safeNetworkCall(
       () async {
@@ -48,19 +51,15 @@ class UserBloc extends Bloc<UserEvent, UserState> with SafetyNetworkMixin {
         add(const UserEvent.loadUsers());
       },
       onError: (error) {
-        emit(
-          state.copyWith(
-            isLoading: false,
-            error: error.toString(),
-          ),
-        );
+        emit(state.copyWith(isLoading: false));
+        _toast.error(error.toString());
       },
     );
   }
 
   /// Handle load users event
   Future<void> _onLoadUsers(_LoadUsers event, emit) async {
-    emit(state.copyWith(isLoading: true, error: null));
+    emit(state.copyWith(isLoading: true));
 
     await safeNetworkCall(
       () async {
@@ -74,19 +73,15 @@ class UserBloc extends Bloc<UserEvent, UserState> with SafetyNetworkMixin {
         );
       },
       onError: (error) {
-        emit(
-          state.copyWith(
-            isLoading: false,
-            error: error.toString(),
-          ),
-        );
+        emit(state.copyWith(isLoading: false));
+        _toast.error(error.toString());
       },
     );
   }
 
   /// Handle load user profile event
   Future<void> _onLoadUserProfile(_LoadUserProfile event, emit) async {
-    emit(state.copyWith(isLoading: true, error: null));
+    emit(state.copyWith(isLoading: true));
 
     await safeNetworkCall(
       () async {
@@ -100,19 +95,15 @@ class UserBloc extends Bloc<UserEvent, UserState> with SafetyNetworkMixin {
         );
       },
       onError: (error) {
-        emit(
-          state.copyWith(
-            isLoading: false,
-            error: error.toString(),
-          ),
-        );
+        emit(state.copyWith(isLoading: false));
+        _toast.error(error.toString());
       },
     );
   }
 
   /// Handle update profile event
   Future<void> _onUpdateProfile(_UpdateProfile event, emit) async {
-    emit(state.copyWith(isLoading: true, error: null));
+    emit(state.copyWith(isLoading: true));
 
     await safeNetworkCall(
       () async {
@@ -129,19 +120,15 @@ class UserBloc extends Bloc<UserEvent, UserState> with SafetyNetworkMixin {
         );
       },
       onError: (error) {
-        emit(
-          state.copyWith(
-            isLoading: false,
-            error: error.toString(),
-          ),
-        );
+        emit(state.copyWith(isLoading: false));
+        _toast.error(error.toString());
       },
     );
   }
 
   /// Handle delete user event
   Future<void> _onDeleteUser(_DeleteUser event, emit) async {
-    emit(state.copyWith(isLoading: true, error: null));
+    emit(state.copyWith(isLoading: true));
 
     await safeNetworkCall(
       () async {
@@ -155,19 +142,15 @@ class UserBloc extends Bloc<UserEvent, UserState> with SafetyNetworkMixin {
         );
       },
       onError: (error) {
-        emit(
-          state.copyWith(
-            isLoading: false,
-            error: error.toString(),
-          ),
-        );
+        emit(state.copyWith(isLoading: false));
+        _toast.error(error.toString());
       },
     );
   }
 
   /// Handle logout event
   Future<void> _onLogout(_Logout event, emit) async {
-    emit(state.copyWith(isLoading: true, error: null));
+    emit(state.copyWith(isLoading: true));
 
     await safeNetworkCall(
       () async {
@@ -182,12 +165,8 @@ class UserBloc extends Bloc<UserEvent, UserState> with SafetyNetworkMixin {
         );
       },
       onError: (error) {
-        emit(
-          state.copyWith(
-            isLoading: false,
-            error: error.toString(),
-          ),
-        );
+        emit(state.copyWith(isLoading: false));
+        _toast.error(error.toString());
       },
     );
   }
