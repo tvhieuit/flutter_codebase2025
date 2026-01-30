@@ -1,7 +1,7 @@
 part of 'login_bloc.dart';
 
 /// Events for Login screen
-@freezed
+@eventFreezed
 sealed class LoginEvent with _$LoginEvent {
   /// Event to submit login credentials
   const factory LoginEvent.submit({
@@ -9,6 +9,7 @@ sealed class LoginEvent with _$LoginEvent {
     required String password,
   }) = LoginEventSubmit;
 
-  /// Event to clear error state
-  const factory LoginEvent.clearError() = LoginEventClearError;
+  const factory LoginEvent.register() = _LoginEventRegister;
+  const factory LoginEvent.forgotPassword() = _LoginEventForgotPassword;
+  const factory LoginEvent.obscurePasswordToggle() = _LoginEventObscurePasswordToggle;
 }

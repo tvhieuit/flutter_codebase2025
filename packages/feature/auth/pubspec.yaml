@@ -33,6 +33,9 @@ dependencies:
   # Routing
   auto_route: any
 
+  app_widget: any
+  app_utility: any
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

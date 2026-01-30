@@ -40,10 +40,14 @@ sealed class Result<T> with _$Result<T> {
   bool get isFailure => this is ResultFailure<T>;
 
   /// Gets the data if success, otherwise returns null
-  T? get data => switch (this) {
-    ResultSuccess(:final data) => data,
-    ResultFailure() => null,
-  };
+  T? get data => whenOrNull(
+    success: (data) => data,
+  );
+
+  Failure? get failure => whenOrNull(
+    failure: (failure) => failure,
+  );
+
 
   /// Alias for [data] - Gets the data if success, otherwise returns null
   T? get dataOrNull => data;
