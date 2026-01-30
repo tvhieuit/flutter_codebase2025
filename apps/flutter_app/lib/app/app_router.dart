@@ -6,18 +6,11 @@ import 'app_custom_route.dart';
 import 'app_router.gr.dart';
 import 'auth_routes.dart';
 
-final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
-BuildContext get globalContext =>
-    rootNavigatorKey.currentContext ?? (throw Exception('Navigator context is not available'));
 
 @singleton
 @AutoRouterConfig(replaceInRouteName: 'Page,Route')
 class AppRouter extends RootStackRouter {
-  AppRouter() : super(navigatorKey: rootNavigatorKey);
-
-  // Helper getters for accessing context globally
-
-  BuildContext? get globalContextOrNull => rootNavigatorKey.currentContext;
+  AppRouter(GlobalKey<NavigatorState> key): super(navigatorKey: key);
 
   @override
   List<AutoRoute> get routes => [

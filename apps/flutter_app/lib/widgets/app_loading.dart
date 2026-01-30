@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../app/app_router.dart';
+import 'package:get_it/get_it.dart';
 
 /// Global loading overlay widget
 ///
@@ -66,6 +65,7 @@ class AppLoading {
           ),
         ),
       );
+      final GlobalKey<NavigatorState> rootNavigatorKey = GetIt.instance();
       rootNavigatorKey.currentState?.overlay?.insert(_currentLoader!);
       _numberOfTask = 0;
     }

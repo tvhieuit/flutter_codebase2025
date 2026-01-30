@@ -37,6 +37,7 @@ dependencies:
   app_widget: any
   domain: any
   feature_auth: any
+  app_core: any
 
 dev_dependencies:
   flutter_test:

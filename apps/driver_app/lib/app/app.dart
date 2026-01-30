@@ -11,10 +11,10 @@ class DriverApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final appRouter = GetIt.instance<AppRouter>();
-
+    final AppRouter appRouter = GetIt.instance();
     return MaterialApp.router(
       title: 'Driver App',
+      scaffoldMessengerKey:  GetIt.instance(),
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
