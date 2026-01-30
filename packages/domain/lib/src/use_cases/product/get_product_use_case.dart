@@ -1,7 +1,7 @@
 import '../../entities/product_entity.dart';
-import '../../failures/failure.dart';
+import 'package:app_core/app_core.dart';
 import '../../repositories/product_repository.dart';
-import '../../result/result.dart';
+import 'package:app_core/app_core.dart';
 import '../base_use_case.dart';
 
 /// Use case for getting a product by ID.

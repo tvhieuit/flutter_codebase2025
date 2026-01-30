@@ -1,5 +1,5 @@
 import '../entities/product_entity.dart';
-import '../result/result.dart';
+import 'package:app_core/app_core.dart';
 
 /// Product repository interface.
 ///

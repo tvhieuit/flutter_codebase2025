@@ -1,4 +1,4 @@
-import 'package:domain/domain.dart';
+import 'package:app_core/app_core.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'auth_credentials.freezed.dart';

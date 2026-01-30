@@ -1,6 +1,6 @@
 part of 'user_bloc.dart';
 
-@freezed
+@eventFreezed
 sealed class UserEvent with _$UserEvent {
   const factory UserEvent.started() = _Started;
   const factory UserEvent.loadUsers({@Default(false) bool forceRefresh}) = _LoadUsers;

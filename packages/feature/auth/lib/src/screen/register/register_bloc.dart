@@ -1,3 +1,4 @@
+import 'package:app_core/app_core.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:domain/domain.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,7 +19,7 @@ part 'register_state.dart';
 
 /// BLoC for managing register screen state
 @injectable
-class RegisterBloc extends Bloc<RegisterEvent, RegisterState> with SafetyNetworkMixin {
+class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
   final AuthRepository _authRepository;
   final UserLocalRepository _userLocalRepository;
   final StackRouter _router;
@@ -51,12 +52,19 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> with SafetyNetwork
     }
 
     if (event.password.isEmpty) {
-      emit(state.copyWith(error: 'Password is required', fieldError: 'password'));
+      emit(
+        state.copyWith(error: 'Password is required', fieldError: 'password'),
+      );
       return;
     }
 
     if (event.password != event.confirmPassword) {
-      emit(state.copyWith(error: 'Passwords do not match', fieldError: 'confirmPassword'));
+      emit(
+        state.copyWith(
+          error: 'Passwords do not match',
+          fieldError: 'confirmPassword',
+        ),
+      );
       return;
     }
 
@@ -89,11 +97,17 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> with SafetyNetwork
     _router.maybePop();
   }
 
-  Future<void> _onObscurePasswordToggle(_RegisterEventObscurePasswordToggle event, emit) async {
+  Future<void> _onObscurePasswordToggle(
+    _RegisterEventObscurePasswordToggle event,
+    emit,
+  ) async {
     emit(state.copyWith(obscurePassword: !state.obscurePassword));
   }
 
-  Future<void> _onObscureConfirmPasswordToggle(_RegisterEventObscureConfirmPasswordToggle event, emit) async {
+  Future<void> _onObscureConfirmPasswordToggle(
+    _RegisterEventObscureConfirmPasswordToggle event,
+    emit,
+  ) async {
     emit(state.copyWith(obscureConfirmPassword: !state.obscureConfirmPassword));
   }
 }

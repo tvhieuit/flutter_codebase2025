@@ -1,5 +1,5 @@
 import '../entities/user_entity.dart';
-import '../result/result.dart';
+import 'package:app_core/app_core.dart';
 
 /// User repository interface.
 ///

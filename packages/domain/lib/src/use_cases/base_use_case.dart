@@ -1,4 +1,4 @@
-import '../result/result.dart';
+import 'package:app_core/app_core.dart';
 
 /// Base use case interface for use cases without parameters.
 ///

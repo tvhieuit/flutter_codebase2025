@@ -1,6 +1,5 @@
+import 'package:app_core/app_core.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-
-import '../annotations/annotations.dart';
 
 part 'product_entity.freezed.dart';
 part 'product_entity.g.dart';

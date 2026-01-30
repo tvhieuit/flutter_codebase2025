@@ -1,6 +1,6 @@
 part of 'splash_bloc.dart';
 
-@freezed
+@stateFreezed
 sealed class SplashState with _$SplashState {
   const SplashState._();
 

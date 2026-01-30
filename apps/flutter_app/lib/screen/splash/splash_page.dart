@@ -2,7 +2,6 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../app/auth_routes.dart';
 import '../../di/injection.dart';
 import '../../extensions/l10n_extension.dart';
 import 'splash_bloc.dart';
@@ -23,7 +22,8 @@ class SplashPage extends StatelessWidget implements AutoRouteWrapper {
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocBuilder<SplashBloc, SplashState>(
-        buildWhen: (previous, current) => previous.isLoading != current.isLoading || previous.error != current.error,
+        buildWhen: (previous, current) =>
+            previous.isLoading != current.isLoading,
         builder: (context, state) {
           return Container(
             decoration: BoxDecoration(
@@ -62,17 +62,6 @@ class SplashPage extends StatelessWidget implements AutoRouteWrapper {
                   if (state.isLoading)
                     const CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    ),
-
-                  // Error Message
-                  if (state.error != null)
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text(
-                        state.error!,
-                        style: const TextStyle(color: Colors.red),
-                        textAlign: TextAlign.center,
-                      ),
                     ),
                 ],
               ),

@@ -2,7 +2,7 @@
 
 This template follows Clean Architecture and project standards.
 
-## 📁 Directory Structure
+## Directory Structure
 
 ```
 lib/screen/feature_name/
@@ -13,7 +13,7 @@ lib/screen/feature_name/
 └── feature_name_bloc.freezed.dart  # Generated
 ```
 
-## 🎯 Complete Implementation
+## Complete Implementation
 
 ### 1. Event (freezed)
 
@@ -21,8 +21,8 @@ lib/screen/feature_name/
 // lib/screen/feature_name/feature_name_event.dart
 part of 'feature_name_bloc.dart';
 
-@freezed
-class FeatureNameEvent with _$FeatureNameEvent {
+@eventFreezed
+sealed class FeatureNameEvent with _$FeatureNameEvent {
   const factory FeatureNameEvent.started() = _Started;
   const factory FeatureNameEvent.loadData() = _LoadData;
   const factory FeatureNameEvent.refresh() = _Refresh;
@@ -35,42 +35,48 @@ class FeatureNameEvent with _$FeatureNameEvent {
 // lib/screen/feature_name/feature_name_state.dart
 part of 'feature_name_bloc.dart';
 
-@freezed
-class FeatureNameState with _$FeatureNameState {
+@stateFreezed
+sealed class FeatureNameState with _$FeatureNameState {
+  const FeatureNameState._();
+
   const factory FeatureNameState({
     @Default(false) bool isLoading,
     @Default(false) bool isInitialized,
     String? data,
-    String? error,
   }) = _FeatureNameState;
 
   factory FeatureNameState.initial() => const FeatureNameState();
 }
 ```
 
-### 3. BLoC (injectable + auto-init)
+### 3. BLoC (injectable + router + toast)
 
 ```dart
 // lib/screen/feature_name/feature_name_bloc.dart
+import 'package:auto_route/auto_route.dart';
+import 'package:app_widget/app_widget.dart';
+import 'package:domain/domain.dart';
+import 'package:feature_auth/auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
-
-import '../../app_mixin/safety_network_mixin.dart';
-// Import your use case here
-// import '../../use_case/feature_name_use_case.dart';
 
 part 'feature_name_event.dart';
 part 'feature_name_state.dart';
 part 'feature_name_bloc.freezed.dart';
 
 @injectable
-class FeatureNameBloc extends Bloc<FeatureNameEvent, FeatureNameState> 
-    with SafetyNetworkMixin {
+class FeatureNameBloc extends Bloc<FeatureNameEvent, FeatureNameState> {
+  final StackRouter _router;
+  final AppRoute _appRoute;
+  final AppToast _toast;
   // Inject use case (not repository!)
   // final FeatureNameUseCase _useCase;
 
   FeatureNameBloc(
+    this._router,
+    this._appRoute,
+    this._toast,
     // this._useCase,
   ) : super(FeatureNameState.initial()) {
     on(_onStarted);
@@ -81,68 +87,51 @@ class FeatureNameBloc extends Bloc<FeatureNameEvent, FeatureNameState>
     add(const FeatureNameEvent.started());
   }
 
-  Future<void> _onStarted(
-    _Started event,
-    emit,
-  ) async {
-    emit(state.copyWith(isLoading: true, error: null));
+  Future<void> _onStarted(_Started event, emit) async {
+    emit(state.copyWith(isLoading: true));
 
-    await safeNetworkCall(
-      () async {
-        // Initialize logic here
-        await Future.delayed(const Duration(seconds: 1));
+    try {
+      // Initialize logic here
+      await Future.delayed(const Duration(seconds: 1));
 
-        emit(
-          state.copyWith(
-            isLoading: false,
-            isInitialized: true,
-          ),
-        );
-      },
-      onError: (error) {
-        emit(
-          state.copyWith(
-            isLoading: false,
-            error: error.toString(),
-          ),
-        );
-      },
-    );
+      emit(
+        state.copyWith(
+          isLoading: false,
+          isInitialized: true,
+        ),
+      );
+    } on Failure catch (e) {
+      emit(state.copyWith(isLoading: false));
+      _toast.error(e.message);
+    } catch (e) {
+      emit(state.copyWith(isLoading: false));
+      _toast.error('An unexpected error occurred');
+    }
   }
 
-  Future<void> _onLoadData(
-    _LoadData event,
-    emit,
-  ) async {
-    emit(state.copyWith(isLoading: true, error: null));
+  Future<void> _onLoadData(_LoadData event, emit) async {
+    emit(state.copyWith(isLoading: true));
 
-    await safeNetworkCall(
-      () async {
-        // Call use case here
-        // final result = await _useCase.getData();
+    try {
+      // Call use case here
+      // final result = await _useCase.getData();
 
-        emit(
-          state.copyWith(
-            isLoading: false,
-            data: 'Sample Data',
-          ),
-        );
-      },
-      onError: (error) {
-        emit(
-          state.copyWith(
-            isLoading: false,
-            error: error.toString(),
-          ),
-        );
-      },
-    );
+      emit(
+        state.copyWith(
+          isLoading: false,
+          data: 'Sample Data',
+        ),
+      );
+    } on Failure catch (e) {
+      emit(state.copyWith(isLoading: false));
+      _toast.error(e.message);
+    } catch (e) {
+      emit(state.copyWith(isLoading: false));
+      _toast.error('An unexpected error occurred');
+    }
   }
 
-  Future<void> _onRefresh(
-    _Refresh event,
-    emit,
-  ) async {
+  Future<void> _onRefresh(_Refresh event, emit) async {
     // Refresh logic
     add(const FeatureNameEvent.loadData());
   }
@@ -174,64 +163,52 @@ class FeatureNamePage extends StatelessWidget implements AutoRouteWrapper {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<FeatureNameBloc, FeatureNameState>(
-      listenWhen: (previous, current) =>
-          previous.error != current.error && current.error != null,
-      listener: (context, state) {
-        // Show error snackbar
-        if (state.error != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.error!)),
-          );
-        }
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Feature Name'),
-        ),
-        body: BlocBuilder<FeatureNameBloc, FeatureNameState>(
-          buildWhen: (previous, current) =>
-              previous.isLoading != current.isLoading ||
-              previous.data != current.data,
-          builder: (context, state) {
-            if (state.isLoading) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-
-            if (state.data == null) {
-              return const Center(
-                child: Text('No data'),
-              );
-            }
-
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(state.data!),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      context.read<FeatureNameBloc>().add(
-                            const FeatureNameEvent.refresh(),
-                          );
-                    },
-                    child: const Text('Refresh'),
-                  ),
-                ],
-              ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Feature Name'),
+      ),
+      body: BlocBuilder<FeatureNameBloc, FeatureNameState>(
+        buildWhen: (previous, current) =>
+            previous.isLoading != current.isLoading ||
+            previous.data != current.data,
+        builder: (context, state) {
+          if (state.isLoading) {
+            return const Center(
+              child: CircularProgressIndicator(),
             );
-          },
-        ),
+          }
+
+          if (state.data == null) {
+            return const Center(
+              child: Text('No data'),
+            );
+          }
+
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(state.data!),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    context.read<FeatureNameBloc>().add(
+                          const FeatureNameEvent.refresh(),
+                        );
+                  },
+                  child: const Text('Refresh'),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
 }
 ```
 
-## 🔧 Setup Steps
+## Setup Steps
 
 ### 1. Create Files
 ```bash
@@ -268,45 +245,51 @@ fvm dart run build_runner build -d
 fvm dart format .
 ```
 
-## ✅ Checklist
+## Checklist
 
-- [ ] Event uses `@freezed`
-- [ ] State uses `@freezed`
+- [ ] Event uses `@eventFreezed` with `sealed class`
+- [ ] State uses `@stateFreezed` with `sealed class`
 - [ ] BLoC uses `@injectable`
-- [ ] BLoC extends with `SafetyNetworkMixin`
+- [ ] BLoC injects `StackRouter`, `AppRoute`, `AppToast`
 - [ ] BLoC auto-starts with `add()` in constructor
+- [ ] BLoC uses `try/catch` + `_toast` for error handling
+- [ ] BLoC navigates via `_router` (not BlocListener)
 - [ ] Page implements `AutoRouteWrapper`
 - [ ] Page uses `wrappedRoute()` for BLoC provider
 - [ ] Page uses `@RoutePage()` annotation
 - [ ] BlocBuilder has `buildWhen`
-- [ ] BlocListener has `listenWhen`
 - [ ] Uses `emit` instead of `Emitter<State>`
 - [ ] Uses `on()` instead of `on<Event>()`
 - [ ] Inject Use Case (not Repository)
-- [ ] All API calls wrapped in `safeNetworkCall()`
+- [ ] No `BlocListener` for navigation or error display
 
-## 🎯 Key Principles
+## Key Principles
 
-### ✅ DO
-- Use `@freezed` for Events and States
+### DO
+- Use `@eventFreezed` for Events and `@stateFreezed` for States
 - Use `@injectable` for BLoCs
 - Implement `AutoRouteWrapper` for Pages
 - Auto-start BLoC with `add()` in constructor
-- Use `buildWhen` and `listenWhen`
+- Use `buildWhen` for BlocBuilder
 - Inject Use Cases only
-- Wrap API calls with `safeNetworkMixin`
+- Use `try/catch` + `_toast.error()` for error handling
+- Navigate via injected `StackRouter` in the BLoC
 - Keep one class per page (no separate View)
 
-### ❌ DON'T
+### DON'T
 - Don't use abstract class for Events
-- Don't skip `buildWhen`/`listenWhen`
+- Don't skip `buildWhen`
 - Don't inject Repositories in BLoCs
 - Don't make direct API calls
 - Don't create separate View class
 - Don't add events in `wrappedRoute()`
 - Don't use type parameters in `on<>()`
+- Don't use `BlocListener` for navigation
+- Don't use `BlocListener` + `SnackBar` for errors
+- Don't store `error` in state
+- Don't use `SafetyNetworkMixin` / `safeNetworkCall`
 
-## 📚 Navigation Example
+## Navigation Example
 
 ### From Another Screen
 ```dart
@@ -321,6 +304,14 @@ context.router.pop();
 context.router.push(const FeatureNameRoute());
 ```
 
+### From BLoC (preferred for bloc-driven navigation)
+```dart
+// In BLoC constructor: inject StackRouter and AppRoute
+_router.replaceAll([_appRoute.home]);
+_router.push(_appRoute.register);
+_router.maybePop();
+```
+
 ### With Parameters
 ```dart
 // In route definition
@@ -330,7 +321,7 @@ AutoRoute(page: FeatureNameRoute.page),
 @RoutePage()
 class FeatureNamePage extends StatelessWidget implements AutoRouteWrapper {
   final String userId;  // Add parameter
-  
+
   const FeatureNamePage({
     super.key,
     required this.userId,  // Required parameter
@@ -350,7 +341,7 @@ class FeatureNamePage extends StatelessWidget implements AutoRouteWrapper {
 context.router.push(FeatureNameRoute(userId: '123'));
 ```
 
-## 🚀 Quick Command Reference
+## Quick Command Reference
 
 ```bash
 # Get dependencies
@@ -366,18 +357,17 @@ fvm dart run melos run fm
 fvm flutter run --flavor dev --dart-define-from-file=configs/dev.json
 ```
 
-## 📝 Notes
+## Notes
 
 - Always run code generation after creating/modifying freezed classes
 - Format code before committing
 - Test navigation flow
 - Use localization for user-facing strings
-- Add proper error handling
+- Use `AppToast` for all error/success messages
 - Consider loading states
 - Test on both Android and iOS
 
 ---
 
 **Last Updated**: Based on project best practices
-**Pattern Version**: 1.0 (Clean Architecture + BLoC + AutoRoute)
-
+**Pattern Version**: 2.0 (Clean Architecture + BLoC + AutoRoute + AppToast)

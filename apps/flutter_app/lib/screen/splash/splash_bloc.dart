@@ -1,10 +1,10 @@
-import 'package:flutter_app/app/app_router.dart';
-import 'package:flutter_app/app/auth_routes.dart';
+import 'package:app_core/app_core.dart';
+import 'package:auto_route/auto_route.dart';
+import 'package:domain/domain.dart';
+import 'package:feature_auth/auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
-
-import '../../app_mixin/safety_network_mixin.dart';
 
 part 'splash_bloc.freezed.dart';
 
@@ -14,8 +14,14 @@ part 'splash_state.dart';
 
 /// BLoC for managing splash screen state and initialization
 @injectable
-class SplashBloc extends Bloc<SplashEvent, SplashState> with SafetyNetworkMixin {
-  SplashBloc(this._router) : super(SplashState.initial()) {
+class SplashBloc extends Bloc<SplashEvent, SplashState> {
+  final StackRouter _router;
+  final AppRoute _appRoute;
+
+  SplashBloc(
+    this._router,
+    this._appRoute,
+  ) : super(SplashState.initial()) {
     on(_onStart);
     on(_onCheckAuth);
     on(_onNavigate);
@@ -24,25 +30,12 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> with SafetyNetworkMixin 
     add(const SplashEvent.start());
   }
 
-  final AppRouter _router;
-
   /// Handles splash screen start event
-  /// Initialize app, check dependencies, etc.
-  Future<void> _onStart(
-    SplashEventStart event,
-    emit,
-  ) async {
-    emit(state.copyWith(isLoading: true, error: null));
+  Future<void> _onStart(SplashEventStart event, emit) async {
+    emit(state.copyWith(isLoading: true));
 
     // Simulate initialization delay
     await Future.delayed(const Duration(seconds: 2));
-
-    // Here you can add:
-    // - Database initialization
-    // - API configuration
-    // - Cache setup
-    // - Feature flags
-    // - etc.
 
     emit(
       state.copyWith(
@@ -56,20 +49,11 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> with SafetyNetworkMixin 
   }
 
   /// Handles authentication check event
-  Future<void> _onCheckAuth(
-    SplashEventCheckAuth event,
-    emit,
-  ) async {
-    // Here you would check:
-    // - Local storage for auth token
-    // - Validate token with API
-    // - Check user session
-    // For now, we'll simulate it
-
+  Future<void> _onCheckAuth(SplashEventCheckAuth event, emit) async {
     await Future.delayed(const Duration(milliseconds: 500));
 
     // Simulate auth check (replace with actual auth logic)
-    final isAuthenticated = false; // await _authRepository.isAuthenticated();
+    final isAuthenticated = false;
 
     emit(
       state.copyWith(
@@ -82,13 +66,7 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> with SafetyNetworkMixin 
   }
 
   /// Handles navigation event
-  /// This will be handled in the UI to trigger navigation
-  Future<void> _onNavigate(
-    SplashEventNavigate event,
-    emit,
-  ) async {
-    // State is already set, UI will react to navigate
-    // based on isAuthenticated flag
-    _router.replace(const LoginRoute());
+  Future<void> _onNavigate(SplashEventNavigate event, emit) async {
+    _router.replaceAll([_appRoute.login]);
   }
 }

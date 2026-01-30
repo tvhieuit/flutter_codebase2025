@@ -1,13 +1,14 @@
 part of 'splash_bloc.dart';
 
 /// State for Splash screen
-@freezed
+@stateFreezed
 sealed class SplashState with _$SplashState {
+  const SplashState._();
+
   const factory SplashState({
     @Default(false) bool isLoading,
     @Default(false) bool isInitialized,
     @Default(false) bool isAuthenticated,
-    String? error,
   }) = _SplashState;
 
   factory SplashState.initial() => const SplashState(

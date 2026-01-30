@@ -17,6 +17,7 @@ dependencies:
   # Dependency Injection
   get_it: any
   injectable: any
+  app_core: any
   
   # Local Storage
   shared_preferences: any

@@ -1,3 +1,4 @@
+import 'package:app_core/app_core.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:domain/domain.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,7 +19,7 @@ part 'login_state.dart';
 
 /// BLoC for managing login screen state
 @injectable
-class LoginBloc extends Bloc<LoginEvent, LoginState> with SafetyNetworkMixin {
+class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final AuthRepository _authRepository;
   final UserLocalRepository _userLocalRepository;
   final StackRouter _router;
@@ -46,7 +47,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> with SafetyNetworkMixin {
     }
 
     if (event.password.isEmpty) {
-      emit(state.copyWith(error: 'Password is required', fieldError: 'password'));
+      emit(
+        state.copyWith(error: 'Password is required', fieldError: 'password'),
+      );
       return;
     }
 
@@ -79,7 +82,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> with SafetyNetworkMixin {
     // TODO: Add forgot password route to AppRoute
   }
 
-  Future<void> _onObscurePasswordToggle(_LoginEventObscurePasswordToggle event, emit) async {
+  Future<void> _onObscurePasswordToggle(
+    _LoginEventObscurePasswordToggle event,
+    emit,
+  ) async {
     emit(state.copyWith(obscurePassword: !state.obscurePassword));
   }
 }
