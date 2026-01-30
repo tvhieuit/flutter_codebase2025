@@ -1,5 +1,5 @@
-name: customer_app
-description: Customer app for the platform
+name: flutter_app
+description: A Flutter application following Clean Architecture principles
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -17,6 +17,7 @@ dependencies:
 
   # State Management
   flutter_bloc: any
+  bloc_event_transformers: any
 
   # Dependency Injection
   get_it: any
@@ -29,14 +30,24 @@ dependencies:
 
   # Networking
   dio: any
+  retrofit: any
 
   # Local Storage
   shared_preferences: any
 
+  # Network Connectivity
+  connectivity_plus: any
+
+  # Permissions
+  permission_handler: any
+
   # Internal Packages
+  app_utility: any
   app_widget: any
+  app_core: any
   domain: any
   feature_auth: any
+  fluttertoast: any
 
 dev_dependencies:
   flutter_test:
@@ -49,11 +60,33 @@ dev_dependencies:
   json_serializable: any
   injectable_generator: any
   auto_route_generator: any
+  retrofit_generator: any
 
 flutter:
   uses-material-design: true
   generate: true
 
+  # assets:
+  #   - assets/icon/
+  #   - assets/image/
+  #   - assets/animation/
+  #   - assets/image/bank/
+
+  # fonts:
+  #   - family: Pretendard
+  #     fonts:
+  #       - asset: assets/fonts/Pretendard-Regular.otf
+  #       - asset: assets/fonts/Pretendard-Bold.otf
+  #         weight: 700
+
+flutter_gen:
+  line_length: 250
+  output: lib/assets/
+
   assets:
-    - assets/icon/
-    - assets/image/
+    outputs:
+      package_parameter_enabled: false
+      class_name: AppAsset
+  integrations:
+    flutter_svg: true
+    lottie: true

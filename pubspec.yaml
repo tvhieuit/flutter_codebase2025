@@ -1,5 +1,5 @@
-name: flutter_app
-description: A Flutter application following Clean Architecture principles
+name: flutter_app_workspace
+description: Workspace root for Flutter monorepo
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -8,6 +8,7 @@ environment:
   flutter: '>=3.38.8 <4.0.0'
 
 workspace:
+  - apps/flutter_app
   - apps/customer_app
   - apps/driver_app
   - packages/app_utility
@@ -70,42 +71,11 @@ dev_dependencies:
   retrofit_generator: ^10.2.1
   melos: ^7.3.0
 
-flutter:
-  uses-material-design: true
-  generate: true
-
-  # assets:
-  #   - assets/icon/
-  #   - assets/image/
-  #   - assets/animation/
-  #   - assets/image/bank/
-
-  # fonts:
-  #   - family: Pretendard
-  #     fonts:
-  #       - asset: assets/fonts/Pretendard-Regular.otf
-  #       - asset: assets/fonts/Pretendard-Bold.otf
-  #         weight: 700
-
-flutter_gen:
-  line_length: 250
-  output: lib/assets/
-
-  assets:
-    outputs:
-      package_parameter_enabled: false
-      class_name: AppAsset
-  integrations:
-    flutter_svg: true
-    lottie: true
-
 melos:
   sdkPath: .fvm/flutter_sdk
-  useRootAsPackage: true
   categories:
     app:
       - "apps/*"
-      - "."
     packages:
       - "packages/**"
   scripts:
@@ -137,9 +107,6 @@ melos:
     fm:
       run: fvm dart run melos exec --concurrency=1 -- fvm dart format .
 
-    fm-check:
-      run: find lib -name "*.dart" ! -name "*.g.dart" ! -name "*.freezed.dart" -exec fvm dart format --set-exit-if-changed {} +
-
     icon:
       run: fvm dart run melos exec --concurrency=1 -- fvm dart run flutter_launcher_icons
 
@@ -148,18 +115,12 @@ melos:
 
     test:
       run: fvm dart run melos exec --concurrency=1 -- fvm flutter test
-      select-packages:
-        - '.'
 
     test:coverage:
       run: fvm dart run melos exec --concurrency=1 -- fvm flutter test --coverage
-      select-packages:
-        - '.'
 
     test:watch:
       run: fvm dart run melos exec --concurrency=1 -- fvm flutter test --watch
-      select-packages:
-        - '.'
 
     aos:devapk:
       run: fvm dart run melos exec --concurrency=1 -- fvm flutter build apk --release --flavor dev --dart-define-from-file=./configs/dev.json
