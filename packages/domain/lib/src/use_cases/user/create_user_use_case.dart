@@ -42,11 +42,12 @@ class CreateUserUseCase
       if (phoneValidation != null) return Result.failure(phoneValidation);
     }
 
-    return await _repository.createUser(
+    final result = await _repository.createUser(
       name: params.name.trim(),
       email: params.email.trim().toLowerCase(),
       phone: params.phone?.trim(),
     );
+    return result;
   }
 
   Failure? _validateName(String name) {

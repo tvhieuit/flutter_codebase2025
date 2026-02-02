@@ -58,12 +58,13 @@ class UpdateUserUseCase
       if (emailValidation != null) return Result.failure(emailValidation);
     }
 
-    return await _repository.updateUser(
+    final result = await _repository.updateUser(
       id: params.id,
       name: params.name?.trim(),
       email: params.email?.trim().toLowerCase(),
       phone: params.phone?.trim(),
     );
+    return result;
   }
 
   Failure? _validateName(String name) {

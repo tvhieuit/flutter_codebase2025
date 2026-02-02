@@ -1,63 +1,50 @@
+import 'package:app_core/app_core.dart';
 import 'package:injectable/injectable.dart';
 
-import '../entities/user_model.dart';
-import '../repositories/local_repository.dart';
-import '../repositories/remote_repository.dart';
+import '../../domain.dart';
 
 /// User use case interface for business logic
 abstract class UserUseCase {
-  Future<UserModel> getUserProfile(int userId);
-  Future<List<UserModel>> getUsers({bool forceRefresh = false});
-  Future<UserModel> updateUserProfile(int userId, Map<String, dynamic> data);
+  Future<UserEntity> getUserProfile(int userId);
+  Future<List<UserEntity>> getUsers({bool forceRefresh = false});
+  Future<UserEntity> updateUserProfile(int userId, Map<String, dynamic> data);
   Future<void> deleteUser(int userId);
-  Future<UserModel?> getCachedUser();
+  Future<UserEntity?> getCachedUser();
   Future<void> logout();
 }
 
 /// Implementation of user use case
 @Injectable(as: UserUseCase)
 class UserUseCaseImpl implements UserUseCase {
-  final RemoteRepository _remoteRepository;
-  final LocalRepository _localRepository;
+  final UserRepository _userRepository;
 
-  UserUseCaseImpl(this._remoteRepository, this._localRepository);
+  UserUseCaseImpl(this._userRepository);
 
   @override
-  Future<UserModel> getUserProfile(int userId) async {
-    // Fetch from API
-    final user = await _remoteRepository.getUserProfile(userId);
-
-    // Cache locally
-    await _localRepository.saveUser(user);
-
-    return user;
+  Future<UserEntity> getUserProfile(int userId) async {
+    final result = await _userRepository.getUserById(userId);
+    return _unwrapResult(result);
   }
 
   @override
-  Future<List<UserModel>> getUsers({bool forceRefresh = false}) async {
-    // Try to get from cache first
+  Future<List<UserEntity>> getUsers({bool forceRefresh = false}) async {
     if (!forceRefresh) {
-      final cachedUsers = await _localRepository.getUserList();
-      if (cachedUsers.isNotEmpty) {
-        return cachedUsers;
+      final cachedResult = await _userRepository.getCachedUserList();
+      if (cachedResult is ResultSuccess<List<UserEntity>> &&
+          cachedResult.data.isNotEmpty) {
+        return cachedResult.data;
       }
     }
 
-    // Fetch from API
-    final users = await _remoteRepository.getUsers();
-
-    // Cache locally
-    await _localRepository.saveUserList(users);
-
-    return users;
+    final result = await _userRepository.getUsers();
+    return _unwrapResult(result);
   }
 
   @override
-  Future<UserModel> updateUserProfile(
+  Future<UserEntity> updateUserProfile(
     int userId,
     Map<String, dynamic> data,
   ) async {
-    // Validate data
     if (data['name']?.toString().isEmpty ?? true) {
       throw Exception('Name is required');
     }
@@ -66,33 +53,39 @@ class UserUseCaseImpl implements UserUseCase {
       throw Exception('Email is required');
     }
 
-    // Update via API
-    final updatedUser = await _remoteRepository.updateUserProfile(userId, data);
-
-    // Update cache
-    await _localRepository.saveUser(updatedUser);
-
-    return updatedUser;
+    final result = await _userRepository.updateUser(
+      id: userId,
+      name: data['name'] as String?,
+      email: data['email'] as String?,
+      phone: data['phone'] as String?,
+    );
+    return _unwrapResult(result);
   }
 
   @override
   Future<void> deleteUser(int userId) async {
-    // Delete via API
-    await _remoteRepository.deleteUser(userId);
-
-    // Clear cache
-    await _localRepository.clearUser();
+    final result = await _userRepository.deleteUser(userId);
+    return _unwrapResult(result);
   }
 
   @override
-  Future<UserModel?> getCachedUser() async {
-    return await _localRepository.getUser();
+  Future<UserEntity?> getCachedUser() async {
+    final result = await _userRepository.getCachedUser();
+    if (result is ResultSuccess<UserEntity?>) {
+      return result.data;
+    }
+    return null;
   }
 
   @override
   Future<void> logout() async {
-    // Clear all local data
-    await _localRepository.clearUser();
-    await _localRepository.clearToken();
+    await _userRepository.clearCachedUser();
+  }
+
+  T _unwrapResult<T>(Result<T> result) {
+    return result.when(
+      success: (data) => data,
+      failure: (failure) => throw failure,
+    );
   }
 }

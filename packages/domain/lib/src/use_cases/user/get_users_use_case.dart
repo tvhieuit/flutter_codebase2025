@@ -49,7 +49,11 @@ class GetUsersUseCase
       );
     }
 
-    return await _repository.getUsers(page: params.page, limit: params.limit);
+    final result = await _repository.getUsers(
+      page: params.page,
+      limit: params.limit,
+    );
+    return result;
   }
 }
 
@@ -87,6 +91,7 @@ class SearchUsersUseCase
       );
     }
 
-    return await _repository.searchUsers(params.query.trim());
+    final result = await _repository.searchUsers(params.query.trim());
+    return result;
   }
 }

@@ -135,12 +135,13 @@ packages/domain/
 │       ├── repositories/         # Repository interfaces
 │       │   ├── repositories.dart
 │       │   ├── user_repository.dart
+│       │   ├── impl/             # Implementations
+│       │   │   └── user_repository_impl.dart
 │       │   └── local/
 │       │       ├── local.dart
 │       │       ├── local_storage.dart
 │       │       ├── local_storage_impl.dart
 │       │       ├── local_storage_keys.dart
-│       │       ├── user_local_repository.dart
 │       │       └── app_settings_repository.dart
 │       ├── result/               # Result type
 │       │   ├── result.dart

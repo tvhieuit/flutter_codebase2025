@@ -1,18 +1,7 @@
 import 'package:app_core/app_core.dart';
-import '../../entities/user_entity.dart';
-import '../../repositories/user_repository.dart';
-import '../base_use_case.dart';
+import '../../../domain.dart';
 
 /// Use case for getting a user by ID.
-///
-/// Example usage in BLoC:
-/// ```dart
-/// final result = await _getUserUseCase(userId);
-/// result.when(
-///   success: (user) => emit(state.copyWith(user: user)),
-///   failure: (failure) => emit(state.copyWith(error: failure.message)),
-/// );
-/// ```
 class GetUserUseCase implements UseCaseWithParams<UserEntity, int> {
   final UserRepository _repository;
 
@@ -31,34 +20,15 @@ class GetUserUseCase implements UseCaseWithParams<UserEntity, int> {
   }
 }
 
-/// Use case for getting the current logged-in user.
-class GetCurrentUserUseCase implements UseCase<UserEntity> {
+/// Use case for getting the current logged-in user from cache.
+/// Note: Remote fetch requires an ID, so this primarily checks cache.
+class GetCurrentUserUseCase implements UseCase<UserEntity?> {
   final UserRepository _repository;
 
   GetCurrentUserUseCase(this._repository);
 
   @override
-  Future<Result<UserEntity>> call() async {
-    // Try to get from cache first
-    final cachedResult = await _repository.getCachedUser();
-
-    return cachedResult.when(
-      success: (cachedUser) async {
-        if (cachedUser != null) {
-          return Result.success(cachedUser);
-        }
-        // No cached user, fetch from remote
-        final remoteResult = await _repository.getCurrentUser();
-
-        // Cache the result if successful
-        remoteResult.whenOrNull(success: (user) => _repository.cacheUser(user));
-
-        return remoteResult;
-      },
-      failure: (failure) async {
-        // Cache failed, try remote
-        return await _repository.getCurrentUser();
-      },
-    );
+  Future<Result<UserEntity?>> call() async {
+    return await _repository.getCachedUser();
   }
 }
