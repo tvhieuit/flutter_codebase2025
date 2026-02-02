@@ -75,7 +75,7 @@ class AppLoadingView extends StatelessWidget {
         break;
     }
 
-    Widget content = Column(
+    final Widget content = Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         SizedBox(
@@ -98,21 +98,6 @@ class AppLoadingView extends StatelessWidget {
       ],
     );
 
-    if (isOverlay) {
-      return PopScope(
-        canPop: false,
-        child: Container(
-          color: Colors.black.withValues(alpha: 0.5),
-          child: Center(
-            child: Material(
-              color: Colors.transparent,
-              child: content,
-            ),
-          ),
-        ),
-      );
-    }
-
-    return Center(child: content);
+    return content;
   }
 }
