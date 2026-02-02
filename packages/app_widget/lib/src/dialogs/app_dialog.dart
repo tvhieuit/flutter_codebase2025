@@ -1,58 +1,48 @@
+import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 
 enum AppDialogType { info, success, warning, danger }
 
-class AppDialog extends StatelessWidget {
+@RoutePage()
+class AppDialogPage extends StatelessWidget {
   final String title;
   final String message;
   final String? primaryActionText;
-  final VoidCallback? onPrimaryAction;
   final String? secondaryActionText;
-  final VoidCallback? onSecondaryAction;
   final AppDialogType type;
   final Widget? content;
 
-  const AppDialog({
+  const AppDialogPage({
     super.key,
     required this.title,
     required this.message,
     this.primaryActionText,
-    this.onPrimaryAction,
     this.secondaryActionText,
-    this.onSecondaryAction,
     this.type = AppDialogType.info,
     this.content,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      elevation: 8,
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(context),
-            const SizedBox(height: 16),
-            Text(
-              message,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-            ),
-            if (content != null) ...[
-              const SizedBox(height: 16),
-              content!,
-            ],
-            const SizedBox(height: 24),
-            _buildActions(context),
-          ],
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildHeader(context),
+        const SizedBox(height: 16),
+        Text(
+          message,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
         ),
-      ),
+        if (content != null) ...[
+          const SizedBox(height: 16),
+          content!,
+        ],
+        const SizedBox(height: 24),
+        _buildActions(context),
+      ],
     );
   }
 
@@ -101,13 +91,13 @@ class AppDialog extends StatelessWidget {
       children: [
         if (secondaryActionText != null)
           TextButton(
-            onPressed: onSecondaryAction ?? () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.of(context).pop(false),
             child: Text(secondaryActionText!),
           ),
         if (primaryActionText != null) ...[
           const SizedBox(width: 8),
           ElevatedButton(
-            onPressed: onPrimaryAction,
+            onPressed: () => Navigator.of(context).pop(true),
             style: ElevatedButton.styleFrom(
               backgroundColor: _getPrimaryColor(context),
               foregroundColor: Theme.of(context).colorScheme.onPrimary,
@@ -131,37 +121,7 @@ class AppDialog extends StatelessWidget {
       case AppDialogType.danger:
         return Theme.of(context).colorScheme.error;
       case AppDialogType.info:
-      default:
         return Theme.of(context).colorScheme.primary;
     }
-  }
-
-  /// Static helper to show the dialog
-  static Future<T?> show<T>(
-    BuildContext context, {
-    required String title,
-    required String message,
-    String? primaryActionText,
-    VoidCallback? onPrimaryAction,
-    String? secondaryActionText,
-    VoidCallback? onSecondaryAction,
-    AppDialogType type = AppDialogType.info,
-    Widget? content,
-    bool barrierDismissible = true,
-  }) {
-    return showDialog<T>(
-      context: context,
-      barrierDismissible: barrierDismissible,
-      builder: (context) => AppDialog(
-        title: title,
-        message: message,
-        primaryActionText: primaryActionText,
-        onPrimaryAction: onPrimaryAction,
-        secondaryActionText: secondaryActionText,
-        onSecondaryAction: onSecondaryAction,
-        type: type,
-        content: content,
-      ),
-    );
   }
 }

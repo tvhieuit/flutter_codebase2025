@@ -1,20 +1,62 @@
 import 'package:flutter/material.dart';
+import 'package:injectable/injectable.dart';
 
 enum AppLoadingSize { small, medium, large }
 
-class AppLoading extends StatelessWidget {
-  final AppLoadingSize size;
-  final Color? color;
-  final bool isOverlay;
-  final String? message;
+@singleton
+class AppLoading {
+  const AppLoading(this._globalKey);
 
-  const AppLoading({
+  final GlobalKey<NavigatorState> _globalKey;
+
+  static OverlayEntry? _overlayEntry;
+
+  /// Helper to show as an overlay
+  void show({String? message}) {
+    if (_overlayEntry != null) {
+      return;
+    }
+    final overlayContext = _globalKey.currentState?.overlay?.context;
+    if (overlayContext == null) {
+      return;
+    }
+    final overlay = Overlay.maybeOf(overlayContext) ?? Navigator.maybeOf(overlayContext)?.overlay;
+
+    if (overlay == null) {
+      debugPrint('AppLoading: No Overlay found in the given context.');
+      return;
+    }
+
+    _overlayEntry = OverlayEntry(
+      builder: (context) => AppLoadingView(
+        isOverlay: true,
+        message: message,
+      ),
+    );
+
+    overlay.insert(_overlayEntry!);
+  }
+
+  /// Helper to hide the overlay
+  void hide() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+  }
+}
+
+class AppLoadingView extends StatelessWidget {
+  const AppLoadingView({
     super.key,
     this.size = AppLoadingSize.medium,
     this.color,
     this.isOverlay = false,
     this.message,
   });
+
+  final AppLoadingSize size;
+  final Color? color;
+  final bool isOverlay;
+  final String? message;
 
   @override
   Widget build(BuildContext context) {
@@ -57,39 +99,20 @@ class AppLoading extends StatelessWidget {
     );
 
     if (isOverlay) {
-      return Container(
-        color: Colors.black.withValues(alpha: 0.5),
-        child: Center(
-          child: Material(
-            color: Colors.transparent,
-            child: content,
+      return PopScope(
+        canPop: false,
+        child: Container(
+          color: Colors.black.withValues(alpha: 0.5),
+          child: Center(
+            child: Material(
+              color: Colors.transparent,
+              child: content,
+            ),
           ),
         ),
       );
     }
 
     return Center(child: content);
-  }
-
-  /// Helper to show as a dialog
-  static Future<void> show(BuildContext context, {String? message}) {
-    return showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => PopScope(
-        canPop: false,
-        child: AppLoading(
-          isOverlay: true,
-          message: message,
-        ),
-      ),
-    );
-  }
-
-  /// Helper to hide the dialog
-  static void hide(BuildContext context) {
-    if (Navigator.of(context).canPop()) {
-      Navigator.of(context).pop();
-    }
   }
 }
