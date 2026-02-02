@@ -1,17 +1,12 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import '../../extensions/l10n_extension.dart';
-import 'user_bloc.dart';
 
 @RoutePage()
 class UserDeleteConfirmationPage extends StatelessWidget {
-  final int userId;
-  final UserBloc userBloc;
 
   const UserDeleteConfirmationPage({
     super.key,
-    required this.userId,
-    required this.userBloc,
   });
 
   @override
@@ -31,15 +26,12 @@ class UserDeleteConfirmationPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             TextButton(
-              onPressed: () => context.router.back(),
+              onPressed: () => context.router.pop(false),
               child: Text(l10n.cancel),
             ),
             ElevatedButton(
               onPressed: () {
-                userBloc.add(
-                  UserEvent.deleteUser(userId),
-                );
-                context.router.back();
+                context.router.pop(true);
               },
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
               child: Text(l10n.delete, style: const TextStyle(color: Colors.white)),

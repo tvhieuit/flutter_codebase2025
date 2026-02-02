@@ -152,12 +152,7 @@ class UserPage extends StatelessWidget implements AutoRouteWrapper {
   }
 
   void _showDeleteConfirmation(BuildContext context, int userId) {
-    context.router.push(
-      UserDeleteConfirmationRoute(
-        userId: userId,
-        userBloc: context.read<UserBloc>(),
-      ),
-    );
+    context.read<UserBloc>().add(UserEvent.deleteUser(userId));
   }
 
   void _showUserDetails(BuildContext context, user) {

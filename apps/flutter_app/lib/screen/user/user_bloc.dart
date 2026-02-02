@@ -1,5 +1,7 @@
 import 'package:app_core/app_core.dart';
 import 'package:app_widget/app_widget.dart';
+import 'package:flutter_app/app/app_router.dart';
+import 'package:flutter_app/app/app_router.gr.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
@@ -8,7 +10,9 @@ import '../../entities/user_model.dart';
 import '../../use_case/user_use_case.dart';
 
 part 'user_event.dart';
+
 part 'user_state.dart';
+
 part 'user_bloc.freezed.dart';
 
 /// BLoC for managing user state and operations
@@ -16,8 +20,9 @@ part 'user_bloc.freezed.dart';
 class UserBloc extends Bloc<UserEvent, UserState> {
   final UserUseCase _useCase;
   final AppToast _toast;
+  final AppRouter _route;
 
-  UserBloc(this._useCase, this._toast) : super(UserState.initial()) {
+  UserBloc(this._useCase, this._toast, this._route) : super(UserState.initial()) {
     on(_onStarted);
     on(_onLoadUsers);
     on(_onLoadUserProfile);
@@ -126,8 +131,11 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
   /// Handle delete user event
   Future<void> _onDeleteUser(_DeleteUser event, emit) async {
+    final result = await _route.push(const UserDeleteConfirmationRoute());
+    if (result == false) {
+      return;
+    }
     emit(state.copyWith(isLoading: true));
-
     try {
       await _useCase.deleteUser(event.userId);
 
@@ -137,6 +145,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
           currentUser: null,
         ),
       );
+      //todo navigate to login again
     } on Failure catch (e) {
       emit(state.copyWith(isLoading: false));
       _toast.error(e.message);

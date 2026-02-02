@@ -114,67 +114,18 @@ class SplashRoute extends _i7.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i3.UserDeleteConfirmationPage]
-class UserDeleteConfirmationRoute
-    extends _i7.PageRouteInfo<UserDeleteConfirmationRouteArgs> {
-  UserDeleteConfirmationRoute({
-    _i8.Key? key,
-    required int userId,
-    required _i9.UserBloc userBloc,
-    List<_i7.PageRouteInfo>? children,
-  }) : super(
-         UserDeleteConfirmationRoute.name,
-         args: UserDeleteConfirmationRouteArgs(
-           key: key,
-           userId: userId,
-           userBloc: userBloc,
-         ),
-         initialChildren: children,
-       );
+class UserDeleteConfirmationRoute extends _i7.PageRouteInfo<void> {
+  const UserDeleteConfirmationRoute({List<_i7.PageRouteInfo>? children})
+    : super(UserDeleteConfirmationRoute.name, initialChildren: children);
 
   static const String name = 'UserDeleteConfirmationRoute';
 
   static _i7.PageInfo page = _i7.PageInfo(
     name,
     builder: (data) {
-      final args = data.argsAs<UserDeleteConfirmationRouteArgs>();
-      return _i3.UserDeleteConfirmationPage(
-        key: args.key,
-        userId: args.userId,
-        userBloc: args.userBloc,
-      );
+      return const _i3.UserDeleteConfirmationPage();
     },
   );
-}
-
-class UserDeleteConfirmationRouteArgs {
-  const UserDeleteConfirmationRouteArgs({
-    this.key,
-    required this.userId,
-    required this.userBloc,
-  });
-
-  final _i8.Key? key;
-
-  final int userId;
-
-  final _i9.UserBloc userBloc;
-
-  @override
-  String toString() {
-    return 'UserDeleteConfirmationRouteArgs{key: $key, userId: $userId, userBloc: $userBloc}';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    if (other is! UserDeleteConfirmationRouteArgs) return false;
-    return key == other.key &&
-        userId == other.userId &&
-        userBloc == other.userBloc;
-  }
-
-  @override
-  int get hashCode => key.hashCode ^ userId.hashCode ^ userBloc.hashCode;
 }
 
 /// generated route for
