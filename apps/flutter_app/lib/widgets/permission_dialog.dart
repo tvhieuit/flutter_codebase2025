@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/app/app_router.gr.dart';
 import 'package:flutter_app/l10n/app_localization.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:app_core/app_core.dart';
 
 import '../di/injection.dart';
 import '../extensions/l10n_extension.dart';
-import '../services/permission_service.dart';
 
 /// Dialog page for permission request
 @RoutePage()

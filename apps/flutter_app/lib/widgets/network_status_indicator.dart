@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:app_core/app_core.dart';
 
 import '../di/injection.dart';
-import '../services/network_service.dart';
 
 /// Widget to show network connection status
 class NetworkStatusIndicator extends StatefulWidget {

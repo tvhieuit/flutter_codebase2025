@@ -13,8 +13,15 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  
+  # Dependency Injection
   get_it: any
   injectable: any
+  
+  # Services
+  connectivity_plus: any
+  permission_handler: any
+  
   # Code Generation
   freezed_annotation: any
 
