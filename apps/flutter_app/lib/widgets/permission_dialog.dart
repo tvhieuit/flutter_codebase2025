@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/app/app_router.gr.dart';
+import 'package:flutter_app/l10n/app_localization.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../di/injection.dart';
@@ -51,7 +52,7 @@ class PermissionDialogPage extends StatelessWidget {
               const SizedBox(width: 8),
               ElevatedButton(
                 onPressed: () => context.router.pop(true),
-                child: Text(isSettingsDialog ? 'Open Settings' : 'Allow'),
+                child: Text(isSettingsDialog ? l10n.openSettings : l10n.allow),
               ),
             ],
           ),
@@ -83,7 +84,7 @@ class PermissionDialog {
       return await _showSettingsDialog(
         context: context,
         title: title,
-        message: settingsMessage ?? 'Permission is permanently denied. Please enable it in app settings.',
+        message: settingsMessage ?? AppLocalizations.of(context).permissionPermanentlyDenied,
       );
     }
 
@@ -127,45 +128,49 @@ class PermissionDialog {
 
   /// Show camera permission dialog
   static Future<bool> showCameraPermission(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return show(
       context: context,
       permission: Permission.camera,
-      title: 'Camera Permission',
-      message: 'This app needs camera access to take photos.',
-      settingsMessage: 'Camera permission is permanently denied. Please enable it in settings to use this feature.',
+      title: l.cameraPermissionTitle,
+      message: l.cameraPermissionMessage,
+      settingsMessage: l.cameraPermissionSettings,
     );
   }
 
   /// Show storage permission dialog
   static Future<bool> showStoragePermission(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return show(
       context: context,
       permission: Permission.storage,
-      title: 'Storage Permission',
-      message: 'This app needs storage access to save files.',
-      settingsMessage: 'Storage permission is permanently denied. Please enable it in settings.',
+      title: l.storagePermissionTitle,
+      message: l.storagePermissionMessage,
+      settingsMessage: l.storagePermissionSettings,
     );
   }
 
   /// Show location permission dialog
   static Future<bool> showLocationPermission(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return show(
       context: context,
       permission: Permission.location,
-      title: 'Location Permission',
-      message: 'This app needs location access to show nearby places.',
-      settingsMessage: 'Location permission is permanently denied. Please enable it in settings.',
+      title: l.locationPermissionTitle,
+      message: l.locationPermissionMessage,
+      settingsMessage: l.locationPermissionSettings,
     );
   }
 
   /// Show notification permission dialog
   static Future<bool> showNotificationPermission(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return show(
       context: context,
       permission: Permission.notification,
-      title: 'Notification Permission',
-      message: 'This app needs notification permission to send you updates.',
-      settingsMessage: 'Notification permission is permanently denied. Please enable it in settings.',
+      title: l.notificationPermissionTitle,
+      message: l.notificationPermissionMessage,
+      settingsMessage: l.notificationPermissionSettings,
     );
   }
 }

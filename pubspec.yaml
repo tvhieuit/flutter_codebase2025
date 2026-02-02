@@ -51,8 +51,6 @@ melos:
         scope:
           - "flutter_app"
           - "feature_auth"
-          - "customer_app"
-          - "driver_app"
 
     analyze:
       run: fvm dart run melos exec --concurrency=1 -- fvm flutter analyze

@@ -193,6 +193,180 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Korean'**
   String get languageKorean;
+
+  /// No description provided for @updateUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Update User'**
+  String get updateUser;
+
+  /// No description provided for @userName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get userName;
+
+  /// No description provided for @userEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get userEmail;
+
+  /// No description provided for @update.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get update;
+
+  /// No description provided for @deleteUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete User'**
+  String get deleteUser;
+
+  /// No description provided for @deleteConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this user?'**
+  String get deleteConfirmation;
+
+  /// No description provided for @userDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'User Details'**
+  String get userDetails;
+
+  /// No description provided for @userPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get userPhone;
+
+  /// No description provided for @userCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Created'**
+  String get userCreated;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @userList.
+  ///
+  /// In en, this message translates to:
+  /// **'User List'**
+  String get userList;
+
+  /// No description provided for @noUsersFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No users found'**
+  String get noUsersFound;
+
+  /// No description provided for @reload.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload'**
+  String get reload;
+
+  /// No description provided for @unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get unknown;
+
+  /// No description provided for @openSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Settings'**
+  String get openSettings;
+
+  /// No description provided for @allow.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow'**
+  String get allow;
+
+  /// No description provided for @permissionPermanentlyDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission is permanently denied. Please enable it in app settings.'**
+  String get permissionPermanentlyDenied;
+
+  /// No description provided for @cameraPermissionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera Permission'**
+  String get cameraPermissionTitle;
+
+  /// No description provided for @cameraPermissionMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This app needs camera access to take photos.'**
+  String get cameraPermissionMessage;
+
+  /// No description provided for @cameraPermissionSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera permission is permanently denied. Please enable it in settings to use this feature.'**
+  String get cameraPermissionSettings;
+
+  /// No description provided for @storagePermissionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Storage Permission'**
+  String get storagePermissionTitle;
+
+  /// No description provided for @storagePermissionMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This app needs storage access to save files.'**
+  String get storagePermissionMessage;
+
+  /// No description provided for @storagePermissionSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Storage permission is permanently denied. Please enable it in settings.'**
+  String get storagePermissionSettings;
+
+  /// No description provided for @locationPermissionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Location Permission'**
+  String get locationPermissionTitle;
+
+  /// No description provided for @locationPermissionMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This app needs location access to show nearby places.'**
+  String get locationPermissionMessage;
+
+  /// No description provided for @locationPermissionSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission is permanently denied. Please enable it in settings.'**
+  String get locationPermissionSettings;
+
+  /// No description provided for @notificationPermissionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification Permission'**
+  String get notificationPermissionTitle;
+
+  /// No description provided for @notificationPermissionMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This app needs notification permission to send you updates.'**
+  String get notificationPermissionMessage;
+
+  /// No description provided for @notificationPermissionSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification permission is permanently denied. Please enable it in settings.'**
+  String get notificationPermissionSettings;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

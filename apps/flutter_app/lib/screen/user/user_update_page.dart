@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import '../../extensions/l10n_extension.dart';
 import 'user_bloc.dart';
 
 @RoutePage()
@@ -33,24 +34,24 @@ class _UserUpdatePageState extends State<UserUpdatePage> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Text(
-          'Update User',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        Text(
+          l10n.updateUser,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
         TextField(
           controller: nameController,
-          decoration: const InputDecoration(
-            labelText: 'Name',
-            border: OutlineInputBorder(),
+          decoration: InputDecoration(
+            labelText: l10n.userName,
+            border: const OutlineInputBorder(),
           ),
         ),
         const SizedBox(height: 12),
         TextField(
           controller: emailController,
-          decoration: const InputDecoration(
-            labelText: 'Email',
-            border: OutlineInputBorder(),
+          decoration: InputDecoration(
+            labelText: l10n.userEmail,
+            border: const OutlineInputBorder(),
           ),
           keyboardType: TextInputType.emailAddress,
         ),
@@ -60,7 +61,7 @@ class _UserUpdatePageState extends State<UserUpdatePage> {
           children: [
             TextButton(
               onPressed: () => context.router.back(),
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
             ),
             ElevatedButton(
               onPressed: () {
@@ -75,7 +76,7 @@ class _UserUpdatePageState extends State<UserUpdatePage> {
 
                 context.router.back();
               },
-              child: const Text('Update'),
+              child: Text(l10n.update),
             ),
           ],
         ),

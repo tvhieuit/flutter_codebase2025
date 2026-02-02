@@ -25,7 +25,7 @@ class UserPage extends StatelessWidget implements AutoRouteWrapper {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('User List'),
+        title: Text(l10n.userList),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
@@ -61,7 +61,7 @@ class UserPage extends StatelessWidget implements AutoRouteWrapper {
                   const Icon(Icons.person_off, size: 64, color: Colors.grey),
                   const SizedBox(height: 16),
                   Text(
-                    'No users found',
+                    l10n.noUsersFound,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: 8),
@@ -71,7 +71,7 @@ class UserPage extends StatelessWidget implements AutoRouteWrapper {
                         const UserEvent.loadUsers(forceRefresh: true),
                       );
                     },
-                    child: const Text('Reload'),
+                    child: Text(l10n.reload),
                   ),
                 ],
               ),
@@ -96,7 +96,7 @@ class UserPage extends StatelessWidget implements AutoRouteWrapper {
                       backgroundImage: user.avatar != null ? NetworkImage(user.avatar!) : null,
                       child: user.avatar == null ? const Icon(Icons.person) : null,
                     ),
-                    title: Text(user.name ?? 'Unknown'),
+                    title: Text(user.name ?? l10n.unknown),
                     subtitle: Text(user.email ?? ''),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
