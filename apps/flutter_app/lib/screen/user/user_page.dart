@@ -1,5 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:feature_app_settings/app_settings.dart';
+import '../../app/app_router.gr.dart';
+import '../../app/settings_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -136,125 +138,42 @@ class UserPage extends StatelessWidget implements AutoRouteWrapper {
   }
 
   Future<void> _openSettings(BuildContext context) async {
-    await AppSettingsSheet.show(
-      context,
-      strings: AppSettingsSheetStrings(
-        title: l10n.settings,
-        themeTitle: l10n.themeModeTitle,
-        themeSystem: l10n.themeModeSystem,
-        themeLight: l10n.themeModeLight,
-        themeDark: l10n.themeModeDark,
-        languageTitle: l10n.languageTitle,
-        languageSystem: l10n.languageSystem,
-        languageEnglish: l10n.languageEnglish,
-        languageKorean: l10n.languageKorean,
+    await context.router.push(
+      AppSettingsRoute(
+        strings: AppSettingsSheetStrings(
+          title: l10n.settings,
+          themeTitle: l10n.themeModeTitle,
+          themeSystem: l10n.themeModeSystem,
+          themeLight: l10n.themeModeLight,
+          themeDark: l10n.themeModeDark,
+          languageTitle: l10n.languageTitle,
+          languageSystem: l10n.languageSystem,
+          languageEnglish: l10n.languageEnglish,
+          languageKorean: l10n.languageKorean,
+        ),
       ),
     );
   }
 
   void _showUpdateDialog(BuildContext context, int userId) {
-    final nameController = TextEditingController();
-    final emailController = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Update User'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: nameController,
-              decoration: const InputDecoration(
-                labelText: 'Name',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: emailController,
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                border: OutlineInputBorder(),
-              ),
-              keyboardType: TextInputType.emailAddress,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(l10n.cancel),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final data = {
-                'name': nameController.text,
-                'email': emailController.text,
-              };
-
-              context.read<UserBloc>().add(
-                UserEvent.updateProfile(userId, data),
-              );
-
-              Navigator.pop(dialogContext);
-            },
-            child: const Text('Update'),
-          ),
-        ],
+    context.router.push(
+      UserUpdateRoute(
+        userId: userId,
+        userBloc: context.read<UserBloc>(),
       ),
     );
   }
 
   void _showDeleteConfirmation(BuildContext context, int userId) {
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Delete User'),
-        content: const Text('Are you sure you want to delete this user?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(l10n.cancel),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              context.read<UserBloc>().add(
-                UserEvent.deleteUser(userId),
-              );
-              Navigator.pop(dialogContext);
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: Text(l10n.delete),
-          ),
-        ],
+    context.router.push(
+      UserDeleteConfirmationRoute(
+        userId: userId,
+        userBloc: context.read<UserBloc>(),
       ),
     );
   }
 
   void _showUserDetails(BuildContext context, user) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(user.name ?? 'User Details'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Email: ${user.email ?? "N/A"}'),
-            const SizedBox(height: 8),
-            Text('Phone: ${user.phone ?? "N/A"}'),
-            const SizedBox(height: 8),
-            Text('Created: ${user.createdAt ?? "N/A"}'),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
-    );
+    context.router.push(UserDetailsRoute(user: user));
   }
 }

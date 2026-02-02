@@ -58,9 +58,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         password: event.password,
       );
       final result = await _authRepository.login(credentials);
-      assert(result.failure != null, result.failure);
+      assert(result.failure == null, result.failure);
       final data = result.data;
-      assert(data == null, 'Data should be null');
+      assert(data != null, 'Data should not be null');
       await _userLocalRepository.saveAccessToken(data!.accessToken);
       emit(state.copyWith(isLoading: false, isSuccess: true, token: data));
       _router.replaceAll([_appRoute.home]);

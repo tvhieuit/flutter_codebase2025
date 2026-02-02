@@ -1,10 +1,10 @@
+import 'package:app_core/app_core.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
-
-import 'app_custom_route.dart';
 import 'app_router.gr.dart';
 import 'auth_routes.dart';
+import 'settings_routes.dart';
 
 @singleton
 @AutoRouterConfig(replaceInRouteName: 'Page,Route')
@@ -24,9 +24,15 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: RegisterRoute.page),
 
     // User screen
-    AutoRoute(
-      page: UserRoute.page,
-    ),
+    AutoRoute(page: UserRoute.page),
+
+    // App Settings (Bottom Sheet)
+    AppBottomSheetRoute(page: AppSettingsRoute.page),
+
+    // User Dialogs
+    AppDialogRoute(page: UserUpdateRoute.page),
+    AppDialogRoute(page: UserDeleteConfirmationRoute.page),
+    AppDialogRoute(page: UserDetailsRoute.page),
 
     // Dialog routes
     AppDialogRoute(

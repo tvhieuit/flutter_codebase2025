@@ -1,9 +1,11 @@
+import 'package:app_core/app_core.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:injectable/injectable.dart';
 
 import '../screen/home/home_page.dart';
 import '../screen/splash/splash_page.dart';
 import 'auth_routes.dart';
+import 'settings_routes.dart';
 
 part 'app_router.gr.dart';
 
@@ -17,5 +19,8 @@ class AppRouter extends RootStackRouter {
     // Auth routes from feature_auth
     AutoRoute(page: LoginRoute.page),
     AutoRoute(page: RegisterRoute.page),
+
+    // App Settings (Bottom Sheet)
+    AppBottomSheetRoute(page: AppSettingsRoute.page),
   ];
 }

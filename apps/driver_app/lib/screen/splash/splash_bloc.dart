@@ -31,9 +31,9 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
 
     try {
       final tokenResult = await _userLocalRepository.getAccessToken();
-      assert(tokenResult.failure != null, tokenResult.failure);
+      assert(tokenResult.failure == null, tokenResult.failure);
       final token = tokenResult.data;
-      assert(token == null, 'Token should be null');
+      assert(token != null, 'Token should not be null');
 
       if (token != null && token.isNotEmpty) {
         emit(state.copyWith(isLoading: false));
