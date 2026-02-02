@@ -2,13 +2,11 @@ import 'package:feature_app_settings/app_settings.dart';
 import 'package:auto_route/auto_route.dart';
 
 /// Route definition for AppSettingsPage from feature_app_settings package
-class AppSettingsRoute extends PageRouteInfo<AppSettingsRouteArgs> {
-  AppSettingsRoute({
-    required AppSettingsSheetStrings strings,
+class AppSettingsRoute extends PageRouteInfo<void> {
+  const AppSettingsRoute({
     List<PageRouteInfo>? children,
   }) : super(
          AppSettingsRoute.name,
-         args: AppSettingsRouteArgs(strings: strings),
          initialChildren: children,
        );
 
@@ -17,14 +15,7 @@ class AppSettingsRoute extends PageRouteInfo<AppSettingsRouteArgs> {
   static PageInfo page = PageInfo(
     name,
     builder: (data) {
-      final args = data.argsAs<AppSettingsRouteArgs>();
-      return AppSettingsPage(strings: args.strings);
+      return const AppSettingsPage();
     },
   );
-}
-
-class AppSettingsRouteArgs {
-  final AppSettingsSheetStrings strings;
-
-  const AppSettingsRouteArgs({required this.strings});
 }

@@ -1,0 +1,12 @@
+{
+  "@@locale": "en",
+  "settingsTitle": "Settings",
+  "themeTitle": "Theme",
+  "themeSystem": "System",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "languageTitle": "Language",
+  "languageSystem": "System",
+  "languageEnglish": "English",
+  "languageKorean": "Korean"
+}

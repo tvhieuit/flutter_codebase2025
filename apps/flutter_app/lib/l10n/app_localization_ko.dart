@@ -30,37 +30,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get error => '오류';
 
   @override
-  String get retry => '다시 시도';
+  String get retry => '재시도';
 
   @override
-  String get settings => '설정';
-
-  @override
-  String get themeModeTitle => '테마';
-
-  @override
-  String get themeModeSystem => '시스템';
-
-  @override
-  String get themeModeLight => '라이트';
-
-  @override
-  String get themeModeDark => '다크';
-
-  @override
-  String get languageTitle => '언어';
-
-  @override
-  String get languageSystem => '시스템';
-
-  @override
-  String get languageEnglish => '영어';
-
-  @override
-  String get languageKorean => '한국어';
-
-  @override
-  String get updateUser => '사용자 업데이트';
+  String get updateUser => '사용자 정보 수정';
 
   @override
   String get userName => '이름';

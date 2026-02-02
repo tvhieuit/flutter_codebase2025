@@ -1,5 +1,4 @@
 import 'package:auto_route/auto_route.dart';
-import 'package:feature_app_settings/app_settings.dart';
 import '../../app/app_router.gr.dart';
 import '../../app/settings_routes.dart';
 import 'package:flutter/material.dart';
@@ -139,19 +138,7 @@ class UserPage extends StatelessWidget implements AutoRouteWrapper {
 
   Future<void> _openSettings(BuildContext context) async {
     await context.router.push(
-      AppSettingsRoute(
-        strings: AppSettingsSheetStrings(
-          title: l10n.settings,
-          themeTitle: l10n.themeModeTitle,
-          themeSystem: l10n.themeModeSystem,
-          themeLight: l10n.themeModeLight,
-          themeDark: l10n.themeModeDark,
-          languageTitle: l10n.languageTitle,
-          languageSystem: l10n.languageSystem,
-          languageEnglish: l10n.languageEnglish,
-          languageKorean: l10n.languageKorean,
-        ),
-      ),
+      const AppSettingsRoute(),
     );
   }
 

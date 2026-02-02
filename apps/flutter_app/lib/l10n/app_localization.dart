@@ -140,60 +140,6 @@ abstract class AppLocalizations {
   /// **'Retry'**
   String get retry;
 
-  /// No description provided for @settings.
-  ///
-  /// In en, this message translates to:
-  /// **'Settings'**
-  String get settings;
-
-  /// No description provided for @themeModeTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Theme'**
-  String get themeModeTitle;
-
-  /// No description provided for @themeModeSystem.
-  ///
-  /// In en, this message translates to:
-  /// **'System'**
-  String get themeModeSystem;
-
-  /// No description provided for @themeModeLight.
-  ///
-  /// In en, this message translates to:
-  /// **'Light'**
-  String get themeModeLight;
-
-  /// No description provided for @themeModeDark.
-  ///
-  /// In en, this message translates to:
-  /// **'Dark'**
-  String get themeModeDark;
-
-  /// No description provided for @languageTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Language'**
-  String get languageTitle;
-
-  /// No description provided for @languageSystem.
-  ///
-  /// In en, this message translates to:
-  /// **'System'**
-  String get languageSystem;
-
-  /// No description provided for @languageEnglish.
-  ///
-  /// In en, this message translates to:
-  /// **'English'**
-  String get languageEnglish;
-
-  /// No description provided for @languageKorean.
-  ///
-  /// In en, this message translates to:
-  /// **'Korean'**
-  String get languageKorean;
-
   /// No description provided for @updateUser.
   ///
   /// In en, this message translates to:

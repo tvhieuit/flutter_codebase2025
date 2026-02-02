@@ -28,6 +28,7 @@ class MyApp extends StatelessWidget {
             localizationsDelegates: const {
               ...AppLocalizations.localizationsDelegates,
               AuthLocalizationsFallback.delegate,
+              AppSettingsLocalizations.delegate,
             },
             supportedLocales: AppLocalizations.supportedLocales,
             theme: ThemeData(

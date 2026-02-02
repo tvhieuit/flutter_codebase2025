@@ -3,40 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../bloc/app_settings_bloc.dart';
-
-/// Strings required to render the common settings UI.
-class AppSettingsSheetStrings {
-  final String title;
-  final String themeTitle;
-  final String themeSystem;
-  final String themeLight;
-  final String themeDark;
-  final String languageTitle;
-  final String languageSystem;
-  final String languageEnglish;
-  final String languageKorean;
-
-  const AppSettingsSheetStrings({
-    required this.title,
-    required this.themeTitle,
-    required this.themeSystem,
-    required this.themeLight,
-    required this.themeDark,
-    required this.languageTitle,
-    required this.languageSystem,
-    required this.languageEnglish,
-    required this.languageKorean,
-  });
-}
+import '../l10n/l10n.dart';
 
 @RoutePage()
 class AppSettingsPage extends StatelessWidget {
-  final AppSettingsSheetStrings strings;
-
-  const AppSettingsPage({super.key, required this.strings});
+  const AppSettingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.settingsL10n;
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -52,12 +27,12 @@ class AppSettingsPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  strings.title,
+                  l10n.settingsTitle,
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  strings.themeTitle,
+                  l10n.themeTitle,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 RadioGroup<ThemeMode>(
@@ -72,22 +47,22 @@ class AppSettingsPage extends StatelessWidget {
                     children: [
                       RadioListTile<ThemeMode>(
                         value: ThemeMode.system,
-                        title: Text(strings.themeSystem),
+                        title: Text(l10n.themeSystem),
                       ),
                       RadioListTile<ThemeMode>(
                         value: ThemeMode.light,
-                        title: Text(strings.themeLight),
+                        title: Text(l10n.themeLight),
                       ),
                       RadioListTile<ThemeMode>(
                         value: ThemeMode.dark,
-                        title: Text(strings.themeDark),
+                        title: Text(l10n.themeDark),
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  strings.languageTitle,
+                  l10n.languageTitle,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 RadioGroup<String?>(
@@ -101,15 +76,15 @@ class AppSettingsPage extends StatelessWidget {
                     children: [
                       RadioListTile<String?>(
                         value: null,
-                        title: Text(strings.languageSystem),
+                        title: Text(l10n.languageSystem),
                       ),
                       RadioListTile<String?>(
                         value: 'en',
-                        title: Text(strings.languageEnglish),
+                        title: Text(l10n.languageEnglish),
                       ),
                       RadioListTile<String?>(
                         value: 'ko',
-                        title: Text(strings.languageKorean),
+                        title: Text(l10n.languageKorean),
                       ),
                     ],
                   ),

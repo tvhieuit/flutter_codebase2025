@@ -23,6 +23,11 @@ dependencies:
   # State management
   flutter_bloc: any
 
+  # Internationalization
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+
   # Dependency injection
   get_it: any
   injectable: any
@@ -43,6 +48,7 @@ dev_dependencies:
   auto_route_generator: any
 
 flutter:
+  generate: true
 
   # To add assets to your package, add an assets section, like this:
   # assets:

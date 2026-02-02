@@ -1,0 +1,12 @@
+{
+  "@@locale": "ko",
+  "settingsTitle": "설정",
+  "themeTitle": "테마",
+  "themeSystem": "시스템 설정",
+  "themeLight": "라이트 모드",
+  "themeDark": "다크 모드",
+  "languageTitle": "언어",
+  "languageSystem": "시스템 설정",
+  "languageEnglish": "영어",
+  "languageKorean": "한국어"
+}
