@@ -9,8 +9,6 @@ environment:
 
 workspace:
   - apps/flutter_app
-  - apps/customer_app
-  - apps/driver_app
   - packages/app_utility
   - packages/app_widget
   - packages/domain
