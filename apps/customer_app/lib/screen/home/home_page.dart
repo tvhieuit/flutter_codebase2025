@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:domain/domain.dart';
+import 'package:feature_app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
@@ -18,6 +19,10 @@ class HomePage extends StatelessWidget {
       appBar: AppBar(
         title: Text(l10n.homeTitle),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () => _openSettings(context),
+          ),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () => _logout(context),
@@ -42,6 +47,25 @@ class HomePage extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Future<void> _openSettings(BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
+
+    await AppSettingsSheet.show(
+      context,
+      strings: AppSettingsSheetStrings(
+        title: l10n.settings,
+        themeTitle: l10n.themeModeTitle,
+        themeSystem: l10n.themeModeSystem,
+        themeLight: l10n.themeModeLight,
+        themeDark: l10n.themeModeDark,
+        languageTitle: l10n.languageTitle,
+        languageSystem: l10n.languageSystem,
+        languageEnglish: l10n.languageEnglish,
+        languageKorean: l10n.languageKorean,
       ),
     );
   }

@@ -1,97 +1,98 @@
 {
-  "@@locale": "en",
-  
-  "appTitle": "Customer App",
+  "@@locale": "ko",
+
+  "appTitle": "고객 앱",
   "@appTitle": {
     "description": "The title of the application"
   },
-  
-  "homeTitle": "Home",
+
+  "homeTitle": "홈",
   "@homeTitle": {
     "description": "Title for home page"
   },
-  
-  "welcomeMessage": "Welcome!",
+
+  "welcomeMessage": "환영합니다!",
   "@welcomeMessage": {
     "description": "Welcome message on home page"
   },
-  
-  "homeDescription": "You are now logged in to the Customer App",
+
+  "homeDescription": "고객 앱에 로그인되었습니다",
   "@homeDescription": {
     "description": "Description on home page"
   },
-  
-  "logout": "Logout",
+
+  "logout": "로그아웃",
   "@logout": {
     "description": "Logout button text"
   },
-  
-  "settings": "Settings",
+
+  "settings": "설정",
   "@settings": {
     "description": "Settings menu item"
   },
-  
-  "profile": "Profile",
+
+  "profile": "프로필",
   "@profile": {
     "description": "Profile menu item"
   },
-  
-  "loading": "Loading...",
+
+  "loading": "로딩 중...",
   "@loading": {
     "description": "Loading indicator text"
   },
-  
-  "error": "Error",
+
+  "error": "오류",
   "@error": {
     "description": "Error title"
   },
-  
-  "retry": "Retry",
+
+  "retry": "다시 시도",
   "@retry": {
     "description": "Retry button text"
   },
-  
-  "cancel": "Cancel",
+
+  "cancel": "취소",
   "@cancel": {
     "description": "Cancel button text"
   },
-  
-  "ok": "OK",
+
+  "ok": "확인",
   "@ok": {
     "description": "OK button text"
   },
 
-  "themeModeTitle": "Theme",
+  "themeModeTitle": "테마",
   "@themeModeTitle": {
     "description": "Title for theme mode section"
   },
-  "themeModeSystem": "System",
+  "themeModeSystem": "시스템",
   "@themeModeSystem": {
     "description": "Theme mode option: follow system"
   },
-  "themeModeLight": "Light",
+  "themeModeLight": "라이트",
   "@themeModeLight": {
     "description": "Theme mode option: light"
   },
-  "themeModeDark": "Dark",
+  "themeModeDark": "다크",
   "@themeModeDark": {
     "description": "Theme mode option: dark"
   },
 
-  "languageTitle": "Language",
+  "languageTitle": "언어",
   "@languageTitle": {
     "description": "Title for language section"
   },
-  "languageSystem": "System",
+  "languageSystem": "시스템",
   "@languageSystem": {
     "description": "Language option: follow system"
   },
-  "languageEnglish": "English",
+  "languageEnglish": "영어",
   "@languageEnglish": {
     "description": "Language option: English"
   },
-  "languageKorean": "Korean",
+  "languageKorean": "한국어",
   "@languageKorean": {
     "description": "Language option: Korean"
   }
 }
+

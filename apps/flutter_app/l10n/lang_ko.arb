@@ -1,0 +1,22 @@
+{
+  "@@locale": "ko",
+  "appName": "플러터 앱",
+  "welcome": "환영합니다",
+  "save": "저장",
+  "cancel": "취소",
+  "delete": "삭제",
+  "loading": "로딩 중...",
+  "error": "오류",
+  "retry": "다시 시도",
+
+  "settings": "설정",
+  "themeModeTitle": "테마",
+  "themeModeSystem": "시스템",
+  "themeModeLight": "라이트",
+  "themeModeDark": "다크",
+  "languageTitle": "언어",
+  "languageSystem": "시스템",
+  "languageEnglish": "영어",
+  "languageKorean": "한국어"
+}
+

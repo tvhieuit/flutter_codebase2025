@@ -7,6 +7,16 @@
   "delete": "Delete",
   "loading": "Loading...",
   "error": "Error",
-  "retry": "Retry"
+  "retry": "Retry",
+
+  "settings": "Settings",
+  "themeModeTitle": "Theme",
+  "themeModeSystem": "System",
+  "themeModeLight": "Light",
+  "themeModeDark": "Dark",
+  "languageTitle": "Language",
+  "languageSystem": "System",
+  "languageEnglish": "English",
+  "languageKorean": "Korean"
 }
 

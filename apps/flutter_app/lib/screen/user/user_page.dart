@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:feature_app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -24,6 +25,10 @@ class UserPage extends StatelessWidget implements AutoRouteWrapper {
       appBar: AppBar(
         title: const Text('User List'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () => _openSettings(context),
+          ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
@@ -126,6 +131,23 @@ class UserPage extends StatelessWidget implements AutoRouteWrapper {
           _showUpdateDialog(context, 1);
         },
         child: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  Future<void> _openSettings(BuildContext context) async {
+    await AppSettingsSheet.show(
+      context,
+      strings: AppSettingsSheetStrings(
+        title: l10n.settings,
+        themeTitle: l10n.themeModeTitle,
+        themeSystem: l10n.themeModeSystem,
+        themeLight: l10n.themeModeLight,
+        themeDark: l10n.themeModeDark,
+        languageTitle: l10n.languageTitle,
+        languageSystem: l10n.languageSystem,
+        languageEnglish: l10n.languageEnglish,
+        languageKorean: l10n.languageKorean,
       ),
     );
   }
