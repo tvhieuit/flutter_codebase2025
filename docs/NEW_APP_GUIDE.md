@@ -192,7 +192,7 @@ class MyApp extends StatelessWidget {
       ),
       localizationsDelegates: const [
         AppLocalizations.delegate,
-        AuthLocalizations.delegate,  // If using feature_auth
+        AuthLocalizationsFallback.delegate, // If using feature_auth (falls back to en)
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,

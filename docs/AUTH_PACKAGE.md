@@ -359,7 +359,7 @@ import 'package:feature_auth/auth.dart';
 MaterialApp.router(
   localizationsDelegates: const [
     AppLocalizations.delegate,
-    AuthLocalizations.delegate,  // Add this
+    AuthLocalizationsFallback.delegate, // Add this (falls back to en)
     GlobalMaterialLocalizations.delegate,
     GlobalWidgetsLocalizations.delegate,
     GlobalCupertinoLocalizations.delegate,
