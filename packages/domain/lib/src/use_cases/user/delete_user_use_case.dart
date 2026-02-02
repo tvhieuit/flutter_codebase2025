@@ -1,6 +1,5 @@
 import 'package:app_core/app_core.dart';
 import '../../repositories/user_repository.dart';
-import 'package:app_core/app_core.dart';
 import '../base_use_case.dart';
 
 /// Use case for deleting a user.

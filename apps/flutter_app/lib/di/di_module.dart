@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:domain/domain.dart';
 import 'package:injectable/injectable.dart';
 
 /// Module for third-party dependencies (app-level only)
@@ -8,7 +9,7 @@ import 'package:injectable/injectable.dart';
 abstract class DiModule {
   /// Dio instance for network calls
   @lazySingleton
-  Dio get dio {
+  Dio dio(AuthInterceptor authInterceptor) {
     final dio = Dio(
       BaseOptions(
         baseUrl: const String.fromEnvironment(
@@ -25,22 +26,10 @@ abstract class DiModule {
     );
 
     // Add interceptors
-    dio.interceptors.add(
-      InterceptorsWrapper(
-        onRequest: (options, handler) {
-          // Add auth token if available
-          // final token = getIt<LocalRepository>().getToken();
-          // if (token != null) {
-          //   options.headers['Authorization'] = 'Bearer $token';
-          // }
-          handler.next(options);
-        },
-        onError: (error, handler) {
-          // Handle errors globally
-          handler.next(error);
-        },
-      ),
-    );
+    dio.interceptors.addAll([
+      authInterceptor,
+      LogInterceptor(responseBody: true, requestBody: true), // Optional but helpful
+    ]);
 
     return dio;
   }

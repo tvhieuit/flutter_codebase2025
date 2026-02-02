@@ -2,9 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:app_core/app_core.dart';
 
 import '../../entities/product_entity.dart';
-import 'package:app_core/app_core.dart';
 import '../../repositories/product_repository.dart';
-import 'package:app_core/app_core.dart';
 import '../base_use_case.dart';
 
 part 'get_products_use_case.freezed.dart';

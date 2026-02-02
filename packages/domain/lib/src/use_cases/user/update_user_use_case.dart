@@ -2,9 +2,7 @@ import 'package:app_core/app_core.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../entities/user_entity.dart';
-import 'package:app_core/app_core.dart';
 import '../../repositories/user_repository.dart';
-import 'package:app_core/app_core.dart';
 import '../base_use_case.dart';
 
 part 'update_user_use_case.freezed.dart';

@@ -1,7 +1,6 @@
 import 'package:app_core/app_core.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:dio/dio.dart';
-import 'package:domain/domain.dart';
 import 'package:feature_auth/auth.dart';
 import 'package:injectable/injectable.dart';
 
@@ -13,7 +12,7 @@ import '../app/auth_routes.dart';
 abstract class AppModule {
   /// Provide Dio instance for networking
   @singleton
-  Dio get dio {
+  Dio dio(AuthInterceptor authInterceptor) {
     final dio = Dio(
       BaseOptions(
         connectTimeout: const Duration(seconds: 30),
@@ -22,10 +21,11 @@ abstract class AppModule {
       ),
     );
 
-    // Add logging interceptor in debug mode
-    dio.interceptors.add(
+    // Add interceptors
+    dio.interceptors.addAll([
+      authInterceptor,
       LogInterceptor(requestBody: true, responseBody: true, error: true),
-    );
+    ]);
 
     return dio;
   }
@@ -182,4 +182,3 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 }
-

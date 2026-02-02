@@ -1,7 +1,6 @@
 import 'package:app_core/app_core.dart';
 import 'package:dio/dio.dart';
 import 'package:domain/domain.dart';
-import 'package:feature_auth/auth.dart';
 import 'package:injectable/injectable.dart';
 
 /// Implementation of AuthRepository using Dio for API calls.

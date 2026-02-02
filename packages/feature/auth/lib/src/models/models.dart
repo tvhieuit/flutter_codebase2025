@@ -1,2 +1,1 @@
-export 'auth_credentials.dart';
-export 'auth_token.dart';
+export 'package:domain/domain.dart';

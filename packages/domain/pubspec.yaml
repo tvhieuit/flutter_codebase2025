@@ -18,6 +18,7 @@ dependencies:
   get_it: any
   injectable: any
   app_core: any
+  dio: any
   
   # Local Storage
   shared_preferences: any
