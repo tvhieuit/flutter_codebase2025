@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'local_storage.dart';
+import '../local/local_storage.dart';
 
 /// Implementation of [LocalStorage] using SharedPreferencesAsync.
 @LazySingleton(as: LocalStorage)
