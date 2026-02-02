@@ -1,8 +1,8 @@
 import 'package:injectable/injectable.dart';
 
 import '../entities/user_model.dart';
-import '../repository/local_repository.dart';
-import '../repository/remote_repository.dart';
+import '../repositories/local_repository.dart';
+import '../repositories/remote_repository.dart';
 
 /// User use case interface for business logic
 abstract class UserUseCase {
@@ -20,10 +20,7 @@ class UserUseCaseImpl implements UserUseCase {
   final RemoteRepository _remoteRepository;
   final LocalRepository _localRepository;
 
-  UserUseCaseImpl(
-    this._remoteRepository,
-    this._localRepository,
-  );
+  UserUseCaseImpl(this._remoteRepository, this._localRepository);
 
   @override
   Future<UserModel> getUserProfile(int userId) async {
@@ -56,7 +53,10 @@ class UserUseCaseImpl implements UserUseCase {
   }
 
   @override
-  Future<UserModel> updateUserProfile(int userId, Map<String, dynamic> data) async {
+  Future<UserModel> updateUserProfile(
+    int userId,
+    Map<String, dynamic> data,
+  ) async {
     // Validate data
     if (data['name']?.toString().isEmpty ?? true) {
       throw Exception('Name is required');

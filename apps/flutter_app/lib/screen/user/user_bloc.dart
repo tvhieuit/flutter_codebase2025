@@ -1,13 +1,11 @@
 import 'package:app_core/app_core.dart';
 import 'package:app_widget/app_widget.dart';
+import 'package:domain/domain.dart';
 import 'package:flutter_app/app/app_router.dart';
 import 'package:flutter_app/app/app_router.gr.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
-
-import '../../entities/user_model.dart';
-import '../../use_case/user_use_case.dart';
 
 part 'user_event.dart';
 

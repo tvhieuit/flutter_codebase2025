@@ -14,5 +14,6 @@ sealed class UserModel with _$UserModel {
     @JsonKey(name: 'created_at') String? createdAt,
   }) = _UserModel;
 
-  factory UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
+  factory UserModel.fromJson(Map<String, dynamic> json) =>
+      _$UserModelFromJson(json);
 }

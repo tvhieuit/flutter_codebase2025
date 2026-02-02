@@ -32,7 +32,10 @@ class RemoteRepositoryImpl implements RemoteRepository {
   }
 
   @override
-  Future<UserModel> updateUserProfile(int userId, Map<String, dynamic> data) async {
+  Future<UserModel> updateUserProfile(
+    int userId,
+    Map<String, dynamic> data,
+  ) async {
     final response = await _dio.put('/users/$userId', data: data);
     return UserModel.fromJson(response.data);
   }
