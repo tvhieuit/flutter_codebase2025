@@ -36,22 +36,15 @@ lib/
 │   ├── app_router.dart           # Auto Route configuration
 │   ├── app_router.gr.dart        # Generated routes
 │   └── auth_routes.dart          # Routes for feature_auth pages
-├── app_mixin/
-│   └── safety_network_mixin.dart # Safe network call wrapper
 ├── di/
-│   ├── di_module.dart            # DI modules (Dio, etc.)
 │   └── injection.dart            # GetIt configuration
-├── entities/
-│   └── user_model.dart           # App-specific models
 ├── extensions/
 │   └── l10n_extension.dart       # Localization extension
 ├── l10n/                         # Generated localization
 ├── navigation/
 │   └── auth_navigation_impl.dart # AuthNavigation implementation
 ├── repository/
-│   ├── auth_repository_impl.dart # AuthRepository implementation
-│   ├── remote_repository.dart    # Remote data access
-│   └── local_repository.dart     # Local data access
+│   └── auth_repository_impl.dart # AuthRepository implementation
 ├── screen/
 │   ├── splash/
 │   │   ├── splash_bloc.dart
@@ -63,11 +56,17 @@ lib/
 │       ├── user_event.dart
 │       ├── user_state.dart
 │       └── user_page.dart
-├── services/
-│   ├── network_service.dart
-│   └── permission_service.dart
-├── use_case/
-│   └── user_use_case.dart
+├── screen/
+│   ├── splash/
+│   │   ├── splash_bloc.dart
+│   │   ├── splash_event.dart
+│   │   ├── splash_state.dart
+│   │   └── splash_page.dart
+│   └── user/
+│       ├── user_bloc.dart
+│       ├── user_event.dart
+│       ├── user_state.dart
+│       └── user_page.dart
 ├── widgets/
 │   ├── app_loading.dart
 │   ├── app_loading_button.dart
