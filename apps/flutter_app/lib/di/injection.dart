@@ -1,6 +1,5 @@
 import 'package:app_core/app_core.dart';
 import 'package:app_widget/app_widget.dart';
-import 'package:domain/domain.dart';
 import 'package:feature_auth/auth.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';

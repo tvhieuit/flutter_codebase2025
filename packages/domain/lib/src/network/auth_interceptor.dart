@@ -7,9 +7,8 @@ import '../repositories/repositories.dart';
 @injectable
 class AuthInterceptor extends Interceptor {
   final AuthRepository _authRepository;
-  final LocalStorage _localStorage;
 
-  AuthInterceptor(this._authRepository, this._localStorage);
+  AuthInterceptor(this._authRepository);
 
   @override
   Future<void> onRequest(
