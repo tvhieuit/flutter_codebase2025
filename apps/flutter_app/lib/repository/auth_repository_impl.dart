@@ -9,7 +9,7 @@ class AuthRepositoryImpl implements AuthRepository {
   final Dio _dio;
   final LocalStorage _localStorage;
 
-  AuthRepositoryImpl(this._dio, this._localStorage);
+  AuthRepositoryImpl(@Named('auth_dio') this._dio, this._localStorage);
 
   static const String _tokenKey = 'auth_token';
   static const String _refreshTokenKey = 'refresh_token';

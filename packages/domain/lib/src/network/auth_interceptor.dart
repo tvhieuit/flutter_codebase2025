@@ -4,6 +4,7 @@ import 'package:injectable/injectable.dart';
 import '../repositories/repositories.dart';
 
 /// Interceptor to handle authentication headers and automated token refresh.
+@Named('auth_interceptor')
 @injectable
 class AuthInterceptor extends Interceptor {
   final AuthRepository _authRepository;

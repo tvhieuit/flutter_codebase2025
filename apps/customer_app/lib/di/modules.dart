@@ -12,7 +12,7 @@ import '../app/auth_routes.dart';
 abstract class AppModule {
   /// Provide Dio instance for networking
   @singleton
-  Dio dio(AuthInterceptor authInterceptor) {
+  Dio dio(@Named('auth_interceptor') Interceptor authInterceptor) {
     final dio = Dio(
       BaseOptions(
         connectTimeout: const Duration(seconds: 30),
@@ -28,6 +28,19 @@ abstract class AppModule {
     ]);
 
     return dio;
+  }
+
+  /// Dio instance for auth
+  @Named('auth_dio')
+  @singleton
+  Dio authDio() {
+    return Dio(
+      BaseOptions(
+        connectTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 30),
+        sendTimeout: const Duration(seconds: 30),
+      ),
+    );
   }
 }
 
