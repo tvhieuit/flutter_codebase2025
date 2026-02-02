@@ -27,6 +27,5 @@ dev_dependencies:
   flutter_lints: any
   build_runner: any
   injectable_generator: any
-  freezed_annotation_generator: any
+  freezed: any
   auto_route_generator: any
-  bloc_generator:
