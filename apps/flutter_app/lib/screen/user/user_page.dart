@@ -92,31 +92,31 @@ class UserPage extends StatelessWidget implements AutoRouteWrapper {
                   margin: const EdgeInsets.only(bottom: 12),
                   child: ListTile(
                     leading: CircleAvatar(
-                      backgroundImage: user.avatar != null ? NetworkImage(user.avatar!) : null,
-                      child: user.avatar == null ? const Icon(Icons.person) : null,
+                      backgroundImage: user.avatarUrl != null ? NetworkImage(user.avatarUrl!) : null,
+                      child: user.avatarUrl == null ? const Icon(Icons.person) : null,
                     ),
-                    title: Text(user.name ?? l10n.unknown),
-                    subtitle: Text(user.email ?? ''),
+                    title: Text(user.name),
+                    subtitle: Text(user.email),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
                           icon: const Icon(Icons.edit),
                           onPressed: () {
-                            _showUpdateDialog(context, user.id!);
+                            _showUpdateDialog(context, user.id);
                           },
                         ),
                         IconButton(
                           icon: const Icon(Icons.delete, color: Colors.red),
                           onPressed: () {
-                            _showDeleteConfirmation(context, user.id!);
+                            _showDeleteConfirmation(context, user.id);
                           },
                         ),
                       ],
                     ),
                     onTap: () {
                       context.read<UserBloc>().add(
-                        UserEvent.loadUserProfile(user.id!),
+                        UserEvent.loadUserProfile(user.id),
                       );
                       _showUserDetails(context, user);
                     },
