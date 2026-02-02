@@ -1,4 +1,5 @@
 export 'auth_localizations.dart';
+export 'auth_localizations_fallback.dart';
 
 import 'package:flutter/widgets.dart';
 
