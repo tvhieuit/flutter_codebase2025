@@ -6,26 +6,26 @@ This document describes the complete structure of the Flutter monorepo workspace
 
 ```
 flutter_codebase2025/
-├── apps/                         # Additional Flutter apps
-│   └── customer_app/             # Customer-facing app
+├── apps/                         # Flutter applications
+│   └── flutter_app/              # Main multi-feature development app
 ├── packages/                     # Shared packages
 │   ├── domain/                   # Core business logic
 │   ├── feature/                  # Feature packages
-│   │   └── auth/                 # Authentication feature
+│   │   ├── auth/                 # Authentication feature
+│   │   └── app_settings/         # Application settings (Theme, Language)
+│   ├── app_core/                 # Core shared configuration
 │   ├── app_utility/              # Shared utilities
 │   └── app_widget/               # Shared UI widgets
-├── lib/                          # Main/root app (flutter_app)
 ├── configs/                      # Environment configurations
 ├── docs/                         # Documentation
 ├── rules/                        # Architecture rules
 ├── scripts/                      # Setup scripts
-├── l10n/                         # Root app localization files
 └── pubspec.yaml                  # Workspace + Melos config
 ```
 
 ## Detailed Structure
 
-### Root App (`lib/`)
+### Root App (`apps/flutter_app/lib/`)
 
 The main Flutter application:
 
@@ -193,6 +193,21 @@ packages/feature/auth/
 ├── pubspec.yaml
 ├── l10n.yaml
 └── build.yaml
+```
+
+**app_settings** - Theme and Language settings:
+```
+packages/feature/app_settings/
+├── lib/
+│   ├── app_settings.dart         # Main export
+│   └── src/
+│       ├── bloc/                 # AppSettingsBloc
+│       ├── sheet/                # AppSettingsPage
+│       ├── l10n/                 # Package-level l10n
+│       └── di/                   # Injection configuration
+├── l10n/                         # ARB files
+├── pubspec.yaml
+└── l10n.yaml
 ```
 
 #### Utility Packages

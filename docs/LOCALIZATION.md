@@ -441,6 +441,58 @@ Widget build(BuildContext context) {
 }
 ```
 
+## Multi-package Localization
+
+In a modular monorepo, each feature package can have its own localization. This keeps features independent and allows them to be shared across apps with their own translations.
+
+### 1. Package Configuration
+Each package should have its own `l10n.yaml` and `arb-dir`.
+
+**`packages/feature/auth/l10n.yaml`**:
+```yaml
+arb-dir: l10n
+template-arb-file: auth_en.arb
+output-localization-file: auth_localizations.dart
+output-class: AuthLocalizations
+output-dir: lib/src/l10n
+```
+
+### 2. Context Extension Helper
+To make it easy to access localizations for a specific package, provide an extension on `BuildContext`.
+
+**`packages/feature/auth/lib/src/l10n/l10n.dart`**:
+```dart
+export 'auth_localizations.dart';
+
+extension AuthLocalizationsX on BuildContext {
+  AuthLocalizations get authL10n => AuthLocalizations.of(this);
+}
+```
+
+### 3. Usage in Feature
+```dart
+import '../l10n/l10n.dart';
+
+Widget build(BuildContext context) {
+  final l10n = context.authL10n; // ✅ Get package-specific strings
+  return Text(l10n.loginTitle);
+}
+```
+
+### 4. Integration in App
+The main app must include the feature package's delegate in its `MaterialApp`.
+
+```dart
+MaterialApp.router(
+  localizationsDelegates: const [
+    AppLocalizations.delegate,
+    AuthLocalizations.delegate, // ✅ Add feature delegate
+    AppSettingsLocalizations.delegate,
+  ],
+  // ...
+)
+```
+
 ## Troubleshooting
 
 ### Issue: Strings not updating

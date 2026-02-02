@@ -255,6 +255,75 @@ AutoRoute(
 - `TransitionsBuilders.fadeIn`
 - `TransitionsBuilders.zoomIn`
 
+## Dialogs and Bottom Sheets as Routes
+
+Instead of using `showDialog` or `showModalBottomSheet` directly, this project uses `auto_route` to manage dialogs and bottom sheets as separate routes. This allows for deep linking, consistent navigation state, and cleaner UI code.
+
+### 1. Dialog Route (Modal)
+
+To create a dialog-like route that overlays the current screen:
+
+```dart
+// app_router.dart
+CustomRoute(
+  page: UserUpdateRoute.page,
+  transitionsBuilder: TransitionsBuilders.fadeIn,
+  durationInMilliseconds: 200,
+  opaque: false, // CRITICAL: allows seeing the previous page underneath
+  barrierDismissible: true,
+),
+```
+
+The page widget should usually wrap its content in a `Dialog`:
+
+```dart
+@RoutePage()
+class UserUpdatePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(/* ... */),
+      ),
+    );
+  }
+}
+```
+
+### 2. Bottom Sheet Route
+
+Similar to dialogs, bottom sheets can be defined as custom routes:
+
+```dart
+// app_router.dart
+CustomRoute(
+  page: AppSettingsRoute.page,
+  transitionsBuilder: TransitionsBuilders.slideBottom,
+  durationInMilliseconds: 300,
+  opaque: false,
+  barrierDismissible: true,
+),
+```
+
+The widget should use `Align` to position it at the bottom:
+
+```dart
+@RoutePage()
+class AppSettingsPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Material(
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+        child: Column(/* ... */),
+      ),
+    );
+  }
+}
+```
+
 ## Best Practices
 
 ### ✅ DO
@@ -393,5 +462,5 @@ class MyApp extends StatelessWidget {
 
 - [Auto Route Documentation](https://pub.dev/packages/auto_route)
 - [Screen Template](./SCREEN_TEMPLATE.md)
-- [Clean Architecture Rules](../rules/clean_architecture.md)
+- [Clean Architecture Rules](../docs/clean_architecture.md)
 
