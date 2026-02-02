@@ -14,7 +14,7 @@ class DriverApp extends StatelessWidget {
     final AppRouter appRouter = GetIt.instance();
     return MaterialApp.router(
       title: 'Driver App',
-      scaffoldMessengerKey:  GetIt.instance(),
+      scaffoldMessengerKey: GetIt.instance(),
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(

@@ -2,8 +2,6 @@ import 'package:app_core/app_core.dart';
 import 'package:domain/domain.dart';
 import 'package:injectable/injectable.dart';
 
-import '../repository/auth_repository.dart';
-
 /// Use case for checking authentication status.
 ///
 /// Checks if user has valid token stored locally.

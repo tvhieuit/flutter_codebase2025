@@ -48,7 +48,6 @@ sealed class Result<T> with _$Result<T> {
     failure: (failure) => failure,
   );
 
-
   /// Alias for [data] - Gets the data if success, otherwise returns null
   T? get dataOrNull => data;
 

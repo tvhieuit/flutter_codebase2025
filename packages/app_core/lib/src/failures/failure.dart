@@ -75,8 +75,7 @@ sealed class Failure with _$Failure {
   );
 
   /// Factory for connection timeout
-  factory Failure.timeout() =>
-      const Failure.network(message: 'Connection timed out', code: 'TIMEOUT');
+  factory Failure.timeout() => const Failure.network(message: 'Connection timed out', code: 'TIMEOUT');
 
   /// Factory for invalid credentials
   factory Failure.invalidCredentials() => const Failure.auth(

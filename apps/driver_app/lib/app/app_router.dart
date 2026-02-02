@@ -11,8 +11,7 @@ part 'app_router.gr.dart';
 @lazySingleton
 @AutoRouterConfig()
 class AppRouter extends RootStackRouter {
-
-  AppRouter(GlobalKey<NavigatorState> key): super(navigatorKey: key);
+  AppRouter(GlobalKey<NavigatorState> key) : super(navigatorKey: key);
 
   @override
   List<AutoRoute> get routes => [

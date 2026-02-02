@@ -25,11 +25,7 @@ class SplashPage extends StatelessWidget implements AutoRouteWrapper {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.local_shipping_outlined,
-              size: 100,
-              color: Colors.white,
-            ),
+            Icon(Icons.local_shipping_outlined, size: 100, color: Colors.white),
             SizedBox(height: 24),
             Text(
               'Driver App',

@@ -22,8 +22,7 @@ class SplashPage extends StatelessWidget implements AutoRouteWrapper {
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocBuilder<SplashBloc, SplashState>(
-        buildWhen: (previous, current) =>
-            previous.isLoading != current.isLoading,
+        buildWhen: (previous, current) => previous.isLoading != current.isLoading,
         builder: (context, state) {
           return Container(
             decoration: BoxDecoration(

@@ -65,7 +65,11 @@ class _RegisterViewState extends State<_RegisterView> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // Logo or Title
-                const Icon(Icons.person_add_outlined, size: 80, color: Colors.blue),
+                const Icon(
+                  Icons.person_add_outlined,
+                  size: 80,
+                  color: Colors.blue,
+                ),
                 const SizedBox(height: 32),
 
                 // Name field
@@ -262,7 +266,9 @@ class _RegisterViewState extends State<_RegisterView> {
             hintText: l10n.confirmPasswordHint,
             prefixIcon: const Icon(Icons.lock_outline),
             border: const OutlineInputBorder(),
-            errorText: state.fieldError == 'confirmPassword' ? state.error : null,
+            errorText: state.fieldError == 'confirmPassword'
+                ? state.error
+                : null,
             suffixIcon: IconButton(
               icon: Icon(
                 state.obscureConfirmPassword
@@ -292,11 +298,15 @@ class _RegisterViewState extends State<_RegisterView> {
   }
 
   void _obscurePasswordToggle() {
-    context.read<RegisterBloc>().add(const RegisterEvent.obscurePasswordToggle());
+    context.read<RegisterBloc>().add(
+      const RegisterEvent.obscurePasswordToggle(),
+    );
   }
 
   void _obscureConfirmPasswordToggle() {
-    context.read<RegisterBloc>().add(const RegisterEvent.obscureConfirmPasswordToggle());
+    context.read<RegisterBloc>().add(
+      const RegisterEvent.obscureConfirmPasswordToggle(),
+    );
   }
 
   void _register() {

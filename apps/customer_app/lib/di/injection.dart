@@ -11,7 +11,6 @@ final getIt = GetIt.instance;
 
 @InjectableInit()
 Future<void> configureDependencies() async {
-
   core.initCorePackage(getIt: getIt);
 
   // Configure widget package DI

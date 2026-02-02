@@ -6,10 +6,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:app_widget/app_widget.dart';
 
-import '../../models/auth_credentials.dart';
-import '../../models/auth_token.dart';
 import '../../navigation/auth_navigation.dart';
-import '../../repository/auth_repository.dart';
 
 part 'login_bloc.freezed.dart';
 

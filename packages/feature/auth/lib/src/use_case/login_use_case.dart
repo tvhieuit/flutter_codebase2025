@@ -2,10 +2,6 @@ import 'package:app_core/app_core.dart';
 import 'package:domain/domain.dart';
 import 'package:injectable/injectable.dart';
 
-import '../models/auth_credentials.dart';
-import '../models/auth_token.dart';
-import '../repository/auth_repository.dart';
-
 /// Use case for user login.
 ///
 /// Validates credentials and performs login via repository.

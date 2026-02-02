@@ -6,11 +6,10 @@ import 'app_custom_route.dart';
 import 'app_router.gr.dart';
 import 'auth_routes.dart';
 
-
 @singleton
 @AutoRouterConfig(replaceInRouteName: 'Page,Route')
 class AppRouter extends RootStackRouter {
-  AppRouter(GlobalKey<NavigatorState> key): super(navigatorKey: key);
+  AppRouter(GlobalKey<NavigatorState> key) : super(navigatorKey: key);
 
   @override
   List<AutoRoute> get routes => [

@@ -15,7 +15,6 @@ final getIt = GetIt.instance;
   asExtension: true,
 )
 void configureDependencies() {
-
   initCorePackage();
 
   // Initialize widget package dependencies
