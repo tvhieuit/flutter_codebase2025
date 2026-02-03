@@ -2,6 +2,8 @@ import 'package:app_core/app_core.dart';
 import 'package:domain/domain.dart';
 import 'package:injectable/injectable.dart';
 
+import 'auth_input_validators.dart';
+
 /// Use case for user login.
 ///
 /// Validates credentials and performs login via repository.
@@ -15,7 +17,7 @@ class LoginUseCase implements UseCaseWithParams<AuthToken, LoginCredentials> {
   @override
   Future<Result<AuthToken>> call(LoginCredentials credentials) async {
     // Validate email
-    final emailError = _validateEmail(credentials.email);
+    final emailError = AuthInputValidators.validateEmail(credentials.email);
     if (emailError != null) return Result.failure(emailError);
 
     // Validate password
@@ -33,21 +35,6 @@ class LoginUseCase implements UseCaseWithParams<AuthToken, LoginCredentials> {
     );
 
     return result;
-  }
-
-  Failure? _validateEmail(String email) {
-    final trimmed = email.trim();
-
-    if (trimmed.isEmpty) {
-      return Failure.required('Email');
-    }
-
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-    if (!emailRegex.hasMatch(trimmed.toLowerCase())) {
-      return Failure.invalidEmail();
-    }
-
-    return null;
   }
 
   Failure? _validatePassword(String password) {

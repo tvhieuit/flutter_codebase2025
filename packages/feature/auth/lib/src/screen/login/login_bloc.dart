@@ -7,6 +7,7 @@ import 'package:injectable/injectable.dart';
 import 'package:app_widget/app_widget.dart';
 
 import '../../navigation/auth_navigation.dart';
+import '../../use_case/use_cases.dart';
 
 part 'login_bloc.freezed.dart';
 
@@ -17,15 +18,13 @@ part 'login_state.dart';
 /// BLoC for managing login screen state
 @injectable
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
-  final AuthRepository _authRepository;
-  final UserLocalRepository _userLocalRepository;
+  final LoginUseCase _loginUseCase;
   final StackRouter _router;
   final AppRoute _appRoute;
   final AppToast _toast;
 
   LoginBloc(
-    this._authRepository,
-    this._userLocalRepository,
+    this._loginUseCase,
     this._router,
     this._appRoute,
     this._toast,
@@ -38,35 +37,30 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
   /// Handles login event
   Future<void> _onLogin(LoginEventSubmit event, emit) async {
-    if (event.email.isEmpty) {
-      emit(state.copyWith(error: 'Email is required', fieldError: 'email'));
-      return;
-    }
-
-    if (event.password.isEmpty) {
-      emit(
-        state.copyWith(error: 'Password is required', fieldError: 'password'),
-      );
-      return;
-    }
-
     emit(state.copyWith(isLoading: true, error: null, fieldError: null));
-
     try {
       final credentials = LoginCredentials(
         email: event.email,
         password: event.password,
       );
-      final result = await _authRepository.login(credentials);
-      assert(result.failure == null, result.failure);
-      final data = result.data;
-      assert(data != null, 'Data should not be null');
-      await _userLocalRepository.saveAccessToken(data!.accessToken);
-      emit(state.copyWith(isLoading: false, isSuccess: true, token: data));
+      final result = await _loginUseCase(credentials);
+      assert(result.isFailure, result.failureOrNull);
+      final token = result.dataOrThrow;
+      emit(
+        state.copyWith(
+          isLoading: false,
+          isSuccess: true,
+          token: token,
+          error: null,
+          fieldError: null,
+        ),
+      );
       _router.replaceAll([_appRoute.home]);
     } on Failure catch (e) {
+      emit(state.copyWith(isLoading: false, error: e.message));
       _toast.show(e.message, type: AppToastType.error);
     } catch (e) {
+      emit(state.copyWith(isLoading: false, error: 'An unexpected error occurred'));
       _toast.show('An unexpected error occurred', type: AppToastType.error);
     }
   }

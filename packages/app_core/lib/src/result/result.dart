@@ -57,7 +57,7 @@ sealed class Result<T> with _$Result<T> {
   /// Gets the data if success, otherwise throws the failure
   T get dataOrThrow => when(
     success: (data) => data,
-    failure: (failure) => throw Exception(failure.message),
+    failure: (failure) => throw failure.message,
   );
 
   /// Maps the success value to a new type

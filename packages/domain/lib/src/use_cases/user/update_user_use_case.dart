@@ -4,6 +4,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import '../../entities/user_entity.dart';
 import '../../repositories/user_repository.dart';
 import '../base_use_case.dart';
+import 'user_input_validators.dart';
 
 part 'update_user_use_case.freezed.dart';
 
@@ -48,14 +49,20 @@ class UpdateUserUseCase
 
     // Validate name if provided
     if (params.name != null) {
-      final nameValidation = _validateName(params.name!);
+      final nameValidation = UserInputValidators.validateName(params.name!);
       if (nameValidation != null) return Result.failure(nameValidation);
     }
 
     // Validate email if provided
     if (params.email != null) {
-      final emailValidation = _validateEmail(params.email!);
+      final emailValidation = UserInputValidators.validateEmail(params.email!);
       if (emailValidation != null) return Result.failure(emailValidation);
+    }
+
+    // Validate phone if provided
+    if (params.phone != null) {
+      final phoneValidation = UserInputValidators.validatePhone(params.phone!);
+      if (phoneValidation != null) return Result.failure(phoneValidation);
     }
 
     final result = await _repository.updateUser(
@@ -65,46 +72,5 @@ class UpdateUserUseCase
       phone: params.phone?.trim(),
     );
     return result;
-  }
-
-  Failure? _validateName(String name) {
-    final trimmedName = name.trim();
-
-    if (trimmedName.isEmpty) {
-      return Failure.required('Name');
-    }
-
-    if (trimmedName.length < 2) {
-      return const Failure.validation(
-        message: 'Name must be at least 2 characters',
-        code: 'NAME_TOO_SHORT',
-        field: 'name',
-      );
-    }
-
-    if (trimmedName.length > 100) {
-      return const Failure.validation(
-        message: 'Name must be at most 100 characters',
-        code: 'NAME_TOO_LONG',
-        field: 'name',
-      );
-    }
-
-    return null;
-  }
-
-  Failure? _validateEmail(String email) {
-    final trimmedEmail = email.trim().toLowerCase();
-
-    if (trimmedEmail.isEmpty) {
-      return Failure.required('Email');
-    }
-
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-    if (!emailRegex.hasMatch(trimmedEmail)) {
-      return Failure.invalidEmail();
-    }
-
-    return null;
   }
 }

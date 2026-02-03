@@ -2,6 +2,8 @@ import 'package:app_core/app_core.dart';
 import 'package:domain/domain.dart';
 import 'package:injectable/injectable.dart';
 
+import 'auth_input_validators.dart';
+
 /// Use case for user registration.
 ///
 /// Validates all fields and performs registration via repository.
@@ -20,7 +22,7 @@ class RegisterUseCase
     if (nameError != null) return Result.failure(nameError);
 
     // Validate email
-    final emailError = _validateEmail(credentials.email);
+    final emailError = AuthInputValidators.validateEmail(credentials.email);
     if (emailError != null) return Result.failure(emailError);
 
     // Validate password
@@ -78,21 +80,6 @@ class RegisterUseCase
         code: 'NAME_TOO_LONG',
         field: 'name',
       );
-    }
-
-    return null;
-  }
-
-  Failure? _validateEmail(String email) {
-    final trimmed = email.trim();
-
-    if (trimmed.isEmpty) {
-      return Failure.required('Email');
-    }
-
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-    if (!emailRegex.hasMatch(trimmed.toLowerCase())) {
-      return Failure.invalidEmail();
     }
 
     return null;

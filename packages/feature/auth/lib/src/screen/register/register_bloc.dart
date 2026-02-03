@@ -7,6 +7,7 @@ import 'package:injectable/injectable.dart';
 import 'package:app_widget/app_widget.dart';
 
 import '../../navigation/auth_navigation.dart';
+import '../../use_case/use_cases.dart';
 
 part 'register_bloc.freezed.dart';
 
@@ -17,15 +18,13 @@ part 'register_state.dart';
 /// BLoC for managing register screen state
 @injectable
 class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
-  final AuthRepository _authRepository;
-  final UserLocalRepository _userLocalRepository;
+  final RegisterUseCase _registerUseCase;
   final StackRouter _router;
   final AppRoute _appRoute;
   final AppToast _toast;
 
   RegisterBloc(
-    this._authRepository,
-    this._userLocalRepository,
+    this._registerUseCase,
     this._router,
     this._appRoute,
     this._toast,
@@ -38,33 +37,6 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
 
   /// Handles register event
   Future<void> _onRegister(RegisterEventSubmit event, emit) async {
-    if (event.name.isEmpty) {
-      emit(state.copyWith(error: 'Name is required', fieldError: 'name'));
-      return;
-    }
-
-    if (event.email.isEmpty) {
-      emit(state.copyWith(error: 'Email is required', fieldError: 'email'));
-      return;
-    }
-
-    if (event.password.isEmpty) {
-      emit(
-        state.copyWith(error: 'Password is required', fieldError: 'password'),
-      );
-      return;
-    }
-
-    if (event.password != event.confirmPassword) {
-      emit(
-        state.copyWith(
-          error: 'Passwords do not match',
-          fieldError: 'confirmPassword',
-        ),
-      );
-      return;
-    }
-
     emit(state.copyWith(isLoading: true, error: null, fieldError: null));
 
     try {
@@ -76,16 +48,24 @@ class RegisterBloc extends Bloc<RegisterEvent, RegisterState> {
         phone: event.phone,
       );
 
-      final result = await _authRepository.register(credentials);
-      assert(result.failure != null, result.failure);
-      final data = result.data;
-      assert(data == null, 'Data should be null');
-      await _userLocalRepository.saveAccessToken(data!.accessToken);
-      emit(state.copyWith(isLoading: false, isSuccess: true, token: data));
+      final result = await _registerUseCase(credentials);
+      assert(result.isFailure, result.failureOrNull);
+      final token = result.dataOrThrow;
+      emit(
+        state.copyWith(
+          isLoading: false,
+          isSuccess: true,
+          token: token,
+          error: null,
+          fieldError: null,
+        ),
+      );
       _router.replaceAll([_appRoute.home]);
     } on Failure catch (e) {
+      emit(state.copyWith(isLoading: false, error: e.message));
       _toast.show(e.message, type: AppToastType.error);
     } catch (e) {
+      emit(state.copyWith(isLoading: false, error: 'An unexpected error occurred'));
       _toast.show('An unexpected error occurred', type: AppToastType.error);
     }
   }
