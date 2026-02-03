@@ -26,6 +26,8 @@ linter:
     use_build_context_synchronously: false
 
 analyzer:
+  enable-experiment:
+    - dot-shorthands
   exclude:
     - "**/*.g.dart"
     - "build/**"

@@ -77,29 +77,21 @@ lib/
 
 ### Apps Directory (`apps/`)
 
-Additional Flutter applications that share packages:
+The Flutter application that shares packages:
 
 ```
 apps/
-└── customer_app/
+└── flutter_app/
     ├── lib/
-    │   ├── app/
-    │   │   ├── app.dart          # MaterialApp
-    │   │   ├── app_router.dart   # Routing
-    │   │   └── auth_routes.dart  # Auth feature routes
-    │   ├── di/
-    │   │   ├── injection.dart    # DI setup
-    │   │   └── modules.dart      # Implementations
-    │   ├── l10n/                 # Generated l10n
-    │   ├── screen/
-    │   │   ├── splash/
-    │   │   └── home/
+    │   ├── app/                  # App, router, routes
+    │   ├── di/                   # GetIt configuration
+    │   ├── l10n/                 # Generated localization
+    │   ├── screen/               # Splash, user, etc.
+    │   ├── navigation/
+    │   ├── extensions/
     │   └── main.dart
     ├── l10n/
-    │   └── app_en.arb
-    ├── assets/
-    │   ├── icon/
-    │   └── image/
+    ├── configs/                  # dev, stg, beta
     ├── pubspec.yaml
     ├── l10n.yaml
     ├── build.yaml
@@ -273,11 +265,13 @@ The workspace is defined in `pubspec.yaml`:
 
 ```yaml
 workspace:
-  - apps/customer_app
+  - apps/flutter_app
   - packages/app_utility
   - packages/app_widget
   - packages/domain
   - packages/feature/auth
+  - packages/feature/app_settings
+  - packages/app_core
 ```
 
 ## Layer Architecture
@@ -307,16 +301,16 @@ workspace:
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                          Apps                                │
-│  ┌─────────────┐  ┌─────────────┐                           │
-│  │ flutter_app │  │ customer_app│                           │
-│  └──────┬──────┘  └──────┬──────┘                           │
-└─────────┼────────────────┼──────────────────────────────────┘
-          │                │
-          ▼                ▼
+│  ┌─────────────┐                                            │
+│  │ flutter_app │                                            │
+│  └──────┬──────┘                                            │
+└─────────┼──────────────────────────────────────────────────┘
+          │
+          ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                    Feature Packages                          │
 │  ┌─────────────┐                                            │
-│  │ feature_auth│                                            │
+│  │ feature_auth│  (feature_app_settings)                    │
 │  └──────┬──────┘                                            │
 └─────────┼───────────────────────────────────────────────────┘
           │

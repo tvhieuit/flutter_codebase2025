@@ -46,16 +46,16 @@ fvm dart run melos run brd
 fvm dart run melos run l10n
 ```
 Generates localizations for:
-- `flutter_app` (root app)
+- `flutter_app`
 - `feature_auth`
-- `customer_app`
+- `feature_app_settings`
 
 ### Single Package Code Generation
 
 To run build_runner on a specific package:
 ```bash
 cd packages/feature/auth && fvm dart run build_runner build -d
-cd apps/customer_app && fvm dart run build_runner build -d
+cd apps/flutter_app && fvm dart run build_runner build -d
 ```
 
 ## Code Quality
@@ -80,7 +80,7 @@ fvm dart run melos run fix
 ```bash
 fvm dart analyze lib/
 fvm dart analyze packages/domain/lib/
-fvm dart analyze apps/customer_app/lib/
+fvm dart analyze apps/flutter_app/lib/
 ```
 
 ## Running Applications
@@ -95,12 +95,6 @@ fvm flutter run --flavor stg --dart-define-from-file=configs/stg.json
 
 # Beta
 fvm flutter run --flavor beta --dart-define-from-file=configs/beta.json
-```
-
-### Customer App
-```bash
-cd apps/customer_app
-fvm flutter run
 ```
 
 ### With Specific Device

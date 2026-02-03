@@ -22,11 +22,11 @@ fvm dart run melos run brd
 # Generate localizations
 fvm dart run melos run l10n
 
-# Run main app
-fvm flutter run --flavor dev --dart-define-from-file=configs/dev.json
+# Run main app (from repo root)
+fvm dart run melos run run:flutter_app
 
-# Run customer app
-cd apps/customer_app && fvm flutter run
+# Or from app directory
+cd apps/flutter_app && fvm flutter run --flavor dev --dart-define-from-file=configs/dev.json
 ```
 
 👉 **Full setup guide**: [docs/QUICK_START.md](./docs/QUICK_START.md)
@@ -35,15 +35,14 @@ cd apps/customer_app && fvm flutter run
 
 ```
 flutter_codebase2025/
-├── apps/                         # Additional Flutter apps
-│   └── customer_app/             # Customer-facing application
+├── apps/                         # Flutter app(s)
+│   └── flutter_app/              # Main application
 ├── packages/                     # Shared packages
 │   ├── domain/                   # Core business logic (entities, repos, use cases)
 │   ├── feature/                  # Feature packages
 │   │   └── auth/                 # Authentication (login, register)
 │   ├── app_utility/              # Shared extensions & helpers
 │   └── app_widget/               # Shared UI widgets
-├── lib/                          # Main/root app (flutter_app)
 ├── configs/                      # Environment configs (dev, stg, beta)
 ├── docs/                         # Documentation
 └── pubspec.yaml                  # Workspace + Melos configuration

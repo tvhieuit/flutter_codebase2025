@@ -6,8 +6,8 @@ This project uses a **Flutter Workspace** with **Melos** for managing multiple p
 
 ```
 flutter_codebase2025/
-├── apps/                    # Multiple Flutter apps
-│   └── customer_app/        # Customer-facing app
+├── apps/                    # Flutter app(s)
+│   └── flutter_app/        # Main application
 ├── packages/                # Shared packages
 │   ├── domain/              # Domain layer (entities, repositories, use cases)
 │   ├── feature/             # Feature packages
@@ -25,11 +25,13 @@ The workspace is defined in the root `pubspec.yaml`:
 
 ```yaml
 workspace:
-  - apps/customer_app
+  - apps/flutter_app
   - packages/app_utility
   - packages/app_widget
   - packages/domain
   - packages/feature/auth
+  - packages/feature/app_settings
+  - packages/app_core
 ```
 
 ## Package Types
@@ -106,26 +108,20 @@ AppPrimaryButton(
 
 ### 4. Apps (`apps/`)
 
-Individual Flutter applications:
-- **customer_app**: Customer-facing mobile app
-- Each app can use any combination of packages
-- Apps have their own:
-  - Routing configuration
-  - DI setup
-  - Localization
-  - Platform configurations (android/, ios/)
+- **flutter_app**: Main Flutter application using shared packages
+- Has its own routing, DI, localization, and platform configs (android/, ios/)
 
 ## Dependency Flow
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                          Apps                                │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
-│  │ flutter_app │  │ customer_app│  │  admin_app  │         │
-│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘         │
-└─────────┼────────────────┼────────────────┼─────────────────┘
-          │                │                │
-          ▼                ▼                ▼
+│  ┌─────────────┐                                            │
+│  │ flutter_app │                                            │
+│  └──────┬──────┘                                            │
+└─────────┼──────────────────────────────────────────────────┘
+          │
+          ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                    Feature Packages                          │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
