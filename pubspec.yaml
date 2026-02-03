@@ -16,8 +16,6 @@ workspace:
   - packages/feature/app_settings
   - packages/app_core
 
-dependencies:
-
 dev_dependencies:
   melos: ^7.3.0
 
