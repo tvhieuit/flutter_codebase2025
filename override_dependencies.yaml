@@ -20,7 +20,7 @@ dart_sdk: ">=3.9.0 <4.0.0"
 # =============================================================================
 # STATE MANAGEMENT
 # =============================================================================
-flutter_bloc: ^9.1.1
+flutter_bloc: ^10.0.6
 bloc_event_transformers: ^2.0.0
 
 # =============================================================================
@@ -33,7 +33,7 @@ injectable: ^2.7.1+2
 # CODE GENERATION - ANNOTATIONS
 # =============================================================================
 freezed_annotation: ^3.1.0
-json_annotation: ^4.9.0
+json_annotation: ^4.10.0
 auto_route: ^11.1.0
 retrofit: ^4.9.1
 
@@ -42,7 +42,7 @@ retrofit: ^4.9.1
 # =============================================================================
 build_runner: ^2.4.13
 freezed: ^3.2.4
-json_serializable: ^6.8.0
+json_serializable: ^6.12.0
 injectable_generator: ^2.6.2
 auto_route_generator: ^10.4.0
 retrofit_generator: ^10.2.1
@@ -60,7 +60,7 @@ shared_preferences: ^2.5.4
 # =============================================================================
 # TOAST MESSAGE
 # =============================================================================
-fluttertoast: ^2.5.4
+fluttertoast: ^8.2.5
 
 # =============================================================================
 # UTILITIES
@@ -71,7 +71,7 @@ permission_handler: ^12.0.1
 # =============================================================================
 # TESTING
 # =============================================================================
-flutter_lints: ^6.0.0
+flutter_lints: ^6.1.0
 melos: ^7.3.0
 
 # =============================================================================
@@ -95,13 +95,13 @@ synchronized: ^3.4.0
 #
 # packages/domain:
 #   - freezed_annotation: any (inherits ^3.1.0)
-#   - json_annotation: any (inherits ^4.9.0)
+#   - json_annotation: any (inherits ^4.10.0)
 #   - get_it: any (inherits ^9.2.0)
 #   - injectable: any (inherits ^2.7.1+2)
 #   - shared_preferences: any (inherits ^2.5.4)
 #
 # packages/app_utility:
-#   - flutter_lints: any (inherits ^6.0.0)
+#   - flutter_lints: any (inherits ^6.1.0)
 #
 # packages/app_widget:
-#   - flutter_lints: any (inherits ^6.0.0)
+#   - flutter_lints: any (inherits ^6.1.0)
