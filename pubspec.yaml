@@ -81,6 +81,12 @@ melos:
       packageFilters:
         scope:
 
+    run:flutter_app:
+      run: fvm dart run melos exec --scope=flutter_app -- fvm flutter run
+      packageFilters:
+        scope:
+          - "flutter_app"
+
     test:
       run: fvm dart run melos exec --concurrency=1 -- fvm flutter test
       packageFilters:

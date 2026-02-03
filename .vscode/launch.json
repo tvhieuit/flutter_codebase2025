@@ -5,18 +5,20 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Run (Android) - No Flavor",
+            "name": "Flutter App - Run (Android) - No Flavor",
             "request": "launch",
             "type": "dart",
             "flutterMode": "debug",
+            "cwd": "${workspaceFolder}/apps/flutter_app",
             "program": "lib/main.dart",
             "args": []
         },
         {
-            "name": "Development (Android)",
+            "name": "Flutter App - Development (Android)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "debug",
+            "cwd": "${workspaceFolder}/apps/flutter_app",
             "program": "lib/main.dart",
             "args": [
                 "--flavor",
@@ -25,10 +27,11 @@
             ]
         },
         {
-            "name": "Staging (Android)",
+            "name": "Flutter App - Staging (Android)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "debug",
+            "cwd": "${workspaceFolder}/apps/flutter_app",
             "program": "lib/main.dart",
             "args": [
                 "--flavor",
@@ -37,10 +40,11 @@
             ]
         },
         {
-            "name": "Beta (Android)",
+            "name": "Flutter App - Beta (Android)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "debug",
+            "cwd": "${workspaceFolder}/apps/flutter_app",
             "program": "lib/main.dart",
             "args": [
                 "--flavor",
@@ -49,10 +53,11 @@
             ]
         },
         {
-            "name": "Development (Android) - Profile",
+            "name": "Flutter App - Development (Android) - Profile",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile",
+            "cwd": "${workspaceFolder}/apps/flutter_app",
             "program": "lib/main.dart",
             "args": [
                 "--flavor",
@@ -61,10 +66,11 @@
             ]
         },
         {
-            "name": "Development (Android) - Release",
+            "name": "Flutter App - Development (Android) - Release",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release",
+            "cwd": "${workspaceFolder}/apps/flutter_app",
             "program": "lib/main.dart",
             "args": [
                 "--flavor",
