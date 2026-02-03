@@ -525,7 +525,7 @@ MaterialApp.router(
 
 - [Flutter Internationalization](https://docs.flutter.dev/ui/accessibility-and-localization/internationalization)
 - [ARB Format Specification](https://github.com/google/app-resource-bundle/wiki/ApplicationResourceBundleSpecification)
-- [Screen Template](./SCREEN_TEMPLATE.md)
+- [Screen Template](./screen_template.md)
 
 ## Summary
 

@@ -152,11 +152,10 @@ part 'my_feature_event.dart';
 part 'my_feature_state.dart';
 
 @injectable
-class MyFeatureBloc extends Bloc<MyFeatureEvent, MyFeatureState>
-    with SafetyNetworkMixin {
-  final MyFeatureRepository _repository;
+class MyFeatureBloc extends Bloc<MyFeatureEvent, MyFeatureState> {
+  final MyFeatureUseCase _useCase;
 
-  MyFeatureBloc(this._repository) : super(MyFeatureState.initial()) {
+  MyFeatureBloc(this._useCase) : super(MyFeatureState.initial()) {
     on<MyFeatureEvent>(_onEvent);
   }
 
@@ -172,26 +171,40 @@ class MyFeatureBloc extends Bloc<MyFeatureEvent, MyFeatureState>
 
   Future<void> _onLoad(Emitter<MyFeatureState> emit) async {
     emit(state.copyWith(isLoading: true));
-    
-    await safeNetworkCall(
-      () async {
-        final result = await _repository.getData();
-        result.when(
-          success: (data) => emit(state.copyWith(
-            isLoading: false,
-            data: data,
-          )),
-          failure: (failure) => emit(state.copyWith(
-            isLoading: false,
-            error: failure.message,
-          )),
-        );
-      },
-      onError: (e) => emit(state.copyWith(
+
+    try {
+      // Simple cache-first behavior
+      if (state.data.isNotEmpty) {
+        emit(state.copyWith(isLoading: false));
+        return;
+      }
+
+      final result = await _useCase();
+      final failure = result.failureOrNull;
+      if (failure != null) {
+        emit(state.copyWith(
+          isLoading: false,
+          error: failure.message,
+        ));
+        return;
+      }
+
+      final data = result.dataOrThrow;
+      emit(state.copyWith(
+        isLoading: false,
+        data: data,
+      ));
+    } on Failure catch (e) {
+      emit(state.copyWith(
+        isLoading: false,
+        error: e.message,
+      ));
+    } catch (e) {
+      emit(state.copyWith(
         isLoading: false,
         error: e.toString(),
-      )),
-    );
+      ));
+    }
   }
 
   Future<void> _onRefresh(Emitter<MyFeatureState> emit) async {
@@ -598,6 +611,6 @@ localizationsDelegates: const [
 
 ## See Also
 
-- [AUTH_PACKAGE.md](./AUTH_PACKAGE.md) - Example: Authentication feature
-- [MONOREPO_GUIDE.md](./MONOREPO_GUIDE.md) - Monorepo overview
-- [NEW_APP_GUIDE.md](./NEW_APP_GUIDE.md) - Creating new apps
+- [auth_package.md](./auth_package.md) - Example: Authentication feature
+- [monorepo_guide.md](./monorepo_guide.md) - Monorepo overview
+- [new_app_guide.md](./new_app_guide.md) - Creating new apps

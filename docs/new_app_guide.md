@@ -546,6 +546,6 @@ Update `android/app/build.gradle` and iOS bundle identifier for each app.
 
 ## See Also
 
-- [MONOREPO_GUIDE.md](./MONOREPO_GUIDE.md) - Monorepo overview
-- [FEATURE_PACKAGES.md](./FEATURE_PACKAGES.md) - Creating feature packages
-- [AUTH_PACKAGE.md](./AUTH_PACKAGE.md) - Using feature_auth
+- [monorepo_guide.md](./monorepo_guide.md) - Monorepo overview
+- [feature_packages.md](./feature_packages.md) - Creating feature packages
+- [auth_package.md](./auth_package.md) - Using feature_auth

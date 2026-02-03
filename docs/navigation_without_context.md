@@ -345,7 +345,7 @@ class NetworkErrorService {
 
 ## References
 
-- [Routing Guide](./ROUTING.md)
-- [Screen Template](./SCREEN_TEMPLATE.md)
+- [Routing Guide](./routing.md)
+- [Screen Template](./screen_template.md)
 - [Auto Route Documentation](https://pub.dev/packages/auto_route)
 

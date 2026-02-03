@@ -312,6 +312,6 @@ fvm dart run melos run brd
 
 ## See Also
 
-- [QUICK_START.md](./QUICK_START.md) - Setup guide
-- [MONOREPO_GUIDE.md](./MONOREPO_GUIDE.md) - Workspace overview
-- [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md) - File organization
+- [quick_start.md](./quick_start.md) - Setup guide
+- [monorepo_guide.md](./monorepo_guide.md) - Workspace overview
+- [project_structure.md](./project_structure.md) - File organization

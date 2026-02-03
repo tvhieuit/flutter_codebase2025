@@ -51,10 +51,14 @@ Core business logic shared across all apps:
 import 'package:domain/domain.dart';
 
 final result = await userRepository.getUser(id);
-result.when(
-  success: (user) => print(user.name),
-  failure: (failure) => print(failure.message),
-);
+final failure = result.failureOrNull;
+if (failure != null) {
+  print(failure.message);
+  return;
+}
+
+final user = result.dataOrThrow;
+print(user.name);
 ```
 
 ### 2. Feature Packages (`packages/feature/`)
@@ -207,7 +211,7 @@ workspace:
 
 ### Create a New App
 
-See [NEW_APP_GUIDE.md](./NEW_APP_GUIDE.md) for detailed instructions.
+See [new_app_guide.md](./new_app_guide.md) for detailed instructions.
 
 ## Dependency Resolution
 
@@ -275,7 +279,7 @@ workspace:
 
 ## See Also
 
-- [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md) - Detailed file structure
-- [NEW_APP_GUIDE.md](./NEW_APP_GUIDE.md) - Creating new apps
-- [FEATURE_PACKAGES.md](./FEATURE_PACKAGES.md) - Creating feature packages
-- [DOMAIN_PACKAGE.md](./DOMAIN_PACKAGE.md) - Domain package documentation
+- [project_structure.md](./project_structure.md) - Detailed file structure
+- [new_app_guide.md](./new_app_guide.md) - Creating new apps
+- [feature_packages.md](./feature_packages.md) - Creating feature packages
+- [domain_package.md](./domain_package.md) - Domain package documentation

@@ -400,6 +400,6 @@ test('should open camera when permission granted', () async {
 
 - [connectivity_plus](https://pub.dev/packages/connectivity_plus)
 - [permission_handler](https://pub.dev/packages/permission_handler)
-- [Screen Template](./SCREEN_TEMPLATE.md)
+- [Screen Template](./screen_template.md)
 - [Clean Architecture](../rules/clean_architecture.md)
 

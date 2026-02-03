@@ -464,6 +464,6 @@ class SyncService {
 
 ## References
 
-- [Screen Template](./SCREEN_TEMPLATE.md)
+- [Screen Template](./screen_template.md)
 - [BLoC Pattern](../rules/bloc_pattern.md)
 

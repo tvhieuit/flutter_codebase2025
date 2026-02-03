@@ -46,7 +46,7 @@ packages/domain/
 │           ├── user/
 │           └── product/
 ├── pubspec.yaml
-└── README.md
+└── readme.md
 ```
 
 ## Custom Freezed Annotations
@@ -117,11 +117,15 @@ import 'package:domain/domain.dart';
 final success = Result.success(user);
 final failure = Result.failure(Failure.noConnection());
 
-// Pattern matching
-result.when(
-  success: (user) => print('User: ${user.name}'),
-  failure: (failure) => print('Error: ${failure.message}'),
-);
+// Explicit handling
+final error = result.failureOrNull;
+if (error != null) {
+  print('Error: ${error.message}');
+  return;
+}
+
+final user = result.dataOrThrow;
+print('User: ${user.name}');
 
 // Convenience methods
 result.isSuccess;     // bool
@@ -247,17 +251,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   Future<void> checkAuth() async {
     // Get cached user
     final result = await _userLocalRepo.getCurrentUser();
-    result.when(
-      success: (user) {
-        if (user != null) {
-          // User is logged in
-        }
-      },
-      failure: (f) => handleError(f),
-    );
+    final failure = result.failureOrNull;
+    if (failure != null) {
+      handleError(failure);
+      return;
+    }
+
+    final currentUser = result.dataOrThrow;
+    if (currentUser != null) {
+      // User is logged in
+    }
     
     // Save user
-    await _userLocalRepo.saveCurrentUser(user);
+    await _userLocalRepo.saveCurrentUser(currentUser);
     
     // Token management
     await _userLocalRepo.saveAccessToken(token);
@@ -461,17 +467,16 @@ class UserBloc extends Bloc<UserEvent, UserState> with SafetyNetworkMixin {
       
       // Fetch from API
       final result = await _getUserUseCase(event.id);
-      
-      result.when(
-        success: (user) {
-          // Cache user
-          _userLocalRepo.saveCurrentUser(user);
-          emit(state.copyWith(user: user, isLoading: false));
-        },
-        failure: (failure) {
-          emit(state.copyWith(error: failure.message, isLoading: false));
-        },
-      );
+      final failure = result.failureOrNull;
+      if (failure != null) {
+        emit(state.copyWith(error: failure.message, isLoading: false));
+        return;
+      }
+
+      final user = result.dataOrThrow;
+      // Cache user
+      _userLocalRepo.saveCurrentUser(user);
+      emit(state.copyWith(user: user, isLoading: false));
     });
   }
 }
@@ -560,11 +565,13 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> with SafetyNetworkMix
       emit(state.copyWith(isLoading: true, error: null));
       
       final result = await _getCurrentUserUseCase();
-      
-      result.when(
-        success: (user) => emit(state.copyWith(user: user, isLoading: false)),
-        failure: (f) => emit(state.copyWith(error: f.message, isLoading: false)),
-      );
+      final failure = result.failureOrNull;
+      if (failure != null) {
+        emit(state.copyWith(error: failure.message, isLoading: false));
+        return;
+      }
+
+      emit(state.copyWith(user: result.dataOrThrow, isLoading: false));
     });
   }
 }

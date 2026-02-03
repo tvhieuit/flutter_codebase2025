@@ -461,6 +461,6 @@ class MyApp extends StatelessWidget {
 ## References
 
 - [Auto Route Documentation](https://pub.dev/packages/auto_route)
-- [Screen Template](./SCREEN_TEMPLATE.md)
+- [Screen Template](./screen_template.md)
 - [Clean Architecture Rules](../docs/clean_architecture.md)
 

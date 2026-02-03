@@ -9,21 +9,18 @@ packages/feature/auth/
 ├── lib/
 │   ├── auth.dart                 # Main export
 │   └── src/
-│       ├── bloc/
-│       │   ├── login_bloc.dart   # Login BLoC
-│       │   └── register_bloc.dart # Registration BLoC
-│       ├── page/
-│       │   ├── login_page.dart   # Login UI
-│       │   └── register_page.dart # Registration UI
-│       ├── models/
-│       │   ├── auth_credentials.dart
-│       │   └── auth_token.dart
-│       ├── repository/
-│       │   └── auth_repository.dart
-│       ├── navigation/
-│       │   └── auth_navigation.dart
+│       ├── di/                   # Dependency injection
 │       ├── l10n/                 # Localization
-│       └── di/                   # Dependency injection
+│       ├── navigation/           # AppRoute contract
+│       ├── repository/           # Re-exports
+│       ├── screen/
+│       │   ├── login/
+│       │   │   ├── login_bloc.dart
+│       │   │   └── login_page.dart
+│       │   └── register/
+│       │       ├── register_bloc.dart
+│       │       └── register_page.dart
+│       └── use_case/             # Login/Register use cases + validators
 ├── l10n/
 │   └── auth_en.arb
 ├── pubspec.yaml
@@ -430,15 +427,19 @@ abstract class AuthRepository {
 }
 ```
 
-### Navigation Interface
+### Navigation Contract
 
 ```dart
-abstract class AuthNavigation {
-  void goToRegister();
-  void goToLogin();
-  void goToHome();
-  void goToForgotPassword();
-  void goBack();
+class AppRoute {
+  final PageRouteInfo login;
+  final PageRouteInfo register;
+  final PageRouteInfo home;
+
+  const AppRoute({
+    required this.login,
+    required this.register,
+    required this.home,
+  });
 }
 ```
 
@@ -452,7 +453,10 @@ sealed class LoginEvent with _$LoginEvent {
     required String email,
     required String password,
   }) = LoginEventSubmit;
-  const factory LoginEvent.clearError() = LoginEventClearError;
+  const factory LoginEvent.register() = _LoginEventRegister;
+  const factory LoginEvent.forgotPassword() = _LoginEventForgotPassword;
+  const factory LoginEvent.obscurePasswordToggle() =
+      _LoginEventObscurePasswordToggle;
 }
 ```
 
@@ -467,7 +471,11 @@ sealed class RegisterEvent with _$RegisterEvent {
     required String confirmPassword,
     String? phone,
   }) = RegisterEventSubmit;
-  const factory RegisterEvent.clearError() = RegisterEventClearError;
+  const factory RegisterEvent.login() = _RegisterEventLogin;
+  const factory RegisterEvent.obscurePasswordToggle() =
+      _RegisterEventObscurePasswordToggle;
+  const factory RegisterEvent.obscureConfirmPasswordToggle() =
+      _RegisterEventObscureConfirmPasswordToggle;
 }
 ```
 
@@ -480,6 +488,7 @@ sealed class LoginState with _$LoginState {
   const factory LoginState({
     @Default(false) bool isLoading,
     @Default(false) bool isSuccess,
+    @Default(true) bool obscurePassword,
     AuthToken? token,
     String? error,
     String? fieldError,
@@ -494,11 +503,31 @@ sealed class RegisterState with _$RegisterState {
   const factory RegisterState({
     @Default(false) bool isLoading,
     @Default(false) bool isSuccess,
+    @Default(true) bool obscurePassword,
+    @Default(true) bool obscureConfirmPassword,
     AuthToken? token,
     String? error,
     String? fieldError,
   }) = _RegisterState;
 }
+```
+
+### Result Handling Pattern
+
+```dart
+final result = await _loginUseCase(credentials);
+assert(result.isSuccess, result.failureOrNull);
+
+final failure = result.failureOrNull;
+if (failure != null) {
+  emit(state.copyWith(isLoading: false, error: failure.message));
+  _toast.show(failure.message, type: AppToastType.error);
+  return;
+}
+
+final token = result.dataOrThrow;
+emit(state.copyWith(isLoading: false, isSuccess: true, token: token));
+_router.replaceAll([_appRoute.home]);
 ```
 
 ## Localization
@@ -552,24 +581,12 @@ cd packages/feature/auth && fvm flutter gen-l10n
 
 ## Testing
 
-### Mock Repository
+### Mock Use Case
 
 ```dart
-class MockAuthRepository implements AuthRepository {
-  @override
-  Future<Result<AuthToken>> login(LoginCredentials credentials) async {
-    if (credentials.email == 'test@test.com' && 
-        credentials.password == 'password') {
-      return const Result.success(AuthToken(
-        accessToken: 'mock_token',
-        refreshToken: 'mock_refresh',
-      ));
-    }
-    return Result.failure(Failure.auth(message: 'Invalid credentials'));
-  }
-  
-  // ... implement other methods
-}
+class MockLoginUseCase extends Mock implements LoginUseCase {}
+class MockStackRouter extends Mock implements StackRouter {}
+class MockAppToast extends Mock implements AppToast {}
 ```
 
 ### BLoC Test
@@ -577,13 +594,25 @@ class MockAuthRepository implements AuthRepository {
 ```dart
 void main() {
   late LoginBloc bloc;
-  late MockAuthRepository mockRepo;
-  late MockUserLocalRepository mockLocalRepo;
+  late MockLoginUseCase mockLoginUseCase;
+  late MockStackRouter mockRouter;
+  late MockAppToast mockToast;
+  late AppRoute appRoute;
+  late AuthToken token;
 
   setUp(() {
-    mockRepo = MockAuthRepository();
-    mockLocalRepo = MockUserLocalRepository();
-    bloc = LoginBloc(mockRepo, mockLocalRepo);
+    mockLoginUseCase = MockLoginUseCase();
+    mockRouter = MockStackRouter();
+    mockToast = MockAppToast();
+    token = const AuthToken(accessToken: 'mock_token');
+    appRoute = AppRoute(
+      login: const LoginRoute(),
+      register: const RegisterRoute(),
+      home: const HomeRoute(),
+    );
+
+    when(() => mockLoginUseCase(any())).thenAnswer((_) async => Result.success(token));
+    bloc = LoginBloc(mockLoginUseCase, mockRouter, appRoute, mockToast);
   });
 
   blocTest<LoginBloc, LoginState>(
@@ -594,8 +623,13 @@ void main() {
       password: 'password',
     )),
     expect: () => [
-      const LoginState(isLoading: true),
-      const LoginState(isLoading: false, isSuccess: true, token: someToken),
+      const LoginState(isLoading: true, obscurePassword: true),
+      LoginState(
+        isLoading: false,
+        isSuccess: true,
+        obscurePassword: true,
+        token: token,
+      ),
     ],
   );
 }
@@ -603,6 +637,6 @@ void main() {
 
 ## See Also
 
-- [FEATURE_PACKAGES.md](./FEATURE_PACKAGES.md) - Creating feature packages
-- [MONOREPO_GUIDE.md](./MONOREPO_GUIDE.md) - Monorepo structure
-- [NEW_APP_GUIDE.md](./NEW_APP_GUIDE.md) - Creating apps with auth
+- [feature_packages.md](./feature_packages.md) - Creating feature packages
+- [monorepo_guide.md](./monorepo_guide.md) - Monorepo structure
+- [new_app_guide.md](./new_app_guide.md) - Creating apps with auth

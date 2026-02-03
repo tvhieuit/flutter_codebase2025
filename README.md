@@ -29,7 +29,7 @@ fvm dart run melos run run:flutter_app
 cd apps/flutter_app && fvm flutter run --flavor dev --dart-define-from-file=configs/dev.json
 ```
 
-👉 **Full setup guide**: [docs/QUICK_START.md](./docs/QUICK_START.md)
+👉 **Full setup guide**: [docs/quick_start.md](./docs/quick_start.md)
 
 ## 📁 Project Structure
 
@@ -48,7 +48,7 @@ flutter_codebase2025/
 └── pubspec.yaml                  # Workspace + Melos configuration
 ```
 
-👉 **Detailed structure**: [docs/PROJECT_STRUCTURE.md](./docs/PROJECT_STRUCTURE.md)
+👉 **Detailed structure**: [docs/project_structure.md](./docs/project_structure.md)
 
 ## 🏗️ Architecture
 
@@ -63,7 +63,7 @@ Presentation (BLoC) → Business Logic (Use Cases) → Data (Repositories)
 - **Feature Packages**: Self-contained features that can be reused
 - **Consistent Tooling**: Single Melos configuration for all packages
 
-👉 **Monorepo guide**: [docs/MONOREPO_GUIDE.md](./docs/MONOREPO_GUIDE.md)
+👉 **Monorepo guide**: [docs/monorepo_guide.md](./docs/monorepo_guide.md)
 
 ## 📦 Packages
 
@@ -97,27 +97,27 @@ fvm dart run melos run aos:devapk  # Build Android APK (dev)
 fvm dart run melos run ios:dev     # Build iOS (dev)
 ```
 
-👉 **All commands**: [docs/COMMANDS.md](./docs/COMMANDS.md)
+👉 **All commands**: [docs/commands.md](./docs/commands.md)
 
 ## 📚 Documentation
 
 ### Getting Started
-- [Quick Start Guide](./docs/QUICK_START.md) - Setup and run
-- [Project Structure](./docs/PROJECT_STRUCTURE.md) - File organization
-- [Commands Reference](./docs/COMMANDS.md) - Available scripts
+- [Quick Start Guide](./docs/quick_start.md) - Setup and run
+- [Project Structure](./docs/project_structure.md) - File organization
+- [Commands Reference](./docs/commands.md) - Available scripts
 
 ### Monorepo & Packages
-- [Monorepo Guide](./docs/MONOREPO_GUIDE.md) - Working with the workspace
-- [Feature Packages](./docs/FEATURE_PACKAGES.md) - Creating feature packages
-- [New App Guide](./docs/NEW_APP_GUIDE.md) - Adding new apps
-- [Domain Package](./docs/DOMAIN_PACKAGE.md) - Core business logic
-- [Auth Package](./docs/AUTH_PACKAGE.md) - Authentication feature
+- [Monorepo Guide](./docs/monorepo_guide.md) - Working with the workspace
+- [Feature Packages](./docs/feature_packages.md) - Creating feature packages
+- [New App Guide](./docs/new_app_guide.md) - Adding new apps
+- [Domain Package](./docs/domain_package.md) - Core business logic
+- [Auth Package](./docs/auth_package.md) - Authentication feature
 
 ### Development
-- [Screen Template](./docs/SCREEN_TEMPLATE.md) - Creating new screens
-- [Routing Guide](./docs/ROUTING.md) - Navigation setup
-- [Localization](./docs/LOCALIZATION.md) - i18n implementation
-- [Services](./docs/SERVICES.md) - Network & permissions
+- [Screen Template](./docs/screen_template.md) - Creating new screens
+- [Routing Guide](./docs/routing.md) - Navigation setup
+- [Localization](./docs/localization.md) - i18n implementation
+- [Services](./docs/services.md) - Network & permissions
 
 ### Architecture Rules
 - [Clean Architecture](./rules/clean_architecture.md)
@@ -137,17 +137,17 @@ fvm dart run melos run brd
 ```bash
 # Create package structure
 mkdir -p packages/feature/my_feature/lib/src/{bloc,page,models,repository,di}
-# See docs/FEATURE_PACKAGES.md for full guide
+# See docs/feature_packages.md for full guide
 ```
 
 ### New App
 ```bash
 # Create app in apps/
 mkdir -p apps/my_app/lib/{app,screen,di}
-# See docs/NEW_APP_GUIDE.md for full guide
+# See docs/new_app_guide.md for full guide
 ```
 
-👉 **Templates**: [docs/SCREEN_TEMPLATE.md](./docs/SCREEN_TEMPLATE.md)
+👉 **Templates**: [docs/screen_template.md](./docs/screen_template.md)
 
 ## 🛠️ Tech Stack
 
@@ -192,7 +192,7 @@ mkdir -p apps/my_app/lib/{app,screen,di}
 
 ## 🤝 Contributing
 
-1. Read [CONTRIBUTING.md](./docs/CONTRIBUTING.md)
+1. Read [contributing.md](./docs/contributing.md)
 2. Follow architecture rules
 3. Add tests for new features
 4. Run code generation before committing

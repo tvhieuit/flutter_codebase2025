@@ -351,14 +351,14 @@ fvm dart run melos run fm      # Format code
 3. **For new app**: Create `apps/your_app/`
 
 See detailed guides:
-- [NEW_APP_GUIDE.md](./NEW_APP_GUIDE.md)
-- [FEATURE_PACKAGES.md](./FEATURE_PACKAGES.md)
-- [SCREEN_TEMPLATE.md](./SCREEN_TEMPLATE.md)
+- [new_app_guide.md](./new_app_guide.md)
+- [feature_packages.md](./feature_packages.md)
+- [screen_template.md](./screen_template.md)
 
 ## See Also
 
-- [MONOREPO_GUIDE.md](./MONOREPO_GUIDE.md) - Monorepo overview
-- [DOMAIN_PACKAGE.md](./DOMAIN_PACKAGE.md) - Domain package details
-- [AUTH_PACKAGE.md](./AUTH_PACKAGE.md) - Auth feature package
-- [QUICK_START.md](./QUICK_START.md) - Getting started
-- [COMMANDS.md](./COMMANDS.md) - Available commands
+- [monorepo_guide.md](./monorepo_guide.md) - Monorepo overview
+- [domain_package.md](./domain_package.md) - Domain package details
+- [auth_package.md](./auth_package.md) - Auth feature package
+- [quick_start.md](./quick_start.md) - Getting started
+- [commands.md](./commands.md) - Available commands
