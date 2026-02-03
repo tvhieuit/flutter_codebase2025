@@ -4,7 +4,6 @@ import '../../extensions/l10n_extension.dart';
 
 @RoutePage()
 class UserDeleteConfirmationPage extends StatelessWidget {
-
   const UserDeleteConfirmationPage({
     super.key,
   });

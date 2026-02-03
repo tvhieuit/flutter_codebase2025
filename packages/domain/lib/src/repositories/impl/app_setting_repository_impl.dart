@@ -1,4 +1,3 @@
-
 import 'package:app_core/app_core.dart';
 import 'package:injectable/injectable.dart';
 
@@ -19,7 +18,7 @@ class AppSettingsRepositoryImpl implements AppSettingsRepository {
       if (modeString == null) return const Result.success(AppThemeMode.system);
 
       final mode = AppThemeMode.values.firstWhere(
-            (e) => e.name == modeString,
+        (e) => e.name == modeString,
         orElse: () => AppThemeMode.system,
       );
       return Result.success(mode);

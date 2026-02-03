@@ -21,8 +21,7 @@ sealed class CreateUserParams with _$CreateUserParams {
 /// Use case for creating a new user.
 ///
 /// Includes comprehensive validation before creating.
-class CreateUserUseCase
-    implements UseCaseWithParams<UserEntity, CreateUserParams> {
+class CreateUserUseCase implements UseCaseWithParams<UserEntity, CreateUserParams> {
   final UserRepository _repository;
 
   CreateUserUseCase(this._repository);

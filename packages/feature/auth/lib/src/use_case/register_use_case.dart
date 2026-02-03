@@ -8,8 +8,7 @@ import 'auth_input_validators.dart';
 ///
 /// Validates all fields and performs registration via repository.
 @injectable
-class RegisterUseCase
-    implements UseCaseWithParams<AuthToken, RegisterCredentials> {
+class RegisterUseCase implements UseCaseWithParams<AuthToken, RegisterCredentials> {
   final AuthRepository _authRepository;
   final UserLocalRepository _userLocalRepository;
 

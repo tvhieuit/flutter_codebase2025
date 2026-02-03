@@ -16,8 +16,7 @@ sealed class AuthToken with _$AuthToken {
     @JsonKey(name: 'expires_in') int? expiresIn,
   }) = _AuthToken;
 
-  factory AuthToken.fromJson(Map<String, dynamic> json) =>
-      _$AuthTokenFromJson(json);
+  factory AuthToken.fromJson(Map<String, dynamic> json) => _$AuthTokenFromJson(json);
 
   /// Checks if token is expired (if expiresIn is available)
   bool get isExpired {

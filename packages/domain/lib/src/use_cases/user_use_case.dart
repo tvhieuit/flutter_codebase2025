@@ -30,8 +30,7 @@ class UserUseCaseImpl implements UserUseCase {
   Future<List<UserEntity>> getUsers({bool forceRefresh = false}) async {
     if (!forceRefresh) {
       final cachedResult = await _userRepository.getCachedUserList();
-      if (cachedResult is ResultSuccess<List<UserEntity>> &&
-          cachedResult.data.isNotEmpty) {
+      if (cachedResult is ResultSuccess<List<UserEntity>> && cachedResult.data.isNotEmpty) {
         return cachedResult.data;
       }
     }

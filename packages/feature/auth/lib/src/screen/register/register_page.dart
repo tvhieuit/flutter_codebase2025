@@ -138,8 +138,7 @@ class _RegisterViewState extends State<_RegisterView> {
 
   Widget _nameField(AuthLocalizations l10n) {
     return BlocBuilder<RegisterBloc, RegisterState>(
-      buildWhen: (prev, curr) =>
-          prev.fieldError != curr.fieldError || prev.error != curr.error,
+      buildWhen: (prev, curr) => prev.fieldError != curr.fieldError || prev.error != curr.error,
       builder: (context, state) {
         return TextFormField(
           controller: _nameController,
@@ -166,8 +165,7 @@ class _RegisterViewState extends State<_RegisterView> {
 
   Widget _emailField(AuthLocalizations l10n) {
     return BlocBuilder<RegisterBloc, RegisterState>(
-      buildWhen: (prev, curr) =>
-          prev.fieldError != curr.fieldError || prev.error != curr.error,
+      buildWhen: (prev, curr) => prev.fieldError != curr.fieldError || prev.error != curr.error,
       builder: (context, state) {
         return TextFormField(
           controller: _emailController,
@@ -193,8 +191,7 @@ class _RegisterViewState extends State<_RegisterView> {
 
   Widget _phoneField(AuthLocalizations l10n) {
     return BlocBuilder<RegisterBloc, RegisterState>(
-      buildWhen: (prev, curr) =>
-          prev.fieldError != curr.fieldError || prev.error != curr.error,
+      buildWhen: (prev, curr) => prev.fieldError != curr.fieldError || prev.error != curr.error,
       builder: (context, state) {
         return TextFormField(
           controller: _phoneController,
@@ -231,9 +228,7 @@ class _RegisterViewState extends State<_RegisterView> {
             errorText: state.fieldError == 'password' ? state.error : null,
             suffixIcon: IconButton(
               icon: Icon(
-                state.obscurePassword
-                    ? Icons.visibility_outlined
-                    : Icons.visibility_off_outlined,
+                state.obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
               ),
               onPressed: _obscurePasswordToggle,
             ),
@@ -266,14 +261,10 @@ class _RegisterViewState extends State<_RegisterView> {
             hintText: l10n.confirmPasswordHint,
             prefixIcon: const Icon(Icons.lock_outline),
             border: const OutlineInputBorder(),
-            errorText: state.fieldError == 'confirmPassword'
-                ? state.error
-                : null,
+            errorText: state.fieldError == 'confirmPassword' ? state.error : null,
             suffixIcon: IconButton(
               icon: Icon(
-                state.obscureConfirmPassword
-                    ? Icons.visibility_outlined
-                    : Icons.visibility_off_outlined,
+                state.obscureConfirmPassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
               ),
               onPressed: _obscureConfirmPasswordToggle,
             ),

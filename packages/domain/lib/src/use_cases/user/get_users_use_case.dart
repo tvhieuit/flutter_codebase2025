@@ -10,8 +10,7 @@ part 'get_users_use_case.freezed.dart';
 /// Parameters for getting users with pagination.
 @paramsFreezed
 sealed class GetUsersParams with _$GetUsersParams {
-  const factory GetUsersParams({@Default(1) int page, @Default(20) int limit}) =
-      _GetUsersParams;
+  const factory GetUsersParams({@Default(1) int page, @Default(20) int limit}) = _GetUsersParams;
 }
 
 /// Use case for getting a list of users with pagination.
@@ -22,8 +21,7 @@ sealed class GetUsersParams with _$GetUsersParams {
 ///   const GetUsersParams(page: 1, limit: 20),
 /// );
 /// ```
-class GetUsersUseCase
-    implements UseCaseWithParams<List<UserEntity>, GetUsersParams> {
+class GetUsersUseCase implements UseCaseWithParams<List<UserEntity>, GetUsersParams> {
   final UserRepository _repository;
 
   GetUsersUseCase(this._repository);
@@ -64,8 +62,7 @@ sealed class SearchUsersParams with _$SearchUsersParams {
 }
 
 /// Use case for searching users.
-class SearchUsersUseCase
-    implements UseCaseWithParams<List<UserEntity>, SearchUsersParams> {
+class SearchUsersUseCase implements UseCaseWithParams<List<UserEntity>, SearchUsersParams> {
   final UserRepository _repository;
 
   SearchUsersUseCase(this._repository);

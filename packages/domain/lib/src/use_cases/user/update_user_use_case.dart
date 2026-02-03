@@ -25,8 +25,7 @@ sealed class UpdateUserParams with _$UpdateUserParams {
 }
 
 /// Use case for updating an existing user.
-class UpdateUserUseCase
-    implements UseCaseWithParams<UserEntity, UpdateUserParams> {
+class UpdateUserUseCase implements UseCaseWithParams<UserEntity, UpdateUserParams> {
   final UserRepository _repository;
 
   UpdateUserUseCase(this._repository);

@@ -126,8 +126,7 @@ class _LoginViewState extends State<_LoginView> {
 
   Widget _emailField(AuthLocalizations l10n) {
     return BlocBuilder<LoginBloc, LoginState>(
-      buildWhen: (prev, curr) =>
-          prev.fieldError != curr.fieldError || prev.error != curr.error,
+      buildWhen: (prev, curr) => prev.fieldError != curr.fieldError || prev.error != curr.error,
       builder: (context, state) {
         return TextFormField(
           controller: _emailController,
@@ -170,9 +169,7 @@ class _LoginViewState extends State<_LoginView> {
             errorText: state.fieldError == 'password' ? state.error : null,
             suffixIcon: IconButton(
               icon: Icon(
-                state.obscurePassword
-                    ? Icons.visibility_outlined
-                    : Icons.visibility_off_outlined,
+                state.obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
               ),
               onPressed: _obscurePasswordToggle,
             ),

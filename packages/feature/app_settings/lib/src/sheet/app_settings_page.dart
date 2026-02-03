@@ -17,8 +17,7 @@ class AppSettingsPage extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: BlocBuilder<AppSettingsBloc, AppSettingsState>(
           buildWhen: (previous, current) =>
-              previous.themeMode != current.themeMode ||
-              previous.locale != current.locale,
+              previous.themeMode != current.themeMode || previous.locale != current.locale,
           builder: (context, state) {
             final selectedLanguageCode = state.locale?.languageCode;
 

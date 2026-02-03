@@ -21,8 +21,7 @@ sealed class ProductEntity with _$ProductEntity {
     @JsonKey(name: 'created_at') DateTime? createdAt,
   }) = _ProductEntity;
 
-  factory ProductEntity.fromJson(Map<String, dynamic> json) =>
-      _$ProductEntityFromJson(json);
+  factory ProductEntity.fromJson(Map<String, dynamic> json) => _$ProductEntityFromJson(json);
 
   /// Gets the price as a formatted double
   double get priceAsDouble => priceInCents / 100;

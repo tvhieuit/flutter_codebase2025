@@ -39,8 +39,7 @@ class AuthLocalizationsEn extends AuthLocalizations {
   String get passwordRequired => 'Please enter your password';
 
   @override
-  String get passwordHelper =>
-      'At least 8 characters with uppercase, lowercase, and number';
+  String get passwordHelper => 'At least 8 characters with uppercase, lowercase, and number';
 
   @override
   String get confirmPasswordLabel => 'Confirm Password';

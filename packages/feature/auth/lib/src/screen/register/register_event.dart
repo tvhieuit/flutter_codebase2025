@@ -13,8 +13,6 @@ sealed class RegisterEvent with _$RegisterEvent {
   }) = RegisterEventSubmit;
 
   const factory RegisterEvent.login() = _RegisterEventLogin;
-  const factory RegisterEvent.obscurePasswordToggle() =
-      _RegisterEventObscurePasswordToggle;
-  const factory RegisterEvent.obscureConfirmPasswordToggle() =
-      _RegisterEventObscureConfirmPasswordToggle;
+  const factory RegisterEvent.obscurePasswordToggle() = _RegisterEventObscurePasswordToggle;
+  const factory RegisterEvent.obscureConfirmPasswordToggle() = _RegisterEventObscureConfirmPasswordToggle;
 }

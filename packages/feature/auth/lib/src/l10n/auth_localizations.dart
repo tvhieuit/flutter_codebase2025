@@ -61,8 +61,7 @@ import 'auth_localizations_en.dart';
 /// be consistent with the languages listed in the AuthLocalizations.supportedLocales
 /// property.
 abstract class AuthLocalizations {
-  AuthLocalizations(String locale)
-    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  AuthLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -70,8 +69,7 @@ abstract class AuthLocalizations {
     return Localizations.of<AuthLocalizations>(context, AuthLocalizations)!;
   }
 
-  static const LocalizationsDelegate<AuthLocalizations> delegate =
-      _AuthLocalizationsDelegate();
+  static const LocalizationsDelegate<AuthLocalizations> delegate = _AuthLocalizationsDelegate();
 
   /// A list of this localizations delegate along with the default localizations
   /// delegates.
@@ -83,13 +81,12 @@ abstract class AuthLocalizations {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
-      <LocalizationsDelegate<dynamic>>[
-        delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ];
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
+    delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+  ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[Locale('en')];
@@ -233,8 +230,7 @@ abstract class AuthLocalizations {
   String get alreadyHaveAccount;
 }
 
-class _AuthLocalizationsDelegate
-    extends LocalizationsDelegate<AuthLocalizations> {
+class _AuthLocalizationsDelegate extends LocalizationsDelegate<AuthLocalizations> {
   const _AuthLocalizationsDelegate();
 
   @override
@@ -245,8 +241,7 @@ class _AuthLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['en'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['en'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AuthLocalizationsDelegate old) => false;

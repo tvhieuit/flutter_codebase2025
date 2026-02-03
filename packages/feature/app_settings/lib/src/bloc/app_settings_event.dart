@@ -8,6 +8,5 @@ sealed class AppSettingsEvent with _$AppSettingsEvent {
     required ThemeMode themeMode,
   }) = _ThemeModeChanged;
 
-  const factory AppSettingsEvent.localeChanged({required Locale? locale}) =
-      _LocaleChanged;
+  const factory AppSettingsEvent.localeChanged({required Locale? locale}) = _LocaleChanged;
 }

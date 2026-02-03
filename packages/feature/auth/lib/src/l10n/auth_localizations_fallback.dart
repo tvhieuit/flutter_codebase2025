@@ -13,12 +13,10 @@ import 'auth_localizations_en.dart';
 class AuthLocalizationsFallback {
   const AuthLocalizationsFallback._();
 
-  static const LocalizationsDelegate<AuthLocalizations> delegate =
-      _AuthLocalizationsFallbackDelegate();
+  static const LocalizationsDelegate<AuthLocalizations> delegate = _AuthLocalizationsFallbackDelegate();
 }
 
-class _AuthLocalizationsFallbackDelegate
-    extends LocalizationsDelegate<AuthLocalizations> {
+class _AuthLocalizationsFallbackDelegate extends LocalizationsDelegate<AuthLocalizations> {
   const _AuthLocalizationsFallbackDelegate();
 
   @override
@@ -40,4 +38,3 @@ class _AuthLocalizationsFallbackDelegate
   @override
   bool shouldReload(LocalizationsDelegate<AuthLocalizations> old) => false;
 }
-

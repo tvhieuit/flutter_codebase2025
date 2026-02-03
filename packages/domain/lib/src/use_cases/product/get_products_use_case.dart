@@ -20,8 +20,7 @@ sealed class GetProductsParams with _$GetProductsParams {
 }
 
 /// Use case for getting products with filtering and pagination.
-class GetProductsUseCase
-    implements UseCaseWithParams<List<ProductEntity>, GetProductsParams> {
+class GetProductsUseCase implements UseCaseWithParams<List<ProductEntity>, GetProductsParams> {
   final ProductRepository _repository;
 
   GetProductsUseCase(this._repository);
@@ -72,13 +71,11 @@ class GetProductsUseCase
 /// Parameters for searching products.
 @paramsFreezed
 sealed class SearchProductsParams with _$SearchProductsParams {
-  const factory SearchProductsParams({required String query}) =
-      _SearchProductsParams;
+  const factory SearchProductsParams({required String query}) = _SearchProductsParams;
 }
 
 /// Use case for searching products.
-class SearchProductsUseCase
-    implements UseCaseWithParams<List<ProductEntity>, SearchProductsParams> {
+class SearchProductsUseCase implements UseCaseWithParams<List<ProductEntity>, SearchProductsParams> {
   final ProductRepository _repository;
 
   SearchProductsUseCase(this._repository);
@@ -99,8 +96,7 @@ class SearchProductsUseCase
 }
 
 /// Use case for getting products by category.
-class GetProductsByCategoryUseCase
-    implements UseCaseWithParams<List<ProductEntity>, String> {
+class GetProductsByCategoryUseCase implements UseCaseWithParams<List<ProductEntity>, String> {
   final ProductRepository _repository;
 
   GetProductsByCategoryUseCase(this._repository);

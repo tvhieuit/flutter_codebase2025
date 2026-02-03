@@ -31,9 +31,7 @@ class UserRepositoryImpl implements UserRepository {
     } on DioException catch (e) {
       // Try to get from cache as fallback
       final cached = await getCachedUser();
-      if (cached is ResultSuccess<UserEntity?> &&
-          cached.data != null &&
-          cached.data!.id == id) {
+      if (cached is ResultSuccess<UserEntity?> && cached.data != null && cached.data!.id == id) {
         return Result.success(cached.data!);
       }
       return Result.failure(_handleDioError(e));
@@ -232,8 +230,7 @@ class UserRepositoryImpl implements UserRepository {
     if (e.response != null) {
       final statusCode = e.response!.statusCode;
       if (statusCode == 401) return const Failure.auth(message: 'Unauthorized');
-      if (statusCode == 404)
-        return const Failure.server(message: 'Not found', statusCode: 404);
+      if (statusCode == 404) return const Failure.server(message: 'Not found', statusCode: 404);
       return Failure.server(
         message: e.message ?? 'Server error',
         statusCode: statusCode,

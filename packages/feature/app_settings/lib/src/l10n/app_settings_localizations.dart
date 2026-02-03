@@ -62,8 +62,7 @@ import 'app_settings_localizations_ko.dart';
 /// be consistent with the languages listed in the AppSettingsLocalizations.supportedLocales
 /// property.
 abstract class AppSettingsLocalizations {
-  AppSettingsLocalizations(String locale)
-    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  AppSettingsLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -74,8 +73,7 @@ abstract class AppSettingsLocalizations {
     )!;
   }
 
-  static const LocalizationsDelegate<AppSettingsLocalizations> delegate =
-      _AppSettingsLocalizationsDelegate();
+  static const LocalizationsDelegate<AppSettingsLocalizations> delegate = _AppSettingsLocalizationsDelegate();
 
   /// A list of this localizations delegate along with the default localizations
   /// delegates.
@@ -87,13 +85,12 @@ abstract class AppSettingsLocalizations {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
-      <LocalizationsDelegate<dynamic>>[
-        delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ];
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
+    delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+  ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
@@ -156,8 +153,7 @@ abstract class AppSettingsLocalizations {
   String get languageKorean;
 }
 
-class _AppSettingsLocalizationsDelegate
-    extends LocalizationsDelegate<AppSettingsLocalizations> {
+class _AppSettingsLocalizationsDelegate extends LocalizationsDelegate<AppSettingsLocalizations> {
   const _AppSettingsLocalizationsDelegate();
 
   @override
@@ -168,8 +164,7 @@ class _AppSettingsLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['en', 'ko'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['en', 'ko'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppSettingsLocalizationsDelegate old) => false;

@@ -11,6 +11,5 @@ sealed class LoginEvent with _$LoginEvent {
 
   const factory LoginEvent.register() = _LoginEventRegister;
   const factory LoginEvent.forgotPassword() = _LoginEventForgotPassword;
-  const factory LoginEvent.obscurePasswordToggle() =
-      _LoginEventObscurePasswordToggle;
+  const factory LoginEvent.obscurePasswordToggle() = _LoginEventObscurePasswordToggle;
 }
