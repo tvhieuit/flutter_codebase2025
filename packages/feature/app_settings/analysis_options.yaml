@@ -1,8 +1,2 @@
-include: package:flutter_lints/flutter.yaml
-
-analyzer:
-  enable-experiment:
-    - dot-shorthands
-
-# Additional information about this file can be found at
-# https://dart.dev/guides/language/analysis-options
+# Inherit root config (linter, formatter, dot-shorthands, etc.)
+include: ../../../analysis_options.yaml
