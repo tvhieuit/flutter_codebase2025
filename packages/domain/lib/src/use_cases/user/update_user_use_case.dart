@@ -1,5 +1,6 @@
 import 'package:app_core/app_core.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:injectable/injectable.dart';
 
 import '../../entities/user_entity.dart';
 import '../../repositories/user_repository.dart';
@@ -25,6 +26,7 @@ sealed class UpdateUserParams with _$UpdateUserParams {
 }
 
 /// Use case for updating an existing user.
+@injectable
 class UpdateUserUseCase implements UseCaseWithParams<UserEntity, UpdateUserParams> {
   final UserRepository _repository;
 

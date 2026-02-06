@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:app_core/app_core.dart';
+import 'package:injectable/injectable.dart';
 
 import '../../entities/product_entity.dart';
 import '../../repositories/product_repository.dart';
@@ -20,6 +21,7 @@ sealed class GetProductsParams with _$GetProductsParams {
 }
 
 /// Use case for getting products with filtering and pagination.
+@injectable
 class GetProductsUseCase implements UseCaseWithParams<List<ProductEntity>, GetProductsParams> {
   final ProductRepository _repository;
 
@@ -75,6 +77,7 @@ sealed class SearchProductsParams with _$SearchProductsParams {
 }
 
 /// Use case for searching products.
+@injectable
 class SearchProductsUseCase implements UseCaseWithParams<List<ProductEntity>, SearchProductsParams> {
   final ProductRepository _repository;
 
@@ -96,6 +99,7 @@ class SearchProductsUseCase implements UseCaseWithParams<List<ProductEntity>, Se
 }
 
 /// Use case for getting products by category.
+@injectable
 class GetProductsByCategoryUseCase implements UseCaseWithParams<List<ProductEntity>, String> {
   final ProductRepository _repository;
 

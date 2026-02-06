@@ -1,7 +1,10 @@
 import 'package:app_core/app_core.dart';
+import 'package:injectable/injectable.dart';
+
 import '../../../domain.dart';
 
 /// Use case for getting a user by ID.
+@injectable
 class GetUserUseCase implements UseCaseWithParams<UserEntity, int> {
   final UserRepository _repository;
 
@@ -22,6 +25,7 @@ class GetUserUseCase implements UseCaseWithParams<UserEntity, int> {
 
 /// Use case for getting the current logged-in user from cache.
 /// Note: Remote fetch requires an ID, so this primarily checks cache.
+@injectable
 class GetCurrentUserUseCase implements UseCase<UserEntity?> {
   final UserRepository _repository;
 

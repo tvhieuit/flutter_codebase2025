@@ -16,11 +16,25 @@ part 'user_bloc.freezed.dart';
 /// BLoC for managing user state and operations
 @injectable
 class UserBloc extends Bloc<UserEvent, UserState> {
-  final UserUseCase _useCase;
+  final GetCurrentUserUseCase _getCurrentUser;
+  final GetUsersUseCase _getUsers;
+  final GetUserUseCase _getUser;
+  final UpdateUserUseCase _updateUser;
+  final DeleteUserUseCase _deleteUser;
+  final UserLocalRepository _userLocalRepo;
   final AppToast _toast;
   final AppRouter _route;
 
-  UserBloc(this._useCase, this._toast, this._route) : super(UserState.initial()) {
+  UserBloc(
+    this._getCurrentUser,
+    this._getUsers,
+    this._getUser,
+    this._updateUser,
+    this._deleteUser,
+    this._userLocalRepo,
+    this._toast,
+    this._route,
+  ) : super(UserState.initial()) {
     on(_onStarted);
     on(_onLoadUsers);
     on(_onLoadUserProfile);
@@ -36,143 +50,120 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   Future<void> _onStarted(_Started event, emit) async {
     emit(state.copyWith(isLoading: true));
 
-    try {
-      final cachedUser = await _useCase.getCachedUser();
-
-      emit(
-        state.copyWith(
-          isLoading: false,
-          isInitialized: true,
-          currentUser: cachedUser,
-        ),
-      );
-
-      // Load users in background
-      add(const UserEvent.loadUsers());
-    } on Failure catch (e) {
+    final result = await _getCurrentUser();
+    final failure = result.failureOrNull;
+    if (failure != null) {
       emit(state.copyWith(isLoading: false));
-      _toast.error(e.message);
-    } catch (e) {
-      emit(state.copyWith(isLoading: false));
-      _toast.error('An unexpected error occurred');
+      _toast.error(failure.message);
+      return;
     }
+
+    emit(
+      state.copyWith(
+        isLoading: false,
+        isInitialized: true,
+        currentUser: result.dataOrNull,
+      ),
+    );
+
+    // Load users in background
+    add(const UserEvent.loadUsers());
   }
 
   /// Handle load users event
   Future<void> _onLoadUsers(_LoadUsers event, emit) async {
     emit(state.copyWith(isLoading: true));
 
-    try {
-      final users = await _useCase.getUsers(forceRefresh: event.forceRefresh);
-
-      emit(
-        state.copyWith(
-          isLoading: false,
-          users: users,
-        ),
-      );
-    } on Failure catch (e) {
-      emit(state.copyWith(isLoading: false));
-      _toast.error(e.message);
-    } catch (e) {
-      emit(state.copyWith(isLoading: false));
-      _toast.error('An unexpected error occurred');
+    // Check cache first unless force refresh
+    if (!event.forceRefresh) {
+      final cachedResult = await _userLocalRepo.getCachedUsers();
+      final cachedUsers = cachedResult.dataOrNull;
+      if (cachedUsers != null && cachedUsers.isNotEmpty) {
+        emit(state.copyWith(isLoading: false, users: cachedUsers));
+        return;
+      }
     }
+
+    final result = await _getUsers(const GetUsersParams());
+    final failure = result.failureOrNull;
+    if (failure != null) {
+      emit(state.copyWith(isLoading: false));
+      _toast.error(failure.message);
+      return;
+    }
+
+    emit(state.copyWith(isLoading: false, users: result.dataOrThrow));
   }
 
   /// Handle load user profile event
   Future<void> _onLoadUserProfile(_LoadUserProfile event, emit) async {
     emit(state.copyWith(isLoading: true));
 
-    try {
-      final user = await _useCase.getUserProfile(event.userId);
-
-      emit(
-        state.copyWith(
-          isLoading: false,
-          currentUser: user,
-        ),
-      );
-    } on Failure catch (e) {
+    final result = await _getUser(event.userId);
+    final failure = result.failureOrNull;
+    if (failure != null) {
       emit(state.copyWith(isLoading: false));
-      _toast.error(e.message);
-    } catch (e) {
-      emit(state.copyWith(isLoading: false));
-      _toast.error('An unexpected error occurred');
+      _toast.error(failure.message);
+      return;
     }
+
+    emit(state.copyWith(isLoading: false, currentUser: result.dataOrThrow));
   }
 
   /// Handle update profile event
   Future<void> _onUpdateProfile(_UpdateProfile event, emit) async {
     emit(state.copyWith(isLoading: true));
 
-    try {
-      final updatedUser = await _useCase.updateUserProfile(
-        event.userId,
-        event.data,
-      );
-
-      emit(
-        state.copyWith(
-          isLoading: false,
-          currentUser: updatedUser,
-        ),
-      );
-    } on Failure catch (e) {
+    final result = await _updateUser(
+      UpdateUserParams(
+        id: event.userId,
+        name: event.data['name'] as String?,
+        email: event.data['email'] as String?,
+        phone: event.data['phone'] as String?,
+      ),
+    );
+    final failure = result.failureOrNull;
+    if (failure != null) {
       emit(state.copyWith(isLoading: false));
-      _toast.error(e.message);
-    } catch (e) {
-      emit(state.copyWith(isLoading: false));
-      _toast.error('An unexpected error occurred');
+      _toast.error(failure.message);
+      return;
     }
+
+    emit(state.copyWith(isLoading: false, currentUser: result.dataOrThrow));
   }
 
   /// Handle delete user event
   Future<void> _onDeleteUser(_DeleteUser event, emit) async {
-    final result = await _route.push(const UserDeleteConfirmationRoute());
-    if (result == false) {
+    final confirmResult = await _route.push(const UserDeleteConfirmationRoute());
+    if (confirmResult == false) {
       return;
     }
     emit(state.copyWith(isLoading: true));
-    try {
-      await _useCase.deleteUser(event.userId);
 
-      emit(
-        state.copyWith(
-          isLoading: false,
-          currentUser: null,
-        ),
-      );
-      //todo navigate to login again
-    } on Failure catch (e) {
+    final result = await _deleteUser(event.userId);
+    final failure = result.failureOrNull;
+    if (failure != null) {
       emit(state.copyWith(isLoading: false));
-      _toast.error(e.message);
-    } catch (e) {
-      emit(state.copyWith(isLoading: false));
-      _toast.error('An unexpected error occurred');
+      _toast.error(failure.message);
+      return;
     }
+
+    emit(state.copyWith(isLoading: false, currentUser: null));
+    //todo navigate to login again
   }
 
   /// Handle logout event
   Future<void> _onLogout(_Logout event, emit) async {
     emit(state.copyWith(isLoading: true));
 
-    try {
-      await _useCase.logout();
+    await _userLocalRepo.clearAllUserData();
 
-      emit(
-        state.copyWith(
-          isLoading: false,
-          currentUser: null,
-          users: [],
-        ),
-      );
-    } on Failure catch (e) {
-      emit(state.copyWith(isLoading: false));
-      _toast.error(e.message);
-    } catch (e) {
-      emit(state.copyWith(isLoading: false));
-      _toast.error('An unexpected error occurred');
-    }
+    emit(
+      state.copyWith(
+        isLoading: false,
+        currentUser: null,
+        users: [],
+      ),
+    );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:app_core/app_core.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:injectable/injectable.dart';
 
 import '../../entities/user_entity.dart';
 import '../../repositories/user_repository.dart';
@@ -21,6 +22,7 @@ sealed class CreateUserParams with _$CreateUserParams {
 /// Use case for creating a new user.
 ///
 /// Includes comprehensive validation before creating.
+@injectable
 class CreateUserUseCase implements UseCaseWithParams<UserEntity, CreateUserParams> {
   final UserRepository _repository;
 

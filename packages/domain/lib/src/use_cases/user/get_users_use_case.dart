@@ -1,5 +1,6 @@
 import 'package:app_core/app_core.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:injectable/injectable.dart';
 
 import '../../entities/user_entity.dart';
 import '../../repositories/user_repository.dart';
@@ -21,6 +22,7 @@ sealed class GetUsersParams with _$GetUsersParams {
 ///   const GetUsersParams(page: 1, limit: 20),
 /// );
 /// ```
+@injectable
 class GetUsersUseCase implements UseCaseWithParams<List<UserEntity>, GetUsersParams> {
   final UserRepository _repository;
 
@@ -62,6 +64,7 @@ sealed class SearchUsersParams with _$SearchUsersParams {
 }
 
 /// Use case for searching users.
+@injectable
 class SearchUsersUseCase implements UseCaseWithParams<List<UserEntity>, SearchUsersParams> {
   final UserRepository _repository;
 

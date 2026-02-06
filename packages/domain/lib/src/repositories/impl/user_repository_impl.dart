@@ -80,7 +80,7 @@ class UserRepositoryImpl implements UserRepository {
       final data = {
         'name': name,
         'email': email,
-        if (phone != null) 'phone': phone,
+        ?'phone': phone,
       };
 
       final response = await _dio.post('/users', data: data);

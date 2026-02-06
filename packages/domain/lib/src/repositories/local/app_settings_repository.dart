@@ -1,8 +1,4 @@
-import 'package:injectable/injectable.dart';
-
 import 'package:app_core/app_core.dart';
-import 'local_storage.dart';
-import '../impl/local_storage_keys.dart';
 
 /// Theme mode enum
 enum AppThemeMode { light, dark, system }

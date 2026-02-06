@@ -1,9 +1,12 @@
-import '../../entities/product_entity.dart';
 import 'package:app_core/app_core.dart';
+import 'package:injectable/injectable.dart';
+
+import '../../entities/product_entity.dart';
 import '../../repositories/product_repository.dart';
 import '../base_use_case.dart';
 
 /// Use case for getting a product by ID.
+@injectable
 class GetProductUseCase implements UseCaseWithParams<ProductEntity, int> {
   final ProductRepository _repository;
 
@@ -25,14 +28,14 @@ class GetProductUseCase implements UseCaseWithParams<ProductEntity, int> {
 }
 
 /// Use case for getting featured products.
+@injectable
 class GetFeaturedProductsUseCase implements UseCase<List<ProductEntity>> {
   final ProductRepository _repository;
-  final int limit;
 
-  GetFeaturedProductsUseCase(this._repository, {this.limit = 10});
+  GetFeaturedProductsUseCase(this._repository);
 
   @override
   Future<Result<List<ProductEntity>>> call() async {
-    return await _repository.getFeaturedProducts(limit: limit);
+    return await _repository.getFeaturedProducts();
   }
 }

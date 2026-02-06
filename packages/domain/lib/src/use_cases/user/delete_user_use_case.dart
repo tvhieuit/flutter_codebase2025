@@ -1,8 +1,11 @@
 import 'package:app_core/app_core.dart';
+import 'package:injectable/injectable.dart';
+
 import '../../repositories/user_repository.dart';
 import '../base_use_case.dart';
 
 /// Use case for deleting a user.
+@injectable
 class DeleteUserUseCase implements UseCaseWithParams<void, int> {
   final UserRepository _repository;
 
