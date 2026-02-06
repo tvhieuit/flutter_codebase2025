@@ -67,10 +67,7 @@ abstract class AppSettingsLocalizations {
   final String localeName;
 
   static AppSettingsLocalizations of(BuildContext context) {
-    return Localizations.of<AppSettingsLocalizations>(
-      context,
-      AppSettingsLocalizations,
-    )!;
+    return Localizations.of<AppSettingsLocalizations>(context, AppSettingsLocalizations)!;
   }
 
   static const LocalizationsDelegate<AppSettingsLocalizations> delegate = _AppSettingsLocalizationsDelegate();
@@ -93,10 +90,7 @@ abstract class AppSettingsLocalizations {
   ];
 
   /// A list of this localizations delegate's supported locales.
-  static const List<Locale> supportedLocales = <Locale>[
-    Locale('en'),
-    Locale('ko'),
-  ];
+  static const List<Locale> supportedLocales = <Locale>[Locale('en'), Locale('ko')];
 
   /// No description provided for @settingsTitle.
   ///
@@ -158,9 +152,7 @@ class _AppSettingsLocalizationsDelegate extends LocalizationsDelegate<AppSetting
 
   @override
   Future<AppSettingsLocalizations> load(Locale locale) {
-    return SynchronousFuture<AppSettingsLocalizations>(
-      lookupAppSettingsLocalizations(locale),
-    );
+    return SynchronousFuture<AppSettingsLocalizations>(lookupAppSettingsLocalizations(locale));
   }
 
   @override

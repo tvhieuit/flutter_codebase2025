@@ -235,9 +235,7 @@ class _AuthLocalizationsDelegate extends LocalizationsDelegate<AuthLocalizations
 
   @override
   Future<AuthLocalizations> load(Locale locale) {
-    return SynchronousFuture<AuthLocalizations>(
-      lookupAuthLocalizations(locale),
-    );
+    return SynchronousFuture<AuthLocalizations>(lookupAuthLocalizations(locale));
   }
 
   @override
