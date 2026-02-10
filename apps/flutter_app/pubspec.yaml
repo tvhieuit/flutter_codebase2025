@@ -42,6 +42,7 @@ dependencies:
   permission_handler: any
 
   # Internal Packages
+  data: any
   app_utility: any
   app_widget: any
   app_core: any

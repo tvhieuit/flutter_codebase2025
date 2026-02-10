@@ -21,7 +21,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   final GetUserUseCase _getUser;
   final UpdateUserUseCase _updateUser;
   final DeleteUserUseCase _deleteUser;
-  final UserLocalRepository _userLocalRepo;
+  final GetCachedUsersUseCase _getCachedUsers;
+  final ClearUserDataUseCase _clearUserData;
   final AppToast _toast;
   final AppRouter _route;
 
@@ -31,7 +32,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     this._getUser,
     this._updateUser,
     this._deleteUser,
-    this._userLocalRepo,
+    this._getCachedUsers,
+    this._clearUserData,
     this._toast,
     this._route,
   ) : super(UserState.initial()) {
@@ -76,7 +78,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
     // Check cache first unless force refresh
     if (!event.forceRefresh) {
-      final cachedResult = await _userLocalRepo.getCachedUsers();
+      final cachedResult = await _getCachedUsers();
       final cachedUsers = cachedResult.dataOrNull;
       if (cachedUsers != null && cachedUsers.isNotEmpty) {
         emit(state.copyWith(isLoading: false, users: cachedUsers));
@@ -156,7 +158,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   Future<void> _onLogout(_Logout event, emit) async {
     emit(state.copyWith(isLoading: true));
 
-    await _userLocalRepo.clearAllUserData();
+    await _clearUserData();
 
     emit(
       state.copyWith(

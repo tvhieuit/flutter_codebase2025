@@ -1,5 +1,6 @@
 import 'package:app_core/app_core.dart';
 import 'package:app_widget/app_widget.dart';
+import 'package:data/data.dart';
 import 'package:feature_app_settings/app_settings.dart';
 import 'package:feature_auth/auth.dart';
 import 'package:get_it/get_it.dart';
@@ -20,7 +21,10 @@ void configureDependencies() {
   // Initialize widget package dependencies
   initWidgetPackage();
 
-  // Initialize domain package dependencies
+  // Initialize data package dependencies (repo implementations, Dio, SharedPrefs)
+  initDataPackage();
+
+  // Initialize domain package dependencies (use cases)
   initDomainPackage();
 
   // Initialize auth package dependencies

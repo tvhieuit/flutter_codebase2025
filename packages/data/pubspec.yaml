@@ -1,0 +1,37 @@
+name: data
+description: Data layer containing repository implementations, network, and local storage
+publish_to: 'none'
+version: 0.0.1
+
+resolution: workspace
+
+environment:
+  sdk: '>=3.9.0 <4.0.0'
+
+dependencies:
+  # Internal packages
+  domain: any
+  app_core: any
+
+  # Dependency Injection
+  get_it: any
+  injectable: any
+
+  # Networking
+  dio: any
+
+  # Local Storage
+  shared_preferences: any
+
+  # Code Generation
+  freezed_annotation: any
+  json_annotation: any
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: any
+
+  # Code Generation
+  build_runner: any
+  injectable_generator: any

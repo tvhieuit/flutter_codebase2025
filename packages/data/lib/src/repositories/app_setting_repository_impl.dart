@@ -1,8 +1,8 @@
 import 'package:app_core/app_core.dart';
+import 'package:domain/domain.dart';
 import 'package:injectable/injectable.dart';
 
-import '../../../domain.dart';
-import 'local_storage_keys.dart';
+import '../storage/storage_keys.dart';
 
 /// Implementation of [AppSettingsRepository] using [LocalStorage].
 @LazySingleton(as: AppSettingsRepository)
@@ -16,16 +16,13 @@ class AppSettingsRepositoryImpl implements AppSettingsRepository {
     try {
       final modeString = await _storage.getString(StorageKeys.themeMode);
       if (modeString == null) return const Result.success(AppThemeMode.system);
-
       final mode = AppThemeMode.values.firstWhere(
         (e) => e.name == modeString,
         orElse: () => AppThemeMode.system,
       );
       return Result.success(mode);
     } catch (e) {
-      return Result.failure(
-        Failure.cache(message: 'Failed to get theme mode: $e'),
-      );
+      return Result.failure(Failure.cache(message: 'Failed to get theme mode: $e'));
     }
   }
 
@@ -35,9 +32,7 @@ class AppSettingsRepositoryImpl implements AppSettingsRepository {
       await _storage.setString(StorageKeys.themeMode, mode.name);
       return const Result.success(null);
     } catch (e) {
-      return Result.failure(
-        Failure.cache(message: 'Failed to set theme mode: $e'),
-      );
+      return Result.failure(Failure.cache(message: 'Failed to set theme mode: $e'));
     }
   }
 
@@ -47,9 +42,7 @@ class AppSettingsRepositoryImpl implements AppSettingsRepository {
       final code = await _storage.getString(StorageKeys.languageCode);
       return Result.success(code);
     } catch (e) {
-      return Result.failure(
-        Failure.cache(message: 'Failed to get language code: $e'),
-      );
+      return Result.failure(Failure.cache(message: 'Failed to get language code: $e'));
     }
   }
 
@@ -59,9 +52,7 @@ class AppSettingsRepositoryImpl implements AppSettingsRepository {
       await _storage.setString(StorageKeys.languageCode, code);
       return const Result.success(null);
     } catch (e) {
-      return Result.failure(
-        Failure.cache(message: 'Failed to set language code: $e'),
-      );
+      return Result.failure(Failure.cache(message: 'Failed to set language code: $e'));
     }
   }
 
@@ -69,12 +60,9 @@ class AppSettingsRepositoryImpl implements AppSettingsRepository {
   Future<Result<bool>> isFirstLaunch() async {
     try {
       final isFirst = await _storage.getBool(StorageKeys.isFirstLaunch);
-      // If null (never set), this is first launch
       return Result.success(isFirst ?? true);
     } catch (e) {
-      return Result.failure(
-        Failure.cache(message: 'Failed to get first launch status: $e'),
-      );
+      return Result.failure(Failure.cache(message: 'Failed to get first launch status: $e'));
     }
   }
 
@@ -84,9 +72,7 @@ class AppSettingsRepositoryImpl implements AppSettingsRepository {
       await _storage.setBool(StorageKeys.isFirstLaunch, false);
       return const Result.success(null);
     } catch (e) {
-      return Result.failure(
-        Failure.cache(message: 'Failed to set first launch status: $e'),
-      );
+      return Result.failure(Failure.cache(message: 'Failed to set first launch status: $e'));
     }
   }
 
@@ -96,9 +82,7 @@ class AppSettingsRepositoryImpl implements AppSettingsRepository {
       final completed = await _storage.getBool(StorageKeys.onboardingCompleted);
       return Result.success(completed ?? false);
     } catch (e) {
-      return Result.failure(
-        Failure.cache(message: 'Failed to get onboarding status: $e'),
-      );
+      return Result.failure(Failure.cache(message: 'Failed to get onboarding status: $e'));
     }
   }
 
@@ -108,23 +92,17 @@ class AppSettingsRepositoryImpl implements AppSettingsRepository {
       await _storage.setBool(StorageKeys.onboardingCompleted, true);
       return const Result.success(null);
     } catch (e) {
-      return Result.failure(
-        Failure.cache(message: 'Failed to set onboarding status: $e'),
-      );
+      return Result.failure(Failure.cache(message: 'Failed to set onboarding status: $e'));
     }
   }
 
   @override
   Future<Result<bool>> isPushNotificationEnabled() async {
     try {
-      final enabled = await _storage.getBool(
-        StorageKeys.pushNotificationEnabled,
-      );
-      return Result.success(enabled ?? true); // Default to enabled
+      final enabled = await _storage.getBool(StorageKeys.pushNotificationEnabled);
+      return Result.success(enabled ?? true);
     } catch (e) {
-      return Result.failure(
-        Failure.cache(message: 'Failed to get push notification status: $e'),
-      );
+      return Result.failure(Failure.cache(message: 'Failed to get push notification status: $e'));
     }
   }
 
@@ -134,9 +112,7 @@ class AppSettingsRepositoryImpl implements AppSettingsRepository {
       await _storage.setBool(StorageKeys.pushNotificationEnabled, enabled);
       return const Result.success(null);
     } catch (e) {
-      return Result.failure(
-        Failure.cache(message: 'Failed to set push notification status: $e'),
-      );
+      return Result.failure(Failure.cache(message: 'Failed to set push notification status: $e'));
     }
   }
 
@@ -149,9 +125,7 @@ class AppSettingsRepositoryImpl implements AppSettingsRepository {
       // Don't clear first launch and onboarding flags
       return const Result.success(null);
     } catch (e) {
-      return Result.failure(
-        Failure.cache(message: 'Failed to clear settings: $e'),
-      );
+      return Result.failure(Failure.cache(message: 'Failed to clear settings: $e'));
     }
   }
 }

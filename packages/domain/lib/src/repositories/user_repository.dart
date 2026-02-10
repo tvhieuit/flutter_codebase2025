@@ -32,19 +32,4 @@ abstract class UserRepository {
 
   /// Searches users by query string.
   Future<Result<List<UserEntity>>> searchUsers(String query);
-
-  /// Gets cached user from local storage.
-  Future<Result<UserEntity?>> getCachedUser();
-
-  /// Saves user to local cache.
-  Future<Result<void>> cacheUser(UserEntity user);
-
-  /// Clears user from local cache.
-  Future<Result<void>> clearCachedUser();
-
-  /// Saves list of users to local cache.
-  Future<Result<void>> cacheUserList(List<UserEntity> users);
-
-  /// Gets cached user list from local storage.
-  Future<Result<List<UserEntity>>> getCachedUserList();
 }

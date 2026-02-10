@@ -1,7 +1,9 @@
 import 'package:app_core/app_core.dart';
 import 'package:injectable/injectable.dart';
 
-import '../../../domain.dart';
+import '../../entities/auth/auth_token.dart';
+import '../../repositories/auth_repository.dart';
+import '../base_use_case.dart';
 
 /// Use case for refreshing the access token.
 @injectable

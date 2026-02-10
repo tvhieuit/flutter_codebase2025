@@ -1,7 +1,9 @@
 import 'package:app_core/app_core.dart';
 import 'package:injectable/injectable.dart';
 
-import '../../../domain.dart';
+import '../../repositories/auth_repository.dart';
+import '../../repositories/local/user_local_repository.dart';
+import '../base_use_case.dart';
 
 /// Use case for logging out the current user.
 ///

@@ -1,7 +1,11 @@
 import 'package:app_core/app_core.dart';
 import 'package:injectable/injectable.dart';
 
-import '../../../domain.dart';
+import '../../entities/auth/auth_credentials.dart';
+import '../../entities/auth/auth_token.dart';
+import '../../repositories/auth_repository.dart';
+import '../base_use_case.dart';
+import 'auth_input_validators.dart';
 
 /// Use case for registering a new user.
 @injectable
@@ -12,19 +16,15 @@ class RegisterUseCase implements UseCaseWithParams<AuthToken, RegisterCredential
 
   @override
   Future<Result<AuthToken>> call(RegisterCredentials credentials) async {
-    // Validate name
     final nameValidation = AuthInputValidators.validateName(credentials.name);
     if (nameValidation != null) return Result.failure(nameValidation);
 
-    // Validate email
     final emailValidation = AuthInputValidators.validateEmail(credentials.email);
     if (emailValidation != null) return Result.failure(emailValidation);
 
-    // Validate password
     final passwordValidation = AuthInputValidators.validatePassword(credentials.password);
     if (passwordValidation != null) return Result.failure(passwordValidation);
 
-    // Validate confirm password
     final confirmValidation = AuthInputValidators.validateConfirmPassword(
       credentials.password,
       credentials.confirmPassword,

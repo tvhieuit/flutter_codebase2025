@@ -1,7 +1,11 @@
 import 'package:app_core/app_core.dart';
 import 'package:injectable/injectable.dart';
 
-import '../../../domain.dart';
+import '../../entities/auth/auth_credentials.dart';
+import '../../entities/auth/auth_token.dart';
+import '../../repositories/auth_repository.dart';
+import '../base_use_case.dart';
+import 'auth_input_validators.dart';
 
 /// Use case for logging in with email and password.
 @injectable
@@ -12,11 +16,9 @@ class LoginUseCase implements UseCaseWithParams<AuthToken, LoginCredentials> {
 
   @override
   Future<Result<AuthToken>> call(LoginCredentials credentials) async {
-    // Validate email
     final emailValidation = AuthInputValidators.validateEmail(credentials.email);
     if (emailValidation != null) return Result.failure(emailValidation);
 
-    // Validate password
     final passwordValidation = AuthInputValidators.validatePassword(credentials.password);
     if (passwordValidation != null) return Result.failure(passwordValidation);
 

@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:domain/domain.dart';
 import 'package:injectable/injectable.dart';
-
-import '../repositories/repositories.dart';
 
 /// Interceptor to handle authentication headers and automated token refresh.
 @Named('auth_interceptor')
@@ -35,7 +34,6 @@ class AuthInterceptor extends Interceptor {
       // Logic for token refresh can be implemented here if needed,
       // but usually it's better to handle it in a way that doesn't
       // cause circular dependencies. For now, we'll just pass the error.
-      // If we need to retry, we'd ideally use a separate Dio instance.
     }
 
     handler.next(err);

@@ -2,15 +2,10 @@ import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Domain layer dependency injection module.
-///
-/// Registers external dependencies that can't be auto-injected.
+/// Data layer dependency injection module.
 @module
-abstract class DomainModule {
+abstract class DataModule {
   /// Provides SharedPreferencesAsync instance.
-  ///
-  /// This is a lazy singleton - created when first requested.
-  /// Uses the new async-only API (no local cache).
   @lazySingleton
   SharedPreferencesAsync get sharedPreferencesAsync => SharedPreferencesAsync();
 
@@ -31,13 +26,10 @@ abstract class DomainModule {
         },
       ),
     );
-
-    // Add interceptors
     dio.interceptors.addAll([
       authInterceptor,
       LogInterceptor(responseBody: true, requestBody: true),
     ]);
-
     return dio;
   }
 

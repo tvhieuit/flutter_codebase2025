@@ -2,21 +2,19 @@ import 'dart:convert';
 
 import 'package:app_core/app_core.dart';
 import 'package:dio/dio.dart';
+import 'package:domain/domain.dart';
 import 'package:injectable/injectable.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../domain.dart';
-
-/// Implementation of [UserRepository] using Dio for remote data and SharedPreferences for local cache.
+/// Implementation of [UserRepository] using Dio for remote data and LocalStorage for local cache.
 @Injectable(as: UserRepository)
 class UserRepositoryImpl implements UserRepository {
   final Dio _dio;
-  final SharedPreferencesAsync _prefs;
+  final LocalStorage _localStorage;
+
+  UserRepositoryImpl(this._dio, this._localStorage);
 
   static const String _keyUser = 'user';
   static const String _keyUserList = 'user_list';
-
-  UserRepositoryImpl(this._dio, this._prefs);
 
   @override
   Future<Result<UserEntity>> getUserById(int id) async {
@@ -25,14 +23,14 @@ class UserRepositoryImpl implements UserRepository {
       final user = UserEntity.fromJson(response.data);
 
       // Update cache
-      await cacheUser(user);
+      await _cacheUser(user);
 
       return Result.success(user);
     } on DioException catch (e) {
       // Try to get from cache as fallback
-      final cached = await getCachedUser();
-      if (cached is ResultSuccess<UserEntity?> && cached.data != null && cached.data!.id == id) {
-        return Result.success(cached.data!);
+      final cached = await _getCachedUser();
+      if (cached != null && cached.id == id) {
+        return Result.success(cached);
       }
       return Result.failure(_handleDioError(e));
     } catch (e) {
@@ -55,14 +53,14 @@ class UserRepositoryImpl implements UserRepository {
       final users = data.map((json) => UserEntity.fromJson(json)).toList();
 
       // Update cache
-      await cacheUserList(users);
+      await _cacheUserList(users);
 
       return Result.success(users);
     } on DioException catch (e) {
       // Try to get from cache as fallback
-      final cached = await getCachedUserList();
-      if (cached is ResultSuccess<List<UserEntity>> && cached.data.isNotEmpty) {
-        return Result.success(cached.data);
+      final cached = await _getCachedUserList();
+      if (cached.isNotEmpty) {
+        return Result.success(cached);
       }
       return Result.failure(_handleDioError(e));
     } catch (e) {
@@ -77,17 +75,17 @@ class UserRepositoryImpl implements UserRepository {
     String? phone,
   }) async {
     try {
-      final data = {
+      final data = <String, dynamic>{
         'name': name,
         'email': email,
-        ?'phone': phone,
+        if (phone != null) 'phone': phone,
       };
 
       final response = await _dio.post('/users', data: data);
       final user = UserEntity.fromJson(response.data);
 
       // Update cache
-      await cacheUser(user);
+      await _cacheUser(user);
 
       return Result.success(user);
     } on DioException catch (e) {
@@ -114,7 +112,7 @@ class UserRepositoryImpl implements UserRepository {
       final user = UserEntity.fromJson(response.data);
 
       // Update cache
-      await cacheUser(user);
+      await _cacheUser(user);
 
       return Result.success(user);
     } on DioException catch (e) {
@@ -146,7 +144,7 @@ class UserRepositoryImpl implements UserRepository {
   Future<Result<void>> deleteUser(int id) async {
     try {
       await _dio.delete('/users/$id');
-      await clearCachedUser();
+      await _clearCachedUser();
       return const Result.success(null);
     } on DioException catch (e) {
       return Result.failure(_handleDioError(e));
@@ -155,65 +153,48 @@ class UserRepositoryImpl implements UserRepository {
     }
   }
 
-  // --- Local Cache ---
+  // --- Private Cache Methods ---
 
-  @override
-  Future<Result<UserEntity?>> getCachedUser() async {
+  Future<UserEntity?> _getCachedUser() async {
     try {
-      final json = await _prefs.getString(_keyUser);
-      if (json == null) return const Result.success(null);
-
+      final json = await _localStorage.getString(_keyUser);
+      if (json == null) return null;
       final Map<String, dynamic> data = jsonDecode(json);
-      return Result.success(UserEntity.fromJson(data));
+      return UserEntity.fromJson(data);
     } catch (e) {
-      return Result.failure(Failure.cache(message: e.toString()));
+      return null;
     }
   }
 
-  @override
-  Future<Result<void>> cacheUser(UserEntity user) async {
+  Future<void> _cacheUser(UserEntity user) async {
     try {
       final json = jsonEncode(user.toJson());
-      await _prefs.setString(_keyUser, json);
-      return const Result.success(null);
-    } catch (e) {
-      return Result.failure(Failure.cache(message: e.toString()));
-    }
+      await _localStorage.setString(_keyUser, json);
+    } catch (_) {}
   }
 
-  @override
-  Future<Result<void>> clearCachedUser() async {
+  Future<void> _clearCachedUser() async {
     try {
-      await _prefs.remove(_keyUser);
-      return const Result.success(null);
-    } catch (e) {
-      return Result.failure(Failure.cache(message: e.toString()));
-    }
+      await _localStorage.remove(_keyUser);
+    } catch (_) {}
   }
 
-  @override
-  Future<Result<void>> cacheUserList(List<UserEntity> users) async {
+  Future<void> _cacheUserList(List<UserEntity> users) async {
     try {
       final jsonList = users.map((user) => user.toJson()).toList();
       final json = jsonEncode(jsonList);
-      await _prefs.setString(_keyUserList, json);
-      return const Result.success(null);
-    } catch (e) {
-      return Result.failure(Failure.cache(message: e.toString()));
-    }
+      await _localStorage.setString(_keyUserList, json);
+    } catch (_) {}
   }
 
-  @override
-  Future<Result<List<UserEntity>>> getCachedUserList() async {
+  Future<List<UserEntity>> _getCachedUserList() async {
     try {
-      final json = await _prefs.getString(_keyUserList);
-      if (json == null) return const Result.success([]);
-
+      final json = await _localStorage.getString(_keyUserList);
+      if (json == null) return [];
       final List<dynamic> data = jsonDecode(json);
-      final users = data.map((item) => UserEntity.fromJson(item)).toList();
-      return Result.success(users);
+      return data.map((item) => UserEntity.fromJson(item)).toList();
     } catch (e) {
-      return Result.failure(Failure.cache(message: e.toString()));
+      return [];
     }
   }
 

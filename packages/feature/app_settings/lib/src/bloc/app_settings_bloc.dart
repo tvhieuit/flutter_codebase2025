@@ -4,7 +4,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 
-import '../use_case/app_settings_use_case.dart';
+import '../use_case/get_locale_use_case.dart';
+import '../use_case/get_theme_mode_use_case.dart';
+import '../use_case/set_locale_use_case.dart';
+import '../use_case/set_theme_mode_use_case.dart';
 
 part 'app_settings_bloc.freezed.dart';
 part 'app_settings_event.dart';
@@ -12,9 +15,17 @@ part 'app_settings_state.dart';
 
 @injectable
 class AppSettingsBloc extends Bloc<AppSettingsEvent, AppSettingsState> {
-  final AppSettingsUseCase _useCase;
+  final GetThemeModeUseCase _getThemeModeUseCase;
+  final SetThemeModeUseCase _setThemeModeUseCase;
+  final GetLocaleUseCase _getLocaleUseCase;
+  final SetLocaleUseCase _setLocaleUseCase;
 
-  AppSettingsBloc(this._useCase) : super(AppSettingsState.initial()) {
+  AppSettingsBloc(
+    this._getThemeModeUseCase,
+    this._setThemeModeUseCase,
+    this._getLocaleUseCase,
+    this._setLocaleUseCase,
+  ) : super(AppSettingsState.initial()) {
     on(_onStarted);
     on(_onThemeModeChanged);
     on(_onLocaleChanged);
@@ -23,39 +34,27 @@ class AppSettingsBloc extends Bloc<AppSettingsEvent, AppSettingsState> {
   }
 
   Future<void> _onStarted(_Started event, emit) async {
-    try {
-      final themeModeResult = await _useCase.getThemeMode();
-      assert(themeModeResult.failure != null, themeModeResult.failure);
-      final themeMode = themeModeResult.data;
+    final themeModeResult = await _getThemeModeUseCase();
+    final themeMode = themeModeResult.dataOrNull;
 
-      final localeResult = await _useCase.getLocale();
-      assert(localeResult.failure != null, localeResult.failure);
-      final locale = localeResult.data;
+    final localeResult = await _getLocaleUseCase();
+    final locale = localeResult.dataOrNull;
 
-      emit(
-        state.copyWith(
-          themeMode: themeMode ?? ThemeMode.system,
-          locale: locale,
-        ),
-      );
-    } catch (_) {
-      emit(state.copyWith(themeMode: ThemeMode.system, locale: null));
-    }
+    emit(
+      state.copyWith(
+        themeMode: themeMode ?? ThemeMode.system,
+        locale: locale,
+      ),
+    );
   }
 
   Future<void> _onThemeModeChanged(_ThemeModeChanged event, emit) async {
     emit(state.copyWith(themeMode: event.themeMode));
-    try {
-      final result = await _useCase.setThemeMode(event.themeMode);
-      assert(result.failure != null, result.failure);
-    } catch (_) {}
+    await _setThemeModeUseCase(event.themeMode);
   }
 
   Future<void> _onLocaleChanged(_LocaleChanged event, emit) async {
     emit(state.copyWith(locale: event.locale));
-    try {
-      final result = await _useCase.setLocale(event.locale);
-      assert(result.failure != null, result.failure);
-    } catch (_) {}
+    await _setLocaleUseCase(event.locale);
   }
 }

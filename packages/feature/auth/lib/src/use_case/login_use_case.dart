@@ -1,5 +1,6 @@
 import 'package:app_core/app_core.dart';
-import 'package:domain/domain.dart';
+import 'package:domain/domain.dart'
+    hide LoginUseCase, RegisterUseCase, LogoutUseCase, RefreshTokenUseCase, AuthInputValidators;
 import 'package:injectable/injectable.dart';
 
 import 'auth_input_validators.dart';
