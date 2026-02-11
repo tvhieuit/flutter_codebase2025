@@ -10,7 +10,8 @@ flutter_codebase2025/
 │   └── flutter_app/              # Main multi-feature development app
 ├── packages/                     # Shared packages
 │   ├── app_core/                 # Core shared (Result, Failure, annotations)
-│   ├── domain/                   # Domain layer (entities, use cases, repo interfaces)
+│   ├── domain/                   # Domain layer (entities, repo interfaces)
+│   ├── use_cases/                # Use case layer (application logic)
 │   ├── data/                     # Data layer (repo implementations, network, storage)
 │   ├── feature/                  # Feature packages
 │   │   ├── auth/                 # Authentication feature
@@ -103,40 +104,32 @@ apps/
 
 #### Domain Package (`packages/domain/`)
 
-Pure business logic - entities, use cases, and repository interfaces only (no infrastructure dependencies):
+Pure business logic - entities and repository interfaces ONLY (no infrastructure dependencies, no use cases):
 
 ```
 packages/domain/
 ├── lib/
 │   ├── domain.dart               # Main export
 │   └── src/
-│       ├── di/                   # Dependency injection (use cases only)
+#### Use Cases Package (`packages/use_cases/`)
+
+Application logic - contains all core use cases. Depends on `domain`:
+
+```
+packages/use_cases/
+├── lib/
+│   ├── use_cases.dart            # Main export
+│   └── src/
+│       ├── di/                   # Dependency injection
 │       │   ├── di.dart
 │       │   └── injection.dart
-│       ├── entities/             # Business models
-│       │   ├── entities.dart
-│       │   ├── user_entity.dart
-│       │   ├── product_entity.dart
-│       │   └── auth/
-│       │       ├── auth_token.dart
-│       │       └── auth_credentials.dart
-│       ├── repositories/         # Repository interfaces ONLY (no implementations)
-│       │   ├── repositories.dart
-│       │   ├── user_repository.dart
-│       │   ├── product_repository.dart
-│       │   ├── auth_repository.dart
-│       │   └── local/
-│       │       ├── local.dart
-│       │       ├── local_storage.dart
-│       │       ├── user_local_repository.dart
-│       │       └── app_settings_repository.dart
-│       └── use_cases/            # Business logic
-│           ├── use_cases.dart
-│           ├── base_use_case.dart
-│           ├── auth/
-│           ├── user/
-│           └── product/
+│       ├── use_cases.dart
+│       ├── base_use_case.dart
+│       ├── auth/
+│       ├── user/
+│       └── product/
 └── pubspec.yaml
+```
 ```
 
 #### Data Package (`packages/data/`)
@@ -304,15 +297,15 @@ workspace:
 - **Key Files**: `*_bloc.dart`, `*_event.dart`, `*_state.dart`, `*_page.dart`
 
 ### Business Logic Layer
-- **Location**: `lib/use_case/`, `packages/domain/lib/src/use_cases/`
+- **Location**: `packages/use_cases/lib/src/`
 - **Pattern**: Single-responsibility use cases
 - **Key Files**: `*_use_case.dart`
 
 ### Domain Layer
 - **Location**: `packages/domain/`
 - **Pattern**: Clean Architecture core - pure business logic only
-- **Key Files**: Entities, Use Cases, Repository Interfaces
-- **Dependencies**: `app_core` only (no Dio, no SharedPreferences)
+- **Key Files**: Entities, Repository Interfaces
+- **Dependencies**: `app_core` only (no Dio, no SharedPreferences, no Use Cases)
 
 ### Data Layer
 - **Location**: `packages/data/`
@@ -335,6 +328,14 @@ workspace:
 │                    Feature Packages                          │
 │  ┌─────────────┐                                            │
 │  │ feature_auth│  (feature_app_settings)                    │
+│  └──────┬──────┘                                            │
+└─────────┼───────────────────────────────────────────────────┘
+          │
+          ▼
+┌─────────────────────────────────────────────────────────────┐
+│                      Use Cases Package                       │
+│  ┌─────────────┐                                            │
+│  │  use_cases  │                                            │
 │  └──────┬──────┘                                            │
 └─────────┼───────────────────────────────────────────────────┘
           │

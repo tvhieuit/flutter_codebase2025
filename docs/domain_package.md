@@ -1,8 +1,6 @@
 # Domain Package Guide
 
-## Overview
-
-The `packages/domain` package contains the core business logic following Clean Architecture principles. It's a pure Dart package with Freezed for immutability.
+The `packages/domain` package contains the core business models (entities) and repository interfaces following Clean Architecture principles. It's a pure Dart package with Freezed for immutability.
 
 ## Installation
 
@@ -21,7 +19,7 @@ packages/domain/
 ├── lib/
 │   ├── domain.dart                    # Main export file
 │   └── src/
-│       ├── di/                        # Dependency Injection (use cases only)
+│       ├── di/                        # Dependency Injection (export initialization)
 │       │   ├── di.dart
 │       │   └── injection.dart
 │       ├── entities/                  # Business models (@modelFreezed)
@@ -31,24 +29,22 @@ packages/domain/
 │       │   └── auth/
 │       │       ├── auth_token.dart
 │       │       └── auth_credentials.dart
-│       ├── repositories/              # Repository interfaces ONLY (no implementations)
-│       │   ├── repositories.dart
-│       │   ├── user_repository.dart
-│       │   ├── product_repository.dart
-│       │   ├── auth_repository.dart
-│       │   └── local/
-│       │       ├── local.dart
-│       │       ├── local_storage.dart
-│       │       ├── user_local_repository.dart
-│       │       └── app_settings_repository.dart
-│       └── use_cases/                 # Business logic
-│           ├── use_cases.dart
-│           ├── base_use_case.dart
-│           ├── auth/
-│           ├── user/
-│           └── product/
+│       └── repositories/              # Repository interfaces ONLY (no implementations)
+│           ├── repositories.dart
+│           ├── user_repository.dart
+│           ├── product_repository.dart
+│           ├── auth_repository.dart
+│           └── local/
+│               ├── local.dart
+│               ├── local_storage.dart
+│               ├── user_local_repository.dart
+│               └── app_settings_repository.dart
 ├── pubspec.yaml
 └── readme.md
+```
+
+> **Note**: Use Cases have been moved to their own package: `packages/use_cases`.
+> See [layers_interaction.md](./layers_interaction.md) for more details.
 ```
 
 > **Note**: Repository implementations, network code (AuthInterceptor), storage keys,
@@ -302,88 +298,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
 }
 ```
 
-## Use Cases
-
-### Base Use Case Interfaces
-
-```dart
-import 'package:domain/domain.dart';
-
-// Without parameters
-abstract class UseCase<T> {
-  Future<Result<T>> call();
-}
-
-// With parameters
-abstract class UseCaseWithParams<T, Params> {
-  Future<Result<T>> call(Params params);
-}
-
-// Stream-based
-abstract class StreamUseCase<T> {
-  Stream<Result<T>> call();
-}
-```
-
-### Creating Use Cases
-
-```dart
-import 'package:domain/domain.dart';
-
-// Use case with validation
-class GetUserUseCase implements UseCaseWithParams<UserEntity, int> {
-  final UserRepository _repository;
-  
-  GetUserUseCase(this._repository);
-  
-  @override
-  Future<Result<UserEntity>> call(int userId) async {
-    // Validation
-    if (userId <= 0) {
-      return const Result.failure(
-        Failure.validation(message: 'Invalid user ID'),
-      );
-    }
-    
-    return await _repository.getUserById(userId);
-  }
-}
-
-// Use case with Freezed params
-@paramsFreezed
-sealed class CreateUserParams with _$CreateUserParams {
-  const factory CreateUserParams({
-    required String name,
-    required String email,
-    String? phone,
-  }) = _CreateUserParams;
-}
-
-class CreateUserUseCase implements UseCaseWithParams<UserEntity, CreateUserParams> {
-  final UserRepository _repository;
-  
-  CreateUserUseCase(this._repository);
-  
-  @override
-  Future<Result<UserEntity>> call(CreateUserParams params) async {
-    // Validate name
-    if (params.name.trim().isEmpty) {
-      return Result.failure(Failure.required('Name'));
-    }
-    
-    // Validate email
-    if (!params.email.contains('@')) {
-      return Result.failure(Failure.invalidEmail());
-    }
-    
-    return await _repository.createUser(
-      name: params.name.trim(),
-      email: params.email.trim().toLowerCase(),
-      phone: params.phone?.trim(),
-    );
-  }
-}
-```
+> **Important**: The documentation below on use cases is for reference only if you are implementing local use cases in features. All core use cases are now located in `packages/use_cases`.
 
 ## Dependency Injection Setup
 
@@ -586,7 +501,6 @@ import 'package:domain/domain.dart';
 // This gives you access to:
 // - Entities: UserEntity, ProductEntity, AuthToken, AuthCredentials
 // - Repository Interfaces: UserRepository, LocalStorage, UserLocalRepository, etc.
-// - Use Cases: GetUserUseCase, LoginUseCase, GetCachedUsersUseCase, etc.
 // - DI Init: initDomainPackage()
 
 // From app_core (re-exported by domain):

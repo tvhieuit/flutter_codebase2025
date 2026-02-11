@@ -37,8 +37,9 @@ class MyBloc extends Bloc<MyEvent, MyState> with SafetyNetworkMixin {
 
 ### Domain Layer (Pure Business Logic)
 - **Location**: `packages/domain/`
-- Contains: Entities, Use Cases, Repository Interfaces ONLY
+- Contains: Entities and Repository Interfaces ONLY
 - ❌ CANNOT depend on: Dio, SharedPreferences, or any infrastructure
+- ❌ CANNOT depend on: Use Cases (Use cases are now in their own package)
 
 ## Dependency Injection Requirements
 
@@ -52,7 +53,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 }
 ```
 
-### Use Case Registration (in `packages/domain/`)
+### Use Case Registration (in `packages/use_cases/`)
 ```dart
 @injectable
 class LoginUseCase implements UseCaseWithParams<AuthToken, AuthCredentials> {
@@ -62,10 +63,7 @@ class LoginUseCase implements UseCaseWithParams<AuthToken, AuthCredentials> {
 
   @override
   Future<Result<AuthToken>> call(AuthCredentials params) async {
-    return await _authRepository.login(
-      email: params.email,
-      password: params.password,
-    );
+    return await _authRepository.login(params);
   }
 }
 ```
@@ -104,7 +102,8 @@ class AuthRepositoryImpl implements AuthRepository {
 
 | Package | Contains | Does NOT contain |
 |---------|----------|------------------|
-| `domain` | Entities, Use Cases, Repository Interfaces | Dio, SharedPreferences, implementations |
+| `domain` | Entities, Repository Interfaces | Use Cases, Dio, SharedPreferences |
+| `use_cases` | Core Business Use Cases | UI, Dio, SharedPreferences |
 | `data` | Repository Implementations, Network (Dio), Storage (SharedPrefs) | BLoCs, Use Cases, UI |
 | `feature/*` | BLoCs, Pages, Feature-specific Use Cases | Repository implementations |
 | `app_core` | Result, Failure, Annotations, Base Services | Business logic |
