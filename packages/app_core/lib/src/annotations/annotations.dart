@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:injectable/injectable.dart';
 
 /// Custom Freezed annotation for Events
 /// - No copyWith (events are immutable and don't need copying)
@@ -64,3 +65,12 @@ const paramsFreezed = Freezed(
   toJson: false,
   toStringOverride: false,
 );
+
+
+const apiUrlNamed = Named('api_url_named');
+const tenantIdNamed = Named('tenant_id_named');
+const categoryOilNamed = Named('category_oil_named');
+const authInterceptorNamed = Named('auth_interceptor_named');
+const dioNamed = Named('dio_named');
+const authDioNamed = Named('auth_dio_named');
+

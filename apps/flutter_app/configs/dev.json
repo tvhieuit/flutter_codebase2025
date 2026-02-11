@@ -1,6 +1,5 @@
 {
-  "app_name": "Flutter App Dev",
-  "api_base_url": "https://api-dev.example.com",
-  "environment": "development"
+  "API_URL": "https://co2-api.118.69.67.72.nip.io/api/v1/",
+  "TENANT_ID": "93f84ce3-f638-4ae8-bd5f-89f2fe05ff27",
+  "CATEGORY_OIL": "7e3f5b81-f842-4b57-b876-cd467d25a592"
 }
-

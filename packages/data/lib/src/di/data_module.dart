@@ -1,3 +1,4 @@
+import 'package:app_core/app_core.dart';
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,7 +12,7 @@ abstract class DataModule {
 
   /// Main Dio instance with auth interceptor
   @lazySingleton
-  Dio dio(@Named('auth_interceptor') Interceptor authInterceptor) {
+  Dio dio(@authInterceptorNamed Interceptor authInterceptor) {
     final dio = Dio(
       BaseOptions(
         baseUrl: const String.fromEnvironment(
@@ -34,7 +35,7 @@ abstract class DataModule {
   }
 
   /// Dio instance specifically for AuthRepository to avoid circular dependency
-  @Named('auth_dio')
+  @authDioNamed
   @lazySingleton
   Dio authDio() {
     return Dio(
