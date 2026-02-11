@@ -4,7 +4,7 @@ import 'package:data/data.dart';
 import 'package:feature_app_settings/app_settings.dart';
 import 'package:feature_auth/auth.dart';
 import 'package:use_cases/use_cases.dart';
-import 'package:domain/domain.dart';
+
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 
