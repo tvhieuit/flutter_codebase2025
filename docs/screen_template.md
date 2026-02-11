@@ -263,6 +263,7 @@ fvm dart format .
 - [ ] Uses `on()` instead of `on<Event>()`
 - [ ] Inject Use Case (not Repository)
 - [ ] No `BlocListener` for navigation or error display
+- [ ] All user actions trigger a BLoC event (no direct logic in UI)
 
 ## Key Principles
 
@@ -283,8 +284,10 @@ fvm dart format .
 - [ ] Don't wrap the entire `Scaffold` in `BlocBuilder` (see [bloc_pattern.md](./bloc_pattern.md))
 - Don't inject Repositories in BLoCs
 - Don't make direct API calls
-- Don't create separate View class
-- Don't add events in `wrappedRoute()`
+- [ ] Don't create separate View class
+- [ ] Don't add events in `wrappedRoute()`
+- [ ] Don't call BLoC methods directly (use `.add(Event)`)
+- [ ] Don't perform logic (navigation/API) in UI callbacks
 - Don't use type parameters in `on<>()`
 - Don't use `BlocListener` for navigation
 - Don't use `BlocListener` + `SnackBar` for errors

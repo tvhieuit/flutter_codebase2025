@@ -2,350 +2,82 @@
 
 ## Overview
 
-Sometimes you need to navigate without access to `BuildContext`, such as:
-- In Dio interceptors
-- In services or repositories
-- In background tasks
-- From static methods
+In modular projects, it's common to need navigation from places where `BuildContext` is unavailable (Interceptors, Services, Repositories). Instead of using static global keys, we use **Dependency Injection** to provide the Router.
 
-## Setup
-
-The `AppRouter` includes a global navigator key:
+## ❌ SAI (Wrong Practice)
+Do NOT use static global keys or access `NavigatorState` directly through static variables. This makes code hard to test and tightly coupled.
 
 ```dart
-@singleton
-@AutoRouterConfig(replaceInRouteName: 'Page,Route')
-class AppRouter extends $AppRouter {
-  // Global key for navigation without BuildContext
-  static final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
+// ❌ DONT: Static access
+AppRouter.rootNavigatorKey.currentContext?.router.push(const LoginRoute());
+```
 
-  AppRouter() : super(navigatorKey: rootNavigatorKey);
+---
 
-  @override
-  List<AutoRoute> get routes => [...];
+## ✅ ĐÚNG (Best Practice)
+Inject the `StackRouter` (or `AppRouter`) into your classes. This follows Clean Architecture and makes your logic testable.
+
+### 1. In a Service or Repository
+The router is registered as a singleton in `GetIt`. Simply request it in the constructor.
+
+```dart
+@injectable
+class MyService {
+  final StackRouter _router;
+
+  MyService(this._router);
+
+  void handleAction() {
+    _router.push(const MyRoute());
+  }
 }
 ```
 
-## Usage Examples
-
-### 1. Navigate from Dio Interceptor
+### 2. In a Dio Interceptor
+Since Interceptors are often registered as singletons, you can inject the router directly.
 
 ```dart
-import 'package:dio/dio.dart';
-import '../app/app_router.dart';
-
+@injectable
 class AuthInterceptor extends Interceptor {
+  final StackRouter _router;
+
+  AuthInterceptor(this._router);
+
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     if (err.response?.statusCode == 401) {
-      // Unauthorized - navigate to login without BuildContext
-      AppRouter.rootNavigatorKey.currentContext?.router.push(const LoginRoute());
+      // Auto-navigate on session expired
+      _router.replaceAll([const LoginRoute()]);
     }
-    
     super.onError(err, handler);
   }
 }
 ```
 
-### 2. Navigate from Service
+---
+
+## Navigation in Different Layers
+
+| Layer | Recommended Access |
+|-------|-------------------|
+| **UI (Widget)** | `context.router.push(...)` |
+| **BLoC** | Inject `StackRouter` in constructor |
+| **Service/Repo** | Inject `StackRouter` in constructor |
+| **Interceptor** | Inject `StackRouter` in constructor |
+
+### Note on "Global" Dialogs/SnackBars
+For showing dialogs or SnackBars without context, use a dedicated abstraction or inject the `NavigatorState` key if absolutely necessary for `showDialog`, but prefer using `AppToast` for messages as it's context-independent.
 
 ```dart
-import '../app/app_router.dart';
-
-@injectable
-class AuthService {
-  Future<void> logout() async {
-    // Clear token, etc.
-    await _clearUserData();
-    
-    // Navigate to login without BuildContext
-    final context = AppRouter.rootNavigatorKey.currentContext;
-    if (context != null) {
-      context.router.replaceAll([const LoginRoute()]);
-    }
-  }
-}
-```
-
-### 3. Show Dialog from Service
-
-```dart
-import 'package:flutter/material.dart';
-import '../app/app_router.dart';
-
 @injectable
 class NotificationService {
-  void showErrorDialog(String message) {
-    final context = AppRouter.rootNavigatorKey.currentContext;
-    if (context != null) {
-      showDialog(
-        context: context,
-        builder: (_) => AlertDialog(
-          title: const Text('Error'),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
-    }
-  }
-}
-```
-
-### 4. Show SnackBar from Anywhere
-
-```dart
-import 'package:flutter/material.dart';
-import '../app/app_router.dart';
-
-class AppSnackBar {
-  static void show(String message) {
-    final context = AppRouter.rootNavigatorKey.currentContext;
-    if (context != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
-      );
-    }
-  }
+  final AppToast _toast; // Context-independent
   
-  static void showError(String message) {
-    final context = AppRouter.rootNavigatorKey.currentContext;
-    if (context != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
-}
-
-// Usage from anywhere
-AppSnackBar.show('Data saved successfully');
-AppSnackBar.showError('Failed to load data');
-```
-
-### 5. Navigate from UseCase
-
-```dart
-import '../app/app_router.dart';
-
-@Injectable(as: AuthUseCase)
-class AuthUseCaseImpl implements AuthUseCase {
-  @override
-  Future<void> handleSessionExpired() async {
-    // Session expired, navigate to login
-    final context = AppRouter.rootNavigatorKey.currentContext;
-    if (context != null) {
-      context.router.replaceAll([const LoginRoute()]);
-    }
-  }
+  void notify(String msg) => _toast.show(msg);
 }
 ```
 
-### 6. Complete Dio Setup with Auto-Navigation
-
-```dart
-@module
-abstract class NetworkModule {
-  @lazySingleton
-  Dio get dio {
-    final dio = Dio(
-      BaseOptions(
-        baseUrl: 'https://api.example.com',
-        connectTimeout: const Duration(seconds: 30),
-        receiveTimeout: const Duration(seconds: 30),
-      ),
-    );
-
-    // Add interceptor with navigation
-    dio.interceptors.add(
-      InterceptorsWrapper(
-        onError: (error, handler) {
-          if (error.response?.statusCode == 401) {
-            // Token expired - auto navigate to login
-            final context = AppRouter.rootNavigatorKey.currentContext;
-            if (context != null) {
-              context.router.replaceAll([const LoginRoute()]);
-            }
-          }
-          
-          if (error.response?.statusCode == 403) {
-            // Forbidden - show error
-            AppSnackBar.showError('Access denied');
-          }
-          
-          handler.next(error);
-        },
-      ),
-    );
-
-    return dio;
-  }
-}
-```
-
-## Best Practices
-
-### ✅ DO
-
-1. **Check for null before using**
-   ```dart
-   final context = AppRouter.rootNavigatorKey.currentContext;
-   if (context != null) {
-     context.router.push(const HomeRoute());
-   }
-   ```
-
-2. **Use for error handling**
-   ```dart
-   // Good use case: Handle global errors
-   if (error is UnauthorizedException) {
-     AppRouter.rootNavigatorKey.currentContext?.router.push(const LoginRoute());
-   }
-   ```
-
-3. **Use for background tasks**
-   ```dart
-   // Good use case: Navigate after background task
-   Future<void> syncData() async {
-     await _syncWithServer();
-     final context = AppRouter.rootNavigatorKey.currentContext;
-     if (context != null) {
-       AppSnackBar.show('Sync completed');
-     }
-   }
-   ```
-
-### ❌ DON'T
-
-1. **Don't use when BuildContext is available**
-   ```dart
-   // BAD - BuildContext is available
-   @override
-   Widget build(BuildContext context) {
-     return ElevatedButton(
-       onPressed: () {
-         AppRouter.rootNavigatorKey.currentContext?.router.push(/* */); // WRONG
-         // Use context.router.push instead
-       },
-     );
-   }
-   ```
-
-2. **Don't forget null check**
-   ```dart
-   // BAD - No null check
-   AppRouter.rootNavigatorKey.currentContext!.router.push(/* */); // WRONG
-   
-   // GOOD - With null check
-   final context = AppRouter.rootNavigatorKey.currentContext;
-   if (context != null) {
-     context.router.push(/* */);
-   }
-   ```
-
-3. **Don't overuse it**
-   ```dart
-   // BAD - Using global key when context is available
-   class MyBloc {
-     void navigate() {
-       AppRouter.rootNavigatorKey.currentContext?.router.push(/* */); // WRONG
-       // BLoC shouldn't handle navigation - emit state instead
-     }
-   }
-   ```
-
-## Common Use Cases
-
-### Authentication Error Handling
-
-```dart
-@injectable
-class ApiService {
-  final Dio _dio;
-  
-  ApiService(this._dio) {
-    _dio.interceptors.add(
-      InterceptorsWrapper(
-        onError: (error, handler) {
-          _handleApiError(error);
-          handler.next(error);
-        },
-      ),
-    );
-  }
-  
-  void _handleApiError(DioException error) {
-    final context = AppRouter.rootNavigatorKey.currentContext;
-    if (context == null) return;
-    
-    switch (error.response?.statusCode) {
-      case 401:
-        // Unauthorized
-        context.router.replaceAll([const LoginRoute()]);
-        AppSnackBar.showError('Session expired. Please login again.');
-        break;
-        
-      case 403:
-        // Forbidden
-        AppSnackBar.showError('Access denied');
-        break;
-        
-      case 404:
-        // Not found
-        AppSnackBar.showError('Resource not found');
-        break;
-        
-      case 500:
-        // Server error
-        AppSnackBar.showError('Server error. Please try again.');
-        break;
-    }
-  }
-}
-```
-
-### Network Error Service
-
-```dart
-@injectable
-class NetworkErrorService {
-  void handleNetworkError(dynamic error) {
-    final context = AppRouter.rootNavigatorKey.currentContext;
-    if (context == null) return;
-    
-    String message = 'An error occurred';
-    
-    if (error is DioException) {
-      switch (error.type) {
-        case DioExceptionType.connectionTimeout:
-          message = 'Connection timeout';
-          break;
-        case DioExceptionType.receiveTimeout:
-          message = 'Server response timeout';
-          break;
-        case DioExceptionType.connectionError:
-          message = 'No internet connection';
-          break;
-        default:
-          message = error.message ?? 'Network error';
-      }
-    }
-    
-    AppSnackBar.showError(message);
-  }
-}
-```
-
-## References
-
-- [Routing Guide](./routing.md)
-- [Screen Template](./screen_template.md)
-- [Auto Route Documentation](https://pub.dev/packages/auto_route)
-
+## Why Injection is Better?
+1. **Testability**: You can easily mock the `StackRouter` in unit tests.
+2. **Decoupling**: Classes don't need to know about the concrete `AppRouter` implementation.
+3. **Consistency**: Follows the same dependency pattern used for all other services.

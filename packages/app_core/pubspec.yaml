@@ -21,6 +21,7 @@ dependencies:
   # Services
   connectivity_plus: any
   permission_handler: any
+  auto_route: any
   
   # Code Generation
   freezed_annotation: any

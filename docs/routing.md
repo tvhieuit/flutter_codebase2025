@@ -16,10 +16,7 @@ import 'app_router.gr.dart';
 @singleton  // MUST be singleton - only one router instance in app
 @AutoRouterConfig(replaceInRouteName: 'Page,Route')
 class AppRouter extends $AppRouter {  // MUST extend generated $AppRouter
-  // Global key for navigation without BuildContext
-  static final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
-
-  AppRouter() : super(navigatorKey: rootNavigatorKey);
+  AppRouter() : super();
 
   @override
   List<AutoRoute> get routes => [
@@ -107,7 +104,25 @@ class AppRouter extends $AppRouter {
 fvm dart run melos run brd
 ```
 
-## Navigation
+### Navigation from BLoC / Service (Recommended)
+
+Since the `AppRouter` is a singleton, you can inject it or the `StackRouter` into any class.
+
+```dart
+@injectable
+class MyBloc extends Bloc<MyEvent, MyState> {
+  final StackRouter _router;
+  final AppRoute _appRoute;
+
+  MyBloc(this._router, this._appRoute) : super(const MyState()) {
+    on<MyEvent>((event, emit) {
+      _router.push(_appRoute.details);
+    });
+  }
+}
+```
+
+## Navigation from UI (Widgets)
 
 ### Basic Navigation
 

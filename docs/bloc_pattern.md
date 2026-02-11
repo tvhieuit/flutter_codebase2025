@@ -171,6 +171,44 @@ Widget build(BuildContext context) {
 - Do NOT store `error` in state for display via `BlocListener`
 - Do NOT use `ScaffoldMessenger`/`SnackBar` for errors; use `AppToast`
 
+## User Actions & Events
+
+Every user interaction (button click, text change, scroll) **MUST** be translated into a BLoC Event. The UI should only know how to "add" events and "display" state.
+
+### ❌ SAI (Wrong)
+Performing logic or calling BLoC methods directly in the UI.
+
+```dart
+// ❌ DONT: Direct logic or method call in UI
+ElevatedButton(
+  onPressed: () {
+    _router.push(const DetailsRoute()); // UI shouldn't handle logic
+    context.read<MyBloc>().somePrivateMethod(); // DONT call methods
+  },
+  child: Text('Submit'),
+)
+```
+
+### ✅ ĐÚNG (Correct)
+The UI triggers an event; the BLoC handles the logic.
+
+```dart
+// ✅ DO: Trigger event
+ElevatedButton(
+  onPressed: () {
+    context.read<MyBloc>().add(const MyEvent.submitClicked());
+  },
+  child: Text('Submit'),
+)
+
+// In BLoC:
+Future<void> _onSubmitClicked(event, emit) async {
+  // Logic: API calls, then navigation
+  await _useCase.submit();
+  _router.push(const DetailsRoute());
+}
+```
+
 ## Best Practices
 
 ### DO
@@ -193,4 +231,6 @@ Widget build(BuildContext context) {
 - Don't use `BlocListener` for navigation
 - Don't use `BlocListener` + `SnackBar` for errors
 - Don't store `error` in state for UI display
+- Don't call BLoC methods directly (e.g. `_bloc.someMethod()`); ALWAYS use `_bloc.add(Event())`
+- Don't perform logic (navigation, API calls, data manipulation) directly in UI callbacks; trigger an event instead
 - Don't use `SafetyNetworkMixin` with `safeNetworkCall` (use try/catch + _toast)
