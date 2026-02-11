@@ -1,9 +1,7 @@
 import 'package:app_core/app_core.dart';
 import 'package:injectable/injectable.dart';
 
-import '../../entities/auth/auth_credentials.dart';
-import '../../entities/auth/auth_token.dart';
-import '../../repositories/auth_repository.dart';
+import 'package:domain/domain.dart';
 import '../base_use_case.dart';
 import 'auth_input_validators.dart';
 

@@ -47,6 +47,7 @@ dependencies:
   app_widget: any
   app_core: any
   domain: any
+  use_cases: any
   feature_auth: any
   feature_app_settings: any
   fluttertoast: any

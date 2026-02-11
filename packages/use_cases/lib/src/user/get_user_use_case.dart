@@ -1,8 +1,7 @@
 import 'package:app_core/app_core.dart';
 import 'package:injectable/injectable.dart';
 
-import '../../entities/user_entity.dart';
-import '../../repositories/user_repository.dart';
+import 'package:domain/domain.dart';
 import '../base_use_case.dart';
 
 /// Use case for getting a user by ID.

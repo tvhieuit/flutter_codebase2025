@@ -1,7 +1,7 @@
 import 'package:app_core/app_core.dart';
 import 'package:injectable/injectable.dart';
 
-import '../../repositories/product_repository.dart';
+import 'package:domain/domain.dart';
 import '../base_use_case.dart';
 
 /// Use case for deleting a product.

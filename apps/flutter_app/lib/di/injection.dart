@@ -3,6 +3,8 @@ import 'package:app_widget/app_widget.dart';
 import 'package:data/data.dart';
 import 'package:feature_app_settings/app_settings.dart';
 import 'package:feature_auth/auth.dart';
+import 'package:use_cases/use_cases.dart';
+import 'package:domain/domain.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 
@@ -24,8 +26,11 @@ void configureDependencies() {
   // Initialize data package dependencies (repo implementations, Dio, SharedPrefs)
   initDataPackage();
 
-  // Initialize domain package dependencies (use cases)
+  // Initialize domain package dependencies
   initDomainPackage();
+
+  // Initialize use cases package dependencies
+  initUseCasesPackage();
 
   // Initialize auth package dependencies
   initAuthPackage();

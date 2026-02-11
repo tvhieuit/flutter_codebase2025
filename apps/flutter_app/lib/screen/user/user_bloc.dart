@@ -1,6 +1,7 @@
 import 'package:app_core/app_core.dart';
 import 'package:app_widget/app_widget.dart';
 import 'package:domain/domain.dart';
+import 'package:use_cases/use_cases.dart';
 import 'package:flutter_app/app/app_router.dart';
 import 'package:flutter_app/app/app_router.gr.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

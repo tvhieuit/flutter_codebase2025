@@ -1,7 +1,7 @@
 import 'package:app_core/app_core.dart';
 import 'package:injectable/injectable.dart';
 
-import '../../repositories/local/user_local_repository.dart';
+import 'package:domain/domain.dart';
 import '../base_use_case.dart';
 
 /// Use case for clearing all user data from local storage.

@@ -13,6 +13,7 @@ workspace:
   - packages/app_widget
   - packages/domain
   - packages/data
+  - packages/use_cases
   - packages/feature/auth
   - packages/feature/app_settings
   - packages/app_core

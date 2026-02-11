@@ -1,6 +1,7 @@
 import 'package:app_core/app_core.dart';
 import 'package:domain/domain.dart'
-    hide LoginUseCase, RegisterUseCase, LogoutUseCase, RefreshTokenUseCase, AuthInputValidators;
+    ;
+import 'package:use_cases/use_cases.dart';
 import 'package:injectable/injectable.dart';
 
 /// Use case for checking authentication status.

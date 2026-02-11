@@ -2,8 +2,7 @@ import 'package:app_core/app_core.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 
-import '../../entities/user_entity.dart';
-import '../../repositories/user_repository.dart';
+import 'package:domain/domain.dart';
 import '../base_use_case.dart';
 import 'user_input_validators.dart';
 

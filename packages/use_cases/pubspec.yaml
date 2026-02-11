@@ -1,5 +1,5 @@
-name: feature_auth
-description: Authentication feature package (login, register, logout)
+name: use_cases
+description: Application layer containing business logic (use cases) for flutter_app
 publish_to: 'none'
 version: 0.0.1
 
@@ -8,35 +8,19 @@ resolution: workspace
 
 environment:
   sdk: '>=3.9.0 <4.0.0'
-  flutter: '>=3.38.8 <4.0.0'
 
 dependencies:
-  flutter:
-    sdk: flutter
-  flutter_localizations:
-    sdk: flutter
-  
-  # Domain layer
+  # Internal Packages
   domain: any
-  use_cases: any
-  
-  # State Management
-  flutter_bloc: any
-  
+  app_core: any
+
   # Dependency Injection
   get_it: any
   injectable: any
-  
+
   # Code Generation
   freezed_annotation: any
   json_annotation: any
-  
-  # Routing
-  auto_route: any
-
-  app_widget: any
-  app_utility: any
-  app_core: any
 
 dev_dependencies:
   flutter_test:
@@ -48,7 +32,3 @@ dev_dependencies:
   freezed: any
   json_serializable: any
   injectable_generator: any
-  auto_route_generator: any
-
-flutter:
-  generate: true

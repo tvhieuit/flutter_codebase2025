@@ -1,5 +1,6 @@
 import 'package:app_core/app_core.dart';
 import 'package:domain/domain.dart';
+import 'package:use_cases/use_cases.dart';
 import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 

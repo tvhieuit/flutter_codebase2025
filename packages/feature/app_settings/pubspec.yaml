@@ -16,6 +16,7 @@ dependencies:
 
   # Domain
   domain: any
+  use_cases: any
 
   # App conventions (freezed macros)
   app_core: any
