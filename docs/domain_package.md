@@ -21,33 +21,39 @@ packages/domain/
 ├── lib/
 │   ├── domain.dart                    # Main export file
 │   └── src/
-│       ├── annotations/               # Custom Freezed annotations
-│       │   └── annotations.dart
-│       ├── di/                        # Dependency Injection
-│       │   └── domain_module.dart
+│       ├── di/                        # Dependency Injection (use cases only)
+│       │   ├── di.dart
+│       │   └── injection.dart
 │       ├── entities/                  # Business models (@modelFreezed)
+│       │   ├── entities.dart
 │       │   ├── user_entity.dart
-│       │   └── product_entity.dart
-│       ├── failures/                  # Error handling (@resultFreezed)
-│       │   └── failure.dart
-│       ├── repositories/              # Repository interfaces & implementations
+│       │   ├── product_entity.dart
+│       │   └── auth/
+│       │       ├── auth_token.dart
+│       │       └── auth_credentials.dart
+│       ├── repositories/              # Repository interfaces ONLY (no implementations)
+│       │   ├── repositories.dart
 │       │   ├── user_repository.dart
 │       │   ├── product_repository.dart
+│       │   ├── auth_repository.dart
 │       │   └── local/
+│       │       ├── local.dart
 │       │       ├── local_storage.dart
-│       │       ├── local_storage_impl.dart
-│       │       ├── local_storage_keys.dart
 │       │       ├── user_local_repository.dart
 │       │       └── app_settings_repository.dart
-│       ├── result/                    # Result type (@resultFreezed)
-│       │   └── result.dart
 │       └── use_cases/                 # Business logic
+│           ├── use_cases.dart
 │           ├── base_use_case.dart
+│           ├── auth/
 │           ├── user/
 │           └── product/
 ├── pubspec.yaml
 └── readme.md
 ```
+
+> **Note**: Repository implementations, network code (AuthInterceptor), storage keys,
+> and infrastructure DI (Dio, SharedPreferences) live in `packages/data/`.
+> See [data_package.md](./data_package.md).
 
 ## Custom Freezed Annotations
 
@@ -169,7 +175,7 @@ failure.when(
 
 ### LocalStorage Interface
 
-Abstract interface for key-value storage:
+Abstract interface for key-value storage (defined here, implemented in `packages/data/`):
 
 ```dart
 import 'package:domain/domain.dart';
@@ -178,28 +184,28 @@ import 'package:domain/domain.dart';
 @injectable
 class MyUseCase {
   final LocalStorage _storage;
-  
+
   MyUseCase(this._storage);
-  
+
   Future<void> saveData() async {
     // String
     await _storage.setString('key', 'value');
     final value = await _storage.getString('key');
-    
+
     // JSON Object
     await _storage.setJson('user', user.toJson());
     final json = await _storage.getJson('user');
-    
+
     // JSON List
     await _storage.setJsonList('users', users.map((u) => u.toJson()).toList());
     final jsonList = await _storage.getJsonList('users');
-    
+
     // Other types
     await _storage.setInt('count', 42);
     await _storage.setBool('enabled', true);
     await _storage.setDouble('price', 99.99);
     await _storage.setStringList('tags', ['a', 'b']);
-    
+
     // Utilities
     final exists = await _storage.containsKey('key');
     await _storage.remove('key');
@@ -209,31 +215,7 @@ class MyUseCase {
 }
 ```
 
-### Storage Keys
-
-Type-safe storage key constants:
-
-```dart
-import 'package:domain/domain.dart';
-
-// Use predefined keys
-await storage.getString(StorageKeys.accessToken);
-await storage.setJson(StorageKeys.currentUser, user.toJson());
-
-// Available keys
-StorageKeys.accessToken        // 'access_token'
-StorageKeys.refreshToken       // 'refresh_token'
-StorageKeys.currentUser        // 'current_user'
-StorageKeys.themeMode          // 'theme_mode'
-StorageKeys.languageCode       // 'language_code'
-StorageKeys.isFirstLaunch      // 'is_first_launch'
-StorageKeys.cachedUsers        // 'cached_users'
-// ... and more
-
-// Create custom cache keys
-final key = StorageKeys.cacheKey('products');  // 'cache_products'
-final tsKey = StorageKeys.timestampKey('users'); // 'users_timestamp'
-```
+> **Note**: `StorageKeys` constants and `LocalStorageImpl` are in `packages/data/`.
 
 ### UserLocalRepository
 
@@ -405,11 +387,16 @@ class CreateUserUseCase implements UseCaseWithParams<UserEntity, CreateUserParam
 
 ## Dependency Injection Setup
 
-### 1. Register Domain Module in Main App
+### 1. Register Packages in Main App
 
 ```dart
 // lib/di/injection.dart
+import 'package:app_core/app_core.dart';
+import 'package:app_widget/app_widget.dart';
+import 'package:data/data.dart';
 import 'package:domain/domain.dart';
+import 'package:feature_app_settings/app_settings.dart';
+import 'package:feature_auth/auth.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 
@@ -417,15 +404,16 @@ import 'injection.config.dart';
 
 final getIt = GetIt.instance;
 
-@InjectableInit(
-  initializerName: 'init',
-  preferRelativeImports: true,
-  asExtension: true,
-  externalPackageModulesBefore: [
-    ExternalModule(DomainModule),  // ← Add Domain Module
-  ],
-)
-void configureDependencies() => getIt.init();
+@InjectableInit(...)
+Future<void> configureDependencies() async {
+  initCorePackage();
+  initWidgetPackage();
+  initDataPackage();        // Registers repo impls, Dio, SharedPrefs
+  initDomainPackage();      // Registers use cases
+  initAuthPackage();
+  initAppSettingsPackage();
+  getIt.init();
+}
 ```
 
 ### 2. Run Code Generation
@@ -440,44 +428,42 @@ fvm dart run melos run brd
 ```dart
 import 'package:domain/domain.dart';
 
+// BLoCs inject USE CASES only, never repositories directly
 @injectable
-class UserBloc extends Bloc<UserEvent, UserState> with SafetyNetworkMixin {
-  final GetUserUseCase _getUserUseCase;
-  final UserLocalRepository _userLocalRepo;
-  
+class UserBloc extends Bloc<UserEvent, UserState> {
+  final GetCurrentUserUseCase _getCurrentUserUseCase;
+  final GetUsersUseCase _getUsersUseCase;
+  final GetCachedUsersUseCase _getCachedUsersUseCase;
+
   UserBloc(
-    this._getUserUseCase,
-    this._userLocalRepo,
+    this._getCurrentUserUseCase,
+    this._getUsersUseCase,
+    this._getCachedUsersUseCase,
   ) : super(UserState.initial()) {
     on(_onLoadUser);
   }
-  
-  Future<void> _onLoadUser(_LoadUser event, emit) async {
-    await safeNetworkCall(() async {
-      emit(state.copyWith(isLoading: true));
-      
-      // Try cache first
-      final cacheResult = await _userLocalRepo.getCurrentUser();
-      final cachedUser = cacheResult.dataOrNull;
-      
-      if (cachedUser != null) {
-        emit(state.copyWith(user: cachedUser, isLoading: false));
-        return;
-      }
-      
-      // Fetch from API
-      final result = await _getUserUseCase(event.id);
-      final failure = result.failureOrNull;
-      if (failure != null) {
-        emit(state.copyWith(error: failure.message, isLoading: false));
-        return;
-      }
 
-      final user = result.dataOrThrow;
-      // Cache user
-      _userLocalRepo.saveCurrentUser(user);
-      emit(state.copyWith(user: user, isLoading: false));
-    });
+  Future<void> _onLoadUser(_LoadUser event, emit) async {
+    emit(state.copyWith(isLoading: true));
+
+    // Try cache first
+    final cacheResult = await _getCachedUsersUseCase();
+    final cachedUsers = cacheResult.dataOrNull;
+
+    if (cachedUsers != null && cachedUsers.isNotEmpty) {
+      emit(state.copyWith(users: cachedUsers, isLoading: false));
+      return;
+    }
+
+    // Fetch from API
+    final result = await _getUsersUseCase();
+    final failure = result.failureOrNull;
+    if (failure != null) {
+      emit(state.copyWith(error: failure.message, isLoading: false));
+      return;
+    }
+
+    emit(state.copyWith(users: result.dataOrThrow, isLoading: false));
   }
 }
 ```
@@ -532,47 +518,53 @@ import 'profile_event.dart';
 import 'profile_state.dart';
 
 @injectable
-class ProfileBloc extends Bloc<ProfileEvent, ProfileState> with SafetyNetworkMixin {
+class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final GetCurrentUserUseCase _getCurrentUserUseCase;
-  final UserLocalRepository _userLocalRepo;
-  
+  final ClearUserDataUseCase _clearUserDataUseCase;
+  final AppToast _toast;
+
   ProfileBloc(
     this._getCurrentUserUseCase,
-    this._userLocalRepo,
+    this._clearUserDataUseCase,
+    this._toast,
   ) : super(ProfileState.initial()) {
     on(_onStarted);
     on(_onRefresh);
     on(_onLogout);
-    
+
     add(const ProfileEvent.started());
   }
-  
+
   Future<void> _onStarted(_Started event, emit) async {
     await _loadUser(emit);
   }
-  
+
   Future<void> _onRefresh(_Refresh event, emit) async {
-    await _loadUser(emit, forceRefresh: true);
+    await _loadUser(emit);
   }
-  
+
   Future<void> _onLogout(_Logout event, emit) async {
-    await _userLocalRepo.clearAllUserData();
+    await _clearUserDataUseCase();
     emit(ProfileState.initial());
   }
-  
-  Future<void> _loadUser(Emitter<ProfileState> emit, {bool forceRefresh = false}) async {
-    await safeNetworkCall(() async {
-      emit(state.copyWith(isLoading: true, error: null));
-      
+
+  Future<void> _loadUser(Emitter<ProfileState> emit) async {
+    emit(state.copyWith(isLoading: true, error: null));
+
+    try {
       final result = await _getCurrentUserUseCase();
       final failure = result.failureOrNull;
       if (failure != null) {
-        emit(state.copyWith(error: failure.message, isLoading: false));
+        emit(state.copyWith(isLoading: false));
+        _toast.error(failure.message);
         return;
       }
 
       emit(state.copyWith(user: result.dataOrThrow, isLoading: false));
-    });
+    } catch (e) {
+      emit(state.copyWith(isLoading: false));
+      _toast.error('An unexpected error occurred');
+    }
   }
 }
 ```
@@ -592,14 +584,21 @@ fvm dart run melos run brd
 import 'package:domain/domain.dart';
 
 // This gives you access to:
+// - Entities: UserEntity, ProductEntity, AuthToken, AuthCredentials
+// - Repository Interfaces: UserRepository, LocalStorage, UserLocalRepository, etc.
+// - Use Cases: GetUserUseCase, LoginUseCase, GetCachedUsersUseCase, etc.
+// - DI Init: initDomainPackage()
+
+// From app_core (re-exported by domain):
 // - Custom annotations: @eventFreezed, @stateFreezed, @modelFreezed, etc.
 // - Result type: Result.success(), Result.failure()
 // - Failures: Failure.server(), Failure.network(), etc.
-// - Entities: UserEntity, ProductEntity
-// - Repositories: UserRepository, LocalStorage, UserLocalRepository, etc.
-// - Use Cases: GetUserUseCase, CreateUserUseCase, etc.
-// - Storage Keys: StorageKeys.accessToken, etc.
-// - DI Module: DomainModule
+
+// NOT in domain (in packages/data instead):
+// - Repository implementations (AuthRepositoryImpl, UserRepositoryImpl, etc.)
+// - StorageKeys constants
+// - AuthInterceptor
+// - DataModule (Dio, SharedPreferences providers)
 ```
 
 ### Commands

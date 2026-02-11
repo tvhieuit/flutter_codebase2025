@@ -1,5 +1,8 @@
 # Domain Package Refactoring Plan
 
+> **Status**: Phase 1, 2, 3 are **DONE**. Phase 4 is OPTIONAL.
+> Approach chosen: **Phuong an B** (separate `packages/data` package).
+
 ## Muc tieu
 
 Chuan hoa package `domain` theo dung Clean Architecture, dam bao:
@@ -12,57 +15,53 @@ Chuan hoa package `domain` theo dung Clean Architecture, dam bao:
 
 ## Hien trang va Van de
 
-### Cau truc hien tai
+### Cau truc ban dau (truoc refactoring)
 
 ```
-packages/domain/lib/src/
+packages/domain/lib/src/              # MIX domain + data (VI PHAM Clean Architecture)
 ├── di/
-│   ├── di.dart
-│   ├── domain_module.dart
-│   ├── injection.dart
-│   └── injection.config.dart
-├── entities/
-│   ├── entities.dart
-│   ├── user_entity.dart              # co @JsonKey, fromJson, toJson
-│   ├── product_entity.dart           # co @JsonKey, fromJson, toJson
-│   └── auth/
-│       ├── auth_token.dart           # co @JsonKey, fromJson, toJson
-│       └── auth_credentials.dart
+│   ├── domain_module.dart            # Dio, SharedPrefs providers (infrastructure!)
 ├── network/
-│   └── auth_interceptor.dart         # Dio interceptor (infrastructure code)
+│   └── auth_interceptor.dart         # Dio interceptor (infrastructure!)
 ├── repositories/
-│   ├── repositories.dart
-│   ├── user_repository.dart          # abstract + cache methods lan lon
-│   ├── product_repository.dart       # abstract
-│   ├── auth_repository.dart          # abstract
-│   ├── impl/                         # IMPLEMENTATIONS trong domain
+│   ├── impl/                         # IMPLEMENTATIONS trong domain (vi pham!)
 │   │   ├── auth_repository_impl.dart     # phu thuoc Dio
 │   │   ├── user_repository_impl.dart     # phu thuoc Dio, SharedPreferences
-│   │   ├── local_storage_impl.dart       # phu thuoc SharedPreferences
-│   │   ├── user_local_repository_impl.dart
-│   │   ├── app_setting_repository_impl.dart
-│   │   └── local_storage_keys.dart
-│   └── local/
-│       ├── local.dart
-│       ├── local_storage.dart        # abstract interface
-│       ├── user_local_repository.dart
-│       └── app_settings_repository.dart
-└── use_cases/
-    ├── use_cases.dart
-    ├── base_use_case.dart
-    ├── user_use_case.dart            # Monolithic style (throw exception)
-    ├── user/
-    │   ├── user_use_cases.dart
-    │   ├── get_user_use_case.dart     # Single Responsibility (return Result)
-    │   ├── get_users_use_case.dart
-    │   ├── create_user_use_case.dart
-    │   ├── update_user_use_case.dart
-    │   ├── delete_user_use_case.dart
-    │   └── user_input_validators.dart
-    └── product/
-        ├── product_use_cases.dart
-        ├── get_product_use_case.dart
-        └── get_products_use_case.dart
+│   │   └── ...
+├── use_cases/
+│   ├── user_use_case.dart            # Monolithic style (vi pham SRP)
+│   └── user/                         # Single Responsibility style
+```
+
+### Cau truc sau refactoring (hien tai)
+
+```
+packages/domain/lib/src/              # CHI PURE BUSINESS LOGIC
+├── di/
+│   ├── injection.dart                # Only use case registrations
+├── entities/                         # Business models
+├── repositories/                     # INTERFACES ONLY (no impl/)
+│   ├── user_repository.dart          # Remote methods only (no cache methods)
+│   └── local/                        # Local interfaces
+└── use_cases/                        # Single Responsibility pattern only
+    ├── auth/                         # login, register, logout, refresh_token
+    ├── user/                         # get, getAll, create, update, delete, getCached, clearData
+    └── product/                      # get, getAll
+
+packages/data/lib/src/                # INFRASTRUCTURE / DATA LAYER
+├── di/
+│   ├── data_module.dart              # Dio, SharedPrefs providers
+│   └── injection.dart                # Repo impl registrations
+├── network/
+│   └── auth_interceptor.dart         # Dio interceptor
+├── repositories/                     # All implementations
+│   ├── auth_repository_impl.dart
+│   ├── user_repository_impl.dart
+│   ├── local_storage_impl.dart
+│   ├── user_local_repository_impl.dart
+│   └── app_setting_repository_impl.dart
+└── storage/
+    └── storage_keys.dart             # Storage key constants
 ```
 
 ### Danh sach van de
@@ -80,94 +79,19 @@ packages/domain/lib/src/
 
 ---
 
-## Cau truc muc tieu
+## Cau truc muc tieu (DA HOAN THANH)
 
-### Domain package (chi chua pure business logic)
+Da chon **Phuong an B**: Tao `packages/data` rieng.
 
-```
-packages/domain/lib/src/
-├── di/
-│   ├── di.dart
-│   ├── domain_module.dart
-│   ├── injection.dart
-│   └── injection.config.dart
-├── entities/
-│   ├── entities.dart
-│   ├── user_entity.dart              # pure Dart, KHONG co @JsonKey
-│   ├── product_entity.dart
-│   └── auth/
-│       ├── auth_token.dart
-│       └── auth_credentials.dart
-├── repositories/                     # CHI abstract interfaces
-│   ├── repositories.dart
-│   ├── remote/                       # Remote repository interfaces
-│   │   ├── remote.dart
-│   │   ├── user_repository.dart
-│   │   ├── product_repository.dart
-│   │   └── auth_repository.dart
-│   └── local/                        # Local repository interfaces
-│       ├── local.dart
-│       ├── local_storage.dart
-│       ├── local_storage_keys.dart   # Keys la domain concept
-│       ├── user_local_repository.dart
-│       └── app_settings_repository.dart
-├── use_cases/                        # CHI Single Responsibility pattern
-│   ├── use_cases.dart
-│   ├── base_use_case.dart
-│   ├── auth/
-│   │   ├── auth_use_cases.dart
-│   │   ├── login_use_case.dart
-│   │   ├── register_use_case.dart
-│   │   ├── logout_use_case.dart
-│   │   └── auth_input_validators.dart
-│   ├── user/
-│   │   ├── user_use_cases.dart
-│   │   ├── get_user_use_case.dart
-│   │   ├── get_users_use_case.dart
-│   │   ├── create_user_use_case.dart
-│   │   ├── update_user_use_case.dart
-│   │   ├── delete_user_use_case.dart
-│   │   └── user_input_validators.dart
-│   └── product/
-│       ├── product_use_cases.dart
-│       ├── get_product_use_case.dart
-│       ├── get_products_use_case.dart
-│       ├── create_product_use_case.dart
-│       ├── update_product_use_case.dart
-│       └── delete_product_use_case.dart
-└── validators/                       # Shared validators (optional)
-    └── input_validators.dart
-```
-
-### Data layer (nhan implementations tu domain)
-
-```
-packages/domain/lib/src/
-├── data/                             # HOAC tao package rieng
-│   ├── models/                       # DTOs voi @JsonKey, fromJson
-│   │   ├── user_model.dart
-│   │   ├── product_model.dart
-│   │   └── auth_token_model.dart
-│   ├── repositories/                 # Repository implementations
-│   │   ├── auth_repository_impl.dart
-│   │   ├── user_repository_impl.dart
-│   │   ├── local_storage_impl.dart
-│   │   ├── user_local_repository_impl.dart
-│   │   └── app_setting_repository_impl.dart
-│   └── network/
-│       └── auth_interceptor.dart
-```
-
-> **Ghi chu**: Co 2 huong tiep can cho data layer:
-> - **Phuong an A**: Tao folder `data/` trong package `domain` (don gian, it breaking changes)
-> - **Phuong an B**: Tao package `data` rieng (chuan hon, nhung nhieu thay doi)
-> Khuyen nghi: Bat dau voi **Phuong an A**, sau do tach ra package rieng khi can.
+Xem cau truc chi tiet tai:
+- [project_structure.md](./project_structure.md) - Cau truc project day du
+- [data_package.md](./data_package.md) - Data package documentation
 
 ---
 
 ## Huong tiep can: Refactor theo Phase
 
-### Phase 1: Don dep Use Cases (It rui ro, lam truoc)
+### Phase 1: Don dep Use Cases (It rui ro, lam truoc) - DONE
 
 **Muc tieu**: Thong nhat ve mot pattern duy nhat cho use cases.
 
@@ -175,17 +99,17 @@ packages/domain/lib/src/
 
 #### Checklist Phase 1
 
-- [ ] **1.1** Xoa `user_use_case.dart` (monolithic style)
+- [x] **1.1** Xoa `user_use_case.dart` (monolithic style)
   - File: `lib/src/use_cases/user_use_case.dart`
   - Kiem tra: Tim tat ca noi import/su dung `UserUseCase`, `UserUseCaseImpl`
   - Cap nhat: Chuyen sang dung individual use cases tuong ung
   - Luu y: BLoC nao dang inject `UserUseCase` phai doi sang inject individual use cases
 
-- [ ] **1.2** Xoa export `user_use_case.dart` trong barrel file
+- [x] **1.2** Xoa export `user_use_case.dart` trong barrel file
   - File: `lib/src/use_cases/use_cases.dart`
   - Xoa dong: `export 'user_use_case.dart';`
 
-- [ ] **1.3** Bo sung auth use cases
+- [x] **1.3** Bo sung auth use cases
   - Tao folder: `lib/src/use_cases/auth/`
   - Tao files:
     - `login_use_case.dart` - validate credentials truoc khi goi repository
@@ -195,94 +119,96 @@ packages/domain/lib/src/
     - `auth_input_validators.dart` - email, password validators
     - `auth_use_cases.dart` - barrel export
 
-- [ ] **1.4** Bo sung product use cases con thieu
+- [x] **1.4** Bo sung product use cases con thieu
   - Tao files trong `lib/src/use_cases/product/`:
     - `create_product_use_case.dart`
     - `update_product_use_case.dart`
     - `delete_product_use_case.dart`
   - Cap nhat `product_use_cases.dart` barrel export
 
-- [ ] **1.5** Chay build_runner va verify
+- [x] **1.5** Chay build_runner va verify
   - `fvm dart run melos run brd`
   - `fvm dart run melos run analyze`
 
 ---
 
-### Phase 2: Tach Repository Interface (Trung binh rui ro)
+### Phase 2: Tach Repository Interface (Trung binh rui ro) - DONE
 
 **Muc tieu**: Repository interfaces ro rang, tach remote vs local.
 
 #### Checklist Phase 2
 
-- [ ] **2.1** Tach `UserRepository` thanh remote-only
+- [x] **2.1** Tach `UserRepository` thanh remote-only
   - File: `lib/src/repositories/user_repository.dart`
   - Xoa cac cache methods: `getCachedUser`, `cacheUser`, `clearCachedUser`, `cacheUserList`, `getCachedUserList`
   - Giu lai chi remote methods: `getUserById`, `getUsers`, `createUser`, `updateUser`, `deleteUser`, `searchUsers`
   - Luu y: `UserLocalRepository` da co san, dung no cho local operations
 
-- [ ] **2.2** To chuc lai folder repositories
+- [x] **2.2** To chuc lai folder repositories
   - Tao folder `repositories/remote/` cho remote interfaces
   - Di chuyen: `user_repository.dart`, `product_repository.dart`, `auth_repository.dart` vao `remote/`
   - Tao `remote/remote.dart` barrel export
   - Cap nhat `repositories/repositories.dart`
 
-- [ ] **2.3** Di chuyen `local_storage_keys.dart` tu `impl/` vao `local/`
+- [x] **2.3** Di chuyen `local_storage_keys.dart` tu `impl/` vao `local/`
   - Day la domain concept (key names), khong phai implementation
   - File: `impl/local_storage_keys.dart` -> `local/local_storage_keys.dart`
   - Cap nhat imports trong `user_local_repository.dart`, `app_settings_repository.dart`
 
-- [ ] **2.4** Cap nhat tat ca imports lien quan
+- [x] **2.4** Cap nhat tat ca imports lien quan
   - Tim va thay the imports trong: use cases, BLoCs, feature packages
   - Chay: `fvm dart run melos run analyze` de tim loi
 
-- [ ] **2.5** Cap nhat `UserRepositoryImpl`
+- [x] **2.5** Cap nhat `UserRepositoryImpl`
   - Xoa cache methods khoi impl
   - Dam bao impl chi implement remote interface moi
 
 ---
 
-### Phase 3: Di chuyen Implementations ra khoi domain (Rui ro cao)
+### Phase 3: Di chuyen Implementations ra khoi domain (Rui ro cao) - DONE
 
 **Muc tieu**: Domain khong con chua implementation code.
 
+**Approach**: Da chon **Phuong an B** - tao `packages/data` rieng (chuan hon).
+
 #### Checklist Phase 3
 
-- [ ] **3.1** Tao folder `data/` trong domain package
-  - Tao: `lib/src/data/`
-  - Tao: `lib/src/data/repositories/`
-  - Tao: `lib/src/data/network/`
+- [x] **3.1** Tao package `packages/data/` (Phuong an B)
+  - Tao: `packages/data/lib/src/di/` (injection, data_module)
+  - Tao: `packages/data/lib/src/repositories/`
+  - Tao: `packages/data/lib/src/network/`
+  - Tao: `packages/data/lib/src/storage/`
 
-- [ ] **3.2** Di chuyen repository implementations
-  - `repositories/impl/auth_repository_impl.dart` -> `data/repositories/auth_repository_impl.dart`
-  - `repositories/impl/user_repository_impl.dart` -> `data/repositories/user_repository_impl.dart`
-  - `repositories/impl/local_storage_impl.dart` -> `data/repositories/local_storage_impl.dart`
-  - `repositories/impl/user_local_repository_impl.dart` -> `data/repositories/user_local_repository_impl.dart`
-  - `repositories/impl/app_setting_repository_impl.dart` -> `data/repositories/app_setting_repository_impl.dart`
+- [x] **3.2** Di chuyen repository implementations sang `packages/data`
+  - `domain/repositories/impl/auth_repository_impl.dart` -> `data/repositories/auth_repository_impl.dart`
+  - `domain/repositories/impl/user_repository_impl.dart` -> `data/repositories/user_repository_impl.dart`
+  - `domain/repositories/impl/local_storage_impl.dart` -> `data/repositories/local_storage_impl.dart`
+  - `domain/repositories/impl/user_local_repository_impl.dart` -> `data/repositories/user_local_repository_impl.dart`
+  - `domain/repositories/impl/app_setting_repository_impl.dart` -> `data/repositories/app_setting_repository_impl.dart`
 
-- [ ] **3.3** Di chuyen network code
-  - `network/auth_interceptor.dart` -> `data/network/auth_interceptor.dart`
+- [x] **3.3** Di chuyen network code
+  - `domain/network/auth_interceptor.dart` -> `data/network/auth_interceptor.dart`
 
-- [ ] **3.4** Xoa folder cu
+- [x] **3.4** Di chuyen DI module
+  - `domain/di/domain_module.dart` -> `data/di/data_module.dart` (rename class DataModule)
+
+- [x] **3.5** Xoa folder cu trong domain
   - Xoa: `repositories/impl/` (da di chuyen)
   - Xoa: `network/` (da di chuyen)
+  - Xoa: `di/domain_module.dart` (da di chuyen)
 
-- [ ] **3.5** Cap nhat `domain.dart` main export
-  - Xoa: `export 'src/network/auth_interceptor.dart';`
-  - Them export cho data layer (tam thoi)
+- [x] **3.6** Cap nhat domain
+  - Xoa: `export 'src/network/auth_interceptor.dart';` tu domain.dart
+  - Xoa: `dio`, `shared_preferences` tu domain/pubspec.yaml
 
-- [ ] **3.6** Cap nhat DI registration
-  - Cap nhat `domain_module.dart` neu can
-  - Cap nhat `injection.dart` / `injection.config.dart`
-  - Chay: `fvm dart run melos run brd`
+- [x] **3.7** Cap nhat app DI
+  - Them `data: any` vao flutter_app/pubspec.yaml
+  - Them `initDataPackage()` vao injection.dart
+  - Them `packages/data` vao root workspace
 
-- [ ] **3.7** Cap nhat tat ca imports o cac package khac
-  - `apps/flutter_app/`
-  - `packages/feature/auth/`
-  - `packages/feature/app_settings/`
-
-- [ ] **3.8** Verify toan bo
-  - `fvm dart run melos run brd`
-  - `fvm dart run melos run analyze`
+- [x] **3.8** Verify toan bo
+  - Build runner: data, domain, flutter_app all pass
+  - Analyze: all packages pass (0 errors)
 
 ---
 
@@ -353,11 +279,11 @@ packages/domain/lib/src/
 ## Thu tu uu tien thuc hien
 
 ```
-Phase 1 (Use Cases)     -----> An toan nhat, lam ngay
+Phase 1 (Use Cases)     -----> DONE
     |
-Phase 2 (Repositories)  -----> Sau Phase 1, trung binh
+Phase 2 (Repositories)  -----> DONE
     |
-Phase 3 (Impl di chuyen) ----> Sau Phase 2, can than
+Phase 3 (Impl di chuyen) ----> DONE (Phuong an B - packages/data)
     |
 Phase 4 (Entity/DTO)    -----> Optional, lam khi can
 ```

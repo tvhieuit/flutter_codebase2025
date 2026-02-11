@@ -24,22 +24,33 @@ Data Sources (API, SharedPreferences)
 ## Files Structure
 
 ```
-lib/
+packages/domain/lib/src/
 ├── entities/
-│   └── user_model.dart                 # Data model with @freezed
-├── repository/
-│   ├── remote_repository.dart          # API calls (interface + implementation)
-│   └── local_repository.dart           # Local storage (interface + implementation)
-├── use_case/
-│   └── user_use_case.dart              # Business logic (interface + implementation)
-├── screen/
-│   └── user/
-│       ├── user_event.dart             # BLoC events
-│       ├── user_state.dart             # BLoC state
-│       ├── user_bloc.dart              # BLoC logic
-│       └── user_page.dart              # UI
+│   └── user_entity.dart               # Business entity with @modelFreezed
+├── repositories/
+│   ├── user_repository.dart           # Remote repository interface (in domain)
+│   └── local/
+│       └── user_local_repository.dart  # Local repository interface (in domain)
+└── use_cases/
+    └── user/
+        ├── get_user_use_case.dart      # Single responsibility use case
+        ├── get_users_use_case.dart
+        └── ...
+
+packages/data/lib/src/
+├── repositories/
+│   ├── user_repository_impl.dart      # Remote implementation (in data)
+│   └── user_local_repository_impl.dart # Local implementation (in data)
 └── di/
-    └── di_module.dart                  # DI module for Dio, SharedPreferences
+    └── data_module.dart               # DI module for Dio, SharedPreferences
+
+apps/flutter_app/lib/
+└── screen/
+    └── user/
+        ├── user_event.dart            # BLoC events
+        ├── user_state.dart            # BLoC state
+        ├── user_bloc.dart             # BLoC logic (injects use cases only)
+        └── user_page.dart             # UI
 ```
 
 ## 1. Entity Layer
@@ -70,149 +81,104 @@ class UserModel with _$UserModel {
 
 ## 2. Repository Layer
 
-### Remote Repository (API)
+### Repository Interface (in `packages/domain/`)
 
 ```dart
-/// Interface
-abstract class RemoteRepository {
-  Future<UserModel> getUserProfile(int userId);
-  Future<List<UserModel>> getUsers();
-  Future<UserModel> updateUserProfile(int userId, Map<String, dynamic> data);
-  Future<void> deleteUser(int userId);
+/// Remote repository interface - defined in domain, implemented in data
+abstract class UserRepository {
+  Future<Result<UserEntity>> getUserById(int id);
+  Future<Result<List<UserEntity>>> getUsers({int? page, int? limit});
+  Future<Result<UserEntity>> createUser({required String name, required String email, String? phone});
+  Future<Result<UserEntity>> updateUser({required int id, String? name, String? email, String? phone});
+  Future<Result<void>> deleteUser(int id);
+  Future<Result<List<UserEntity>>> searchUsers(String query);
 }
+```
 
-/// Implementation
-@Injectable(as: RemoteRepository)
-class RemoteRepositoryImpl implements RemoteRepository {
+### Repository Implementation (in `packages/data/`)
+
+```dart
+/// Implementation with Dio for network calls
+@Injectable(as: UserRepository)
+class UserRepositoryImpl implements UserRepository {
   final Dio _dio;
+  final LocalStorage _localStorage;
 
-  RemoteRepositoryImpl(this._dio);
-
-  @override
-  Future<UserModel> getUserProfile(int userId) async {
-    final response = await _dio.get('/users/$userId');
-    return UserModel.fromJson(response.data);
-  }
-  // ... other methods
-}
-```
-
-### Local Repository (Cache/Storage)
-
-```dart
-/// Interface
-abstract class LocalRepository {
-  Future<void> saveUser(UserModel user);
-  Future<UserModel?> getUser();
-  Future<void> saveUserList(List<UserModel> users);
-  Future<List<UserModel>> getUserList();
-  Future<void> clearUser();
-  Future<void> saveToken(String token);
-  Future<String?> getToken();
-  Future<void> clearToken();
-}
-
-/// Implementation
-@Injectable(as: LocalRepository)
-class LocalRepositoryImpl implements LocalRepository {
-  final SharedPreferences _prefs;
-
-  LocalRepositoryImpl(this._prefs);
+  UserRepositoryImpl(this._dio, this._localStorage);
 
   @override
-  Future<void> saveUser(UserModel user) async {
-    final json = jsonEncode(user.toJson());
-    await _prefs.setString('user', json);
+  Future<Result<UserEntity>> getUserById(int id) async {
+    try {
+      final response = await _dio.get('/users/$id');
+      final user = UserEntity.fromJson(response.data);
+      return Result.success(user);
+    } on DioException catch (e) {
+      return Result.failure(_handleDioError(e));
+    }
   }
   // ... other methods
 }
 ```
 
 **Key Points:**
-- Abstract interfaces for testability
-- `@Injectable(as: Interface)` for DI
-- Remote repository handles API calls
-- Local repository handles caching/storage
+- Interfaces live in `packages/domain/` (pure Dart, no infrastructure)
+- Implementations live in `packages/data/` (depends on Dio, SharedPreferences)
+- `@Injectable(as: Interface)` for DI registration
+- Use `Result<T>` for error handling (no exceptions)
 
-## 3. Use Case Layer
+## 3. Use Case Layer (in `packages/domain/`)
 
-### `lib/use_case/user_use_case.dart`
+Each use case has a single responsibility:
 
 ```dart
-/// Interface
-abstract class UserUseCase {
-  Future<UserModel> getUserProfile(int userId);
-  Future<List<UserModel>> getUsers({bool forceRefresh = false});
-  Future<UserModel> updateUserProfile(int userId, Map<String, dynamic> data);
-  Future<void> deleteUser(int userId);
-  Future<UserModel?> getCachedUser();
-  Future<void> logout();
+/// Get a single user by ID
+@injectable
+class GetUserUseCase implements UseCaseWithParams<UserEntity, int> {
+  final UserRepository _userRepository;
+
+  GetUserUseCase(this._userRepository);
+
+  @override
+  Future<Result<UserEntity>> call(int userId) async {
+    if (userId <= 0) {
+      return const Result.failure(Failure.validation(message: 'Invalid user ID'));
+    }
+    return await _userRepository.getUserById(userId);
+  }
 }
 
-/// Implementation
-@Injectable(as: UserUseCase)
-class UserUseCaseImpl implements UserUseCase {
-  final RemoteRepository _remoteRepository;
-  final LocalRepository _localRepository;
+/// Get cached users from local storage
+@injectable
+class GetCachedUsersUseCase implements UseCase<List<UserEntity>> {
+  final UserLocalRepository _userLocalRepository;
 
-  UserUseCaseImpl(
-    this._remoteRepository,
-    this._localRepository,
-  );
+  GetCachedUsersUseCase(this._userLocalRepository);
 
   @override
-  Future<UserModel> getUserProfile(int userId) async {
-    // Fetch from API
-    final user = await _remoteRepository.getUserProfile(userId);
-    
-    // Cache locally
-    await _localRepository.saveUser(user);
-    
-    return user;
+  Future<Result<List<UserEntity>>> call() async {
+    return await _userLocalRepository.getCachedUsers();
   }
+}
+
+/// Clear all user data (for logout)
+@injectable
+class ClearUserDataUseCase implements UseCase<void> {
+  final UserLocalRepository _userLocalRepository;
+
+  ClearUserDataUseCase(this._userLocalRepository);
 
   @override
-  Future<List<UserModel>> getUsers({bool forceRefresh = false}) async {
-    // Try cache first
-    if (!forceRefresh) {
-      final cachedUsers = await _localRepository.getUserList();
-      if (cachedUsers.isNotEmpty) {
-        return cachedUsers;
-      }
-    }
-    
-    // Fetch from API
-    final users = await _remoteRepository.getUsers();
-    
-    // Cache locally
-    await _localRepository.saveUserList(users);
-    
-    return users;
-  }
-
-  @override
-  Future<UserModel> updateUserProfile(int userId, Map<String, dynamic> data) async {
-    // Validation
-    if (data['name']?.toString().isEmpty ?? true) {
-      throw Exception('Name is required');
-    }
-    
-    // Update via API
-    final updatedUser = await _remoteRepository.updateUserProfile(userId, data);
-    
-    // Update cache
-    await _localRepository.saveUser(updatedUser);
-    
-    return updatedUser;
+  Future<Result<void>> call() async {
+    return await _userLocalRepository.clearAllUserData();
   }
 }
 ```
 
 **Key Points:**
-- Contains business logic and validation
-- Coordinates between remote and local repositories
-- Implements caching strategy
-- Handles data transformation
+- Single Responsibility: one use case = one operation
+- Returns `Result<T>` (no exceptions)
+- Validation happens in the use case
+- Injects repository interfaces (implementations are in `data` package)
 
 ## 4. BLoC Layer
 
@@ -251,42 +217,63 @@ class UserState with _$UserState {
 
 ```dart
 @injectable
-class UserBloc extends Bloc<UserEvent, UserState> with SafetyNetworkMixin {
-  final UserUseCase _useCase;
+class UserBloc extends Bloc<UserEvent, UserState> {
+  final GetUsersUseCase _getUsersUseCase;
+  final GetCachedUsersUseCase _getCachedUsersUseCase;
+  final DeleteUserUseCase _deleteUserUseCase;
+  final ClearUserDataUseCase _clearUserDataUseCase;
+  final AppToast _toast;
 
-  UserBloc(this._useCase) : super(UserState.initial()) {
+  UserBloc(
+    this._getUsersUseCase,
+    this._getCachedUsersUseCase,
+    this._deleteUserUseCase,
+    this._clearUserDataUseCase,
+    this._toast,
+  ) : super(UserState.initial()) {
     on(_onStarted);
     on(_onLoadUsers);
-    on(_onLoadUserProfile);
-    on(_onUpdateProfile);
     on(_onDeleteUser);
     on(_onLogout);
 
-    // Auto-start initialization
     add(const UserEvent.started());
   }
 
   Future<void> _onLoadUsers(_LoadUsers event, emit) async {
-    emit(state.copyWith(isLoading: true, error: null));
+    emit(state.copyWith(isLoading: true));
 
-    await safeNetworkCall(
-      () async {
-        final users = await _useCase.getUsers(forceRefresh: event.forceRefresh);
-        emit(state.copyWith(isLoading: false, users: users));
-      },
-      onError: (error) {
-        emit(state.copyWith(isLoading: false, error: error.toString()));
-      },
-    );
+    try {
+      // Try cache first
+      final cacheResult = await _getCachedUsersUseCase();
+      final cached = cacheResult.dataOrNull;
+      if (cached != null && cached.isNotEmpty && !event.forceRefresh) {
+        emit(state.copyWith(isLoading: false, users: cached));
+        return;
+      }
+
+      // Fetch from API
+      final result = await _getUsersUseCase();
+      final failure = result.failureOrNull;
+      if (failure != null) {
+        emit(state.copyWith(isLoading: false));
+        _toast.error(failure.message);
+        return;
+      }
+
+      emit(state.copyWith(isLoading: false, users: result.dataOrThrow));
+    } catch (e) {
+      emit(state.copyWith(isLoading: false));
+      _toast.error('An unexpected error occurred');
+    }
   }
   // ... other event handlers
 }
 ```
 
 **Key Points:**
-- Uses `SafetyNetworkMixin` for error handling
-- Auto-starts with `add(const UserEvent.started())`
-- Each event has its own handler
+- Injects **use cases** only (never repositories directly)
+- Each use case handles one operation
+- Uses `try/catch` + `AppToast` for error handling
 - Emits new states based on use case results
 
 ## 5. UI Layer
@@ -359,32 +346,43 @@ class UserPage extends StatelessWidget implements AutoRouteWrapper {
 
 ## 6. Dependency Injection
 
-### `lib/di/di_module.dart`
+Infrastructure dependencies (Dio, SharedPreferences) are provided by `packages/data`:
 
 ```dart
+// packages/data/lib/src/di/data_module.dart
 @module
-abstract class DiModule {
+abstract class DataModule {
   @lazySingleton
-  Dio get dio {
-    return Dio(
-      BaseOptions(
-        baseUrl: 'https://jsonplaceholder.typicode.com',
-        connectTimeout: const Duration(seconds: 30),
-        receiveTimeout: const Duration(seconds: 30),
-      ),
-    );
-  }
+  SharedPreferencesAsync get prefs => SharedPreferencesAsync();
 
-  @preResolve
   @lazySingleton
-  Future<SharedPreferences> get prefs => SharedPreferences.getInstance();
+  Dio dio(AuthInterceptor authInterceptor) {
+    return Dio(BaseOptions(
+      connectTimeout: const Duration(seconds: 30),
+      receiveTimeout: const Duration(seconds: 30),
+    ))..interceptors.add(authInterceptor);
+  }
+}
+```
+
+In the app's DI setup:
+
+```dart
+// apps/flutter_app/lib/di/injection.dart
+Future<void> configureDependencies() async {
+  initCorePackage();
+  initWidgetPackage();
+  initDataPackage();     // Registers Dio, SharedPrefs, repo impls
+  initDomainPackage();   // Registers use cases
+  initAuthPackage();
+  getIt.init();          // Registers app-level BLoCs
 }
 ```
 
 **Key Points:**
-- `@module` for third-party dependencies
+- `@module` for third-party dependencies (in `data` package)
 - `@lazySingleton` for single instance
-- `@preResolve` for async initialization
+- Package init order matters: `data` before `domain`
 
 ## Usage Flow
 

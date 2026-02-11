@@ -85,6 +85,7 @@ dependencies:
 
   # Internal Packages
   domain: any
+  data: any
   feature_auth: any  # If using auth
 
 dev_dependencies:
@@ -266,11 +267,13 @@ class RegisterRoute extends PageRouteInfo<void> {
 ### 9. Create di/injection.dart
 
 ```dart
-import 'package:domain/domain.dart' as domain;
-import 'package:feature_auth/auth.dart' as auth;
+import 'package:app_core/app_core.dart';
+import 'package:app_widget/app_widget.dart';
+import 'package:data/data.dart';
+import 'package:domain/domain.dart';
+import 'package:feature_auth/auth.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'injection.config.dart';
 
@@ -278,13 +281,12 @@ final getIt = GetIt.instance;
 
 @InjectableInit()
 Future<void> configureDependencies() async {
-  // Initialize SharedPreferences
-  final prefs = SharedPreferencesAsync();
-  getIt.registerSingleton<SharedPreferencesAsync>(prefs);
-
-  // Configure packages in order
-  domain.initDomainPackage(getIt: getIt);
-  auth.initAuthPackage(getIt: getIt);
+  // Configure packages in order (order matters!)
+  initCorePackage();
+  initWidgetPackage();
+  initDataPackage();        // Registers repo impls, Dio, SharedPrefs
+  initDomainPackage();      // Registers use cases
+  initAuthPackage();
 
   // Configure this app's DI
   getIt.init();

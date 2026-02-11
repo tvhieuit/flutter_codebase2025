@@ -32,7 +32,9 @@ Thank you for your interest in contributing! This document provides guidelines a
 - ❌ **DON'T**: Inject Repositories directly into BLoCs
 - ✅ **DO**: Use abstract interfaces for all repositories and use cases
 - ✅ **DO**: Use `@injectable` annotations for dependency injection
-- ✅ **DO**: Use `SafetyNetworkMixin` for network calls in BLoCs
+- ✅ **DO**: Keep repository interfaces in `packages/domain/`
+- ✅ **DO**: Keep repository implementations in `packages/data/`
+- ❌ **DON'T**: Add Dio or SharedPreferences dependencies to `packages/domain/`
 
 ### Code Style
 

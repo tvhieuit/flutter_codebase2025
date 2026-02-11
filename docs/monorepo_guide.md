@@ -9,12 +9,14 @@ flutter_codebase2025/
 ├── apps/                    # Flutter app(s)
 │   └── flutter_app/        # Main application
 ├── packages/                # Shared packages
-│   ├── domain/              # Domain layer (entities, repositories, use cases)
+│   ├── app_core/            # Core shared (Result, Failure, annotations)
+│   ├── domain/              # Domain layer (entities, use cases, repo interfaces)
+│   ├── data/                # Data layer (repo implementations, network, storage)
 │   ├── feature/             # Feature packages
-│   │   └── auth/            # Authentication feature
+│   │   ├── auth/            # Authentication feature
+│   │   └── app_settings/    # App settings (theme, language)
 │   ├── app_utility/         # Shared utilities and extensions
 │   └── app_widget/          # Shared UI widgets
-├── lib/                     # Main/root app (flutter_app)
 ├── pubspec.yaml             # Workspace config + Melos scripts
 └── melos.yaml               # (Optional) Separate Melos config
 ```
@@ -29,6 +31,7 @@ workspace:
   - packages/app_utility
   - packages/app_widget
   - packages/domain
+  - packages/data
   - packages/feature/auth
   - packages/feature/app_settings
   - packages/app_core
@@ -38,19 +41,18 @@ workspace:
 
 ### 1. Domain Package (`packages/domain/`)
 
-Core business logic shared across all apps:
+Pure business logic shared across all apps (no infrastructure dependencies):
 - **Entities**: Business models with `@freezed`
-- **Repositories**: Abstract interfaces for data access
+- **Repository Interfaces**: Abstract interfaces for data access (NO implementations)
 - **Use Cases**: Business logic operations
-- **Result Type**: Type-safe error handling
-- **Failures**: Sealed failure types
-- **Local Storage**: SharedPreferences abstraction
+- **Result Type**: Type-safe error handling (from `app_core`)
+- **Failures**: Sealed failure types (from `app_core`)
 
 ```dart
 // Usage in any app
 import 'package:domain/domain.dart';
 
-final result = await userRepository.getUser(id);
+final result = await getUserUseCase(userId);
 final failure = result.failureOrNull;
 if (failure != null) {
   print(failure.message);
@@ -61,7 +63,24 @@ final user = result.dataOrThrow;
 print(user.name);
 ```
 
-### 2. Feature Packages (`packages/feature/`)
+### 2. Data Package (`packages/data/`)
+
+Data layer containing repository implementations and infrastructure:
+- **Repository Implementations**: Concrete implementations using Dio, SharedPreferences
+- **Network**: Auth interceptor, Dio configuration
+- **Storage**: Storage key constants, LocalStorage implementation
+- **DI Module**: Provides Dio, SharedPreferencesAsync instances
+
+```dart
+// Data package is imported by the app, not by features
+// It registers implementations for domain interfaces via DI
+import 'package:data/data.dart';
+
+// In app's DI setup
+initDataPackage();
+```
+
+### 3. Feature Packages (`packages/feature/`)
 
 Self-contained features that can be shared across apps:
 - **feature_auth**: Authentication (login, register, logout)
@@ -84,7 +103,7 @@ initAuthPackage(getIt: getIt);
 AutoRoute(page: LoginRoute.page),
 ```
 
-### 3. Utility Packages
+### 4. Utility Packages
 
 **app_utility** - Shared extensions and helpers:
 ```dart
@@ -110,7 +129,7 @@ AppPrimaryButton(
 )
 ```
 
-### 4. Apps (`apps/`)
+### 5. Apps (`apps/`)
 
 - **flutter_app**: Main Flutter application using shared packages
 - Has its own routing, DI, localization, and platform configs (android/, ios/)
@@ -128,19 +147,27 @@ AppPrimaryButton(
           ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                    Feature Packages                          │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
-│  │ feature_auth│  │feature_home │  │feature_cart │         │
-│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘         │
-└─────────┼────────────────┼────────────────┼─────────────────┘
-          │                │                │
-          ▼                ▼                ▼
+│  ┌─────────────┐  ┌──────────────────┐                      │
+│  │ feature_auth│  │feature_app_settings│                    │
+│  └──────┬──────┘  └────────┬─────────┘                      │
+└─────────┼──────────────────┼────────────────────────────────┘
+          │                  │
+          ▼                  ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                      Core Packages                           │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
-│  │   domain    │  │ app_utility │  │ app_widget  │         │
-│  └─────────────┘  └─────────────┘  └─────────────┘         │
+│  ┌──────────┐  ┌──────────┐  ┌─────────────┐  ┌──────────┐ │
+│  │  domain  │  │   data   │  │ app_utility │  │app_widget│ │
+│  └────┬─────┘  └────┬─────┘  └─────────────┘  └──────────┘ │
+│       │              │                                       │
+│       └──────┬───────┘                                       │
+│              ▼                                               │
+│        ┌──────────┐                                          │
+│        │ app_core │                                          │
+│        └──────────┘                                          │
 └─────────────────────────────────────────────────────────────┘
 ```
+
+**Key**: `data` depends on `domain` (implements its interfaces). `domain` depends only on `app_core`.
 
 ## Melos Scripts
 
@@ -229,12 +256,15 @@ This means:
 ## Best Practices
 
 ### 1. Package Dependencies
-- Feature packages depend on `domain` only
-- Apps depend on features and core packages
+- Feature packages depend on `domain` only (not `data`)
+- `data` depends on `domain` (implements its interfaces)
+- `domain` depends only on `app_core` (no Dio, no SharedPreferences)
+- Apps depend on features, `data`, and core packages
 - Avoid circular dependencies
 
 ### 2. Code Sharing
-- Put business logic in `domain`
+- Put business logic (use cases, entities, repo interfaces) in `domain`
+- Put repository implementations, network, storage in `data`
 - Put reusable UI in `app_widget`
 - Put utilities in `app_utility`
 - Put feature-specific code in feature packages
@@ -283,3 +313,4 @@ workspace:
 - [new_app_guide.md](./new_app_guide.md) - Creating new apps
 - [feature_packages.md](./feature_packages.md) - Creating feature packages
 - [domain_package.md](./domain_package.md) - Domain package documentation
+- [data_package.md](./data_package.md) - Data package documentation

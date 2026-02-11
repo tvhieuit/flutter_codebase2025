@@ -9,11 +9,12 @@ flutter_codebase2025/
 ├── apps/                         # Flutter applications
 │   └── flutter_app/              # Main multi-feature development app
 ├── packages/                     # Shared packages
-│   ├── domain/                   # Core business logic
+│   ├── app_core/                 # Core shared (Result, Failure, annotations)
+│   ├── domain/                   # Domain layer (entities, use cases, repo interfaces)
+│   ├── data/                     # Data layer (repo implementations, network, storage)
 │   ├── feature/                  # Feature packages
 │   │   ├── auth/                 # Authentication feature
 │   │   └── app_settings/         # Application settings (Theme, Language)
-│   ├── app_core/                 # Core shared configuration
 │   ├── app_utility/              # Shared utilities
 │   └── app_widget/               # Shared UI widgets
 ├── configs/                      # Environment configurations
@@ -102,45 +103,65 @@ apps/
 
 #### Domain Package (`packages/domain/`)
 
-Core business logic shared across all apps:
+Pure business logic - entities, use cases, and repository interfaces only (no infrastructure dependencies):
 
 ```
 packages/domain/
 ├── lib/
 │   ├── domain.dart               # Main export
 │   └── src/
-│       ├── annotations/          # Custom Freezed annotations
-│       │   ├── annotations.dart
-│       │   └── freezed_annotations.dart
-│       ├── di/                   # Dependency injection
+│       ├── di/                   # Dependency injection (use cases only)
 │       │   ├── di.dart
 │       │   └── injection.dart
 │       ├── entities/             # Business models
 │       │   ├── entities.dart
-│       │   └── user_entity.dart
-│       ├── failures/             # Error types
-│       │   ├── failures.dart
-│       │   └── failure.dart
-│       ├── mixins/               # Shared mixins
-│       │   ├── mixins.dart
-│       │   └── safety_network_mixin.dart
-│       ├── repositories/         # Repository interfaces
+│       │   ├── user_entity.dart
+│       │   ├── product_entity.dart
+│       │   └── auth/
+│       │       ├── auth_token.dart
+│       │       └── auth_credentials.dart
+│       ├── repositories/         # Repository interfaces ONLY (no implementations)
 │       │   ├── repositories.dart
 │       │   ├── user_repository.dart
-│       │   ├── impl/             # Implementations
-│       │   │   └── user_repository_impl.dart
+│       │   ├── product_repository.dart
+│       │   ├── auth_repository.dart
 │       │   └── local/
 │       │       ├── local.dart
 │       │       ├── local_storage.dart
-│       │       ├── local_storage_impl.dart
-│       │       ├── local_storage_keys.dart
+│       │       ├── user_local_repository.dart
 │       │       └── app_settings_repository.dart
-│       ├── result/               # Result type
-│       │   ├── result.dart
-│       │   └── result.freezed.dart
 │       └── use_cases/            # Business logic
 │           ├── use_cases.dart
-│           └── base_use_case.dart
+│           ├── base_use_case.dart
+│           ├── auth/
+│           ├── user/
+│           └── product/
+└── pubspec.yaml
+```
+
+#### Data Package (`packages/data/`)
+
+Repository implementations, network layer, and local storage (depends on `domain` for interfaces):
+
+```
+packages/data/
+├── lib/
+│   ├── data.dart                 # Main export (DI init only)
+│   └── src/
+│       ├── di/                   # Dependency injection
+│       │   ├── di.dart
+│       │   ├── data_module.dart  # Dio, SharedPreferences providers
+│       │   └── injection.dart
+│       ├── network/              # Network layer
+│       │   └── auth_interceptor.dart
+│       ├── repositories/         # Repository implementations
+│       │   ├── auth_repository_impl.dart
+│       │   ├── user_repository_impl.dart
+│       │   ├── local_storage_impl.dart
+│       │   ├── app_setting_repository_impl.dart
+│       │   └── user_local_repository_impl.dart
+│       └── storage/              # Storage constants
+│           └── storage_keys.dart
 └── pubspec.yaml
 ```
 
@@ -269,6 +290,7 @@ workspace:
   - packages/app_utility
   - packages/app_widget
   - packages/domain
+  - packages/data
   - packages/feature/auth
   - packages/feature/app_settings
   - packages/app_core
@@ -286,15 +308,17 @@ workspace:
 - **Pattern**: Single-responsibility use cases
 - **Key Files**: `*_use_case.dart`
 
-### Data Layer
-- **Location**: `lib/repository/`, `packages/domain/lib/src/repositories/`
-- **Pattern**: Repository pattern with interfaces
-- **Key Files**: `*_repository.dart`, `*_repository_impl.dart`
-
 ### Domain Layer
 - **Location**: `packages/domain/`
-- **Pattern**: Clean Architecture core
-- **Key Files**: Entities, Failures, Result type
+- **Pattern**: Clean Architecture core - pure business logic only
+- **Key Files**: Entities, Use Cases, Repository Interfaces
+- **Dependencies**: `app_core` only (no Dio, no SharedPreferences)
+
+### Data Layer
+- **Location**: `packages/data/`
+- **Pattern**: Repository implementations, network, local storage
+- **Key Files**: `*_repository_impl.dart`, `auth_interceptor.dart`, `data_module.dart`
+- **Dependencies**: `domain`, `app_core`, `dio`, `shared_preferences`
 
 ## Dependency Flow
 

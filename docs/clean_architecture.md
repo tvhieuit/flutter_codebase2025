@@ -30,64 +30,84 @@ class MyBloc extends Bloc<MyEvent, MyState> with SafetyNetworkMixin {
 - ✅ CAN depend on: Repository Interfaces
 - ❌ CANNOT depend on: BLoCs, UI, Data Sources directly
 
-### Data Layer (Repositories)
-- ✅ CAN depend on: Data Sources, External APIs
+### Data Layer (Repository Implementations)
+- **Location**: `packages/data/`
+- ✅ CAN depend on: Domain interfaces, Data Sources (Dio, SharedPreferences)
 - ❌ CANNOT depend on: BLoCs, Use Cases
+
+### Domain Layer (Pure Business Logic)
+- **Location**: `packages/domain/`
+- Contains: Entities, Use Cases, Repository Interfaces ONLY
+- ❌ CANNOT depend on: Dio, SharedPreferences, or any infrastructure
 
 ## Dependency Injection Requirements
 
 ### BLoC Registration
 ```dart
 @injectable
-class AuthBloc extends Bloc<AuthEvent, AuthState> with SafetyNetworkMixin {
-  final AuthUseCase _authUseCase;
-  
-  AuthBloc(this._authUseCase) : super(AuthState.initial());
+class AuthBloc extends Bloc<AuthEvent, AuthState> {
+  final LoginUseCase _loginUseCase;
+
+  AuthBloc(this._loginUseCase) : super(AuthState.initial());
 }
 ```
 
-### Use Case Registration
+### Use Case Registration (in `packages/domain/`)
 ```dart
-abstract class AuthUseCase {
-  Future<UserEntity> login(String email, String password);
-}
+@injectable
+class LoginUseCase implements UseCaseWithParams<AuthToken, AuthCredentials> {
+  final AuthRepository _authRepository;
 
-@Injectable(as: AuthUseCase)
-class AuthUseCaseImpl implements AuthUseCase {
-  final RemoteRepository _remoteRepository;
-  
-  AuthUseCaseImpl(this._remoteRepository);
-  
+  LoginUseCase(this._authRepository);
+
   @override
-  Future<UserEntity> login(String email, String password) async {
-    final response = await _remoteRepository.login(email, password);
-    return UserEntity.fromResponse(response);
+  Future<Result<AuthToken>> call(AuthCredentials params) async {
+    return await _authRepository.login(
+      email: params.email,
+      password: params.password,
+    );
   }
 }
 ```
 
-### Repository Registration
+### Repository Interface (in `packages/domain/`)
 ```dart
-abstract class RemoteRepository {
-  Future<LoginResponse> login(String email, String password);
+abstract class AuthRepository {
+  Future<Result<AuthToken>> login({required String email, required String password});
 }
+```
 
-@Injectable(as: RemoteRepository)
-class RemoteRepositoryImpl implements RemoteRepository {
+### Repository Implementation (in `packages/data/`)
+```dart
+@Injectable(as: AuthRepository)
+class AuthRepositoryImpl implements AuthRepository {
   final Dio _dio;
-  
-  RemoteRepositoryImpl(this._dio);
-  
+
+  AuthRepositoryImpl(this._dio);
+
   @override
-  Future<LoginResponse> login(String email, String password) async {
-    final response = await _dio.post('/auth/login', data: {
-      'email': email,
-      'password': password,
-    });
-    return LoginResponse.fromJson(response.data);
+  Future<Result<AuthToken>> login({required String email, required String password}) async {
+    try {
+      final response = await _dio.post('/auth/login', data: {
+        'email': email,
+        'password': password,
+      });
+      return Result.success(AuthToken.fromJson(response.data));
+    } on DioException catch (e) {
+      return Result.failure(Failure.network(message: e.message ?? 'Network error'));
+    }
   }
 }
 ```
+
+## Package Responsibilities
+
+| Package | Contains | Does NOT contain |
+|---------|----------|------------------|
+| `domain` | Entities, Use Cases, Repository Interfaces | Dio, SharedPreferences, implementations |
+| `data` | Repository Implementations, Network (Dio), Storage (SharedPrefs) | BLoCs, Use Cases, UI |
+| `feature/*` | BLoCs, Pages, Feature-specific Use Cases | Repository implementations |
+| `app_core` | Result, Failure, Annotations, Base Services | Business logic |
 
 ## Summary
 
@@ -96,11 +116,13 @@ class RemoteRepositoryImpl implements RemoteRepository {
 - Implement abstract interfaces for all layers
 - Use @injectable, @lazySingleton annotations
 - Handle errors at appropriate layers
+- Keep repository interfaces in `domain`, implementations in `data`
 
 ### ❌ NEVER DO
 - Inject Repositories directly in BLoCs
 - Skip abstract interfaces
 - Mix presentation logic with business logic
+- Put infrastructure dependencies (Dio, SharedPreferences) in domain
 
 ### 🎯 Architecture Goals
 - Separation of concerns

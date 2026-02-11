@@ -34,23 +34,32 @@ Located in `lib/src/annotations/annotations.dart`:
 lib/
 ├── domain.dart              # Main library export
 └── src/
-    ├── annotations/         # Custom Freezed annotations
-    │   └── annotations.dart
+    ├── di/                  # DI (use case registrations only)
+    │   ├── di.dart
+    │   └── injection.dart
     ├── entities/            # @modelFreezed entities
     │   ├── user_entity.dart
-    │   └── product_entity.dart
-    ├── failures/            # @resultFreezed failures
-    │   └── failure.dart
-    ├── repositories/        # Repository interfaces
+    │   ├── product_entity.dart
+    │   └── auth/
+    │       ├── auth_token.dart
+    │       └── auth_credentials.dart
+    ├── repositories/        # Repository interfaces ONLY (no implementations)
     │   ├── user_repository.dart
-    │   └── product_repository.dart
-    ├── result/              # @resultFreezed Result type
-    │   └── result.dart
-    └── use_cases/           # @paramsFreezed params
+    │   ├── product_repository.dart
+    │   ├── auth_repository.dart
+    │   └── local/
+    │       ├── local_storage.dart
+    │       ├── user_local_repository.dart
+    │       └── app_settings_repository.dart
+    └── use_cases/           # Single responsibility use cases
         ├── base_use_case.dart
+        ├── auth/
         ├── user/
         └── product/
 ```
+
+> **Note**: Repository implementations, network code, and storage utilities
+> live in `packages/data/`. Domain contains only pure business logic.
 
 ## Usage Examples
 

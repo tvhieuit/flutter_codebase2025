@@ -18,7 +18,8 @@ Complete documentation for the Flutter Clean Architecture Monorepo.
 | [monorepo_guide.md](./monorepo_guide.md) | Working with the workspace |
 | [feature_packages.md](./feature_packages.md) | Creating feature packages |
 | [new_app_guide.md](./new_app_guide.md) | Adding new apps |
-| [domain_package.md](./domain_package.md) | Core business logic package |
+| [domain_package.md](./domain_package.md) | Domain layer (entities, use cases, interfaces) |
+| [data_package.md](./data_package.md) | Data layer (implementations, network, storage) |
 | [auth_package.md](./auth_package.md) | Authentication feature package |
 
 ### Feature Development
@@ -86,6 +87,7 @@ docs/
 ├── feature_packages.md           # Feature package creation
 ├── new_app_guide.md              # New app creation
 ├── domain_package.md             # Domain package
+├── data_package.md               # Data package
 ├── auth_package.md               # Auth feature package
 │
 ├── # Feature Development

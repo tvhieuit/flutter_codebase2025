@@ -591,13 +591,14 @@ localizationsDelegates: const [
 
 ### 1. Keep Features Independent
 - Don't import other feature packages
-- Only depend on `domain` for shared types
+- Only depend on `domain` for shared types (not `data`)
 - Use navigation interfaces for cross-feature navigation
+- Repository implementations live in `packages/data/`, not in features
 
 ### 2. Abstract External Dependencies
-- Use repository interfaces
+- Use repository interfaces (defined in `domain`)
 - Use navigation interfaces
-- Let the app provide implementations
+- Repository implementations are registered by `packages/data/` via DI
 
 ### 3. Localization
 - Each feature has its own ARB files

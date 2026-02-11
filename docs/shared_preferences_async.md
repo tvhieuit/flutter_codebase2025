@@ -219,17 +219,19 @@ Future<void> logout() async {
 
 ## Dependency Injection Setup
 
-### di_module.dart
+SharedPreferencesAsync is registered in `packages/data/lib/src/di/data_module.dart`:
 
 ```dart
 @module
-abstract class DiModule {
+abstract class DataModule {
   /// SharedPreferencesAsync instance for local storage
   /// No need for @preResolve as it doesn't require async initialization
   @lazySingleton
   SharedPreferencesAsync get prefs => SharedPreferencesAsync();
 }
 ```
+
+Repository implementations in `packages/data/` inject `LocalStorage` (the abstract interface from domain) rather than `SharedPreferencesAsync` directly. Only `LocalStorageImpl` in `packages/data/` depends on `SharedPreferencesAsync`.
 
 ## Migration from SharedPreferences
 

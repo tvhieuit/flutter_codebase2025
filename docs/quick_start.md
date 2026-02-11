@@ -234,16 +234,18 @@ fvm dart run melos run brd
 
 ### ✅ DO
 - Use `@injectable` for all BLoCs
-- Use `SafetyNetworkMixin` for API calls
 - Use `@freezed` for all states
 - Use `buildWhen` and `listenWhen`
 - Inject Use Cases (not Repositories)
+- Keep repository interfaces in `packages/domain/`
+- Keep repository implementations in `packages/data/`
 
 ### ❌ DON'T
 - Don't inject Repositories directly in BLoCs
 - Don't skip `buildWhen`/`listenWhen`
 - Don't make direct API calls in BLoCs
 - Don't use mutable states
+- Don't add Dio/SharedPreferences to domain package
 
 ## 🎨 Customize Splash Screen
 

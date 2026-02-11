@@ -38,9 +38,12 @@ flutter_codebase2025/
 ├── apps/                         # Flutter app(s)
 │   └── flutter_app/              # Main application
 ├── packages/                     # Shared packages
-│   ├── domain/                   # Core business logic (entities, repos, use cases)
+│   ├── app_core/                 # Core shared (Result, Failure, annotations)
+│   ├── domain/                   # Business logic (entities, use cases, repo interfaces)
+│   ├── data/                     # Data layer (repo implementations, network, storage)
 │   ├── feature/                  # Feature packages
-│   │   └── auth/                 # Authentication (login, register)
+│   │   ├── auth/                 # Authentication (login, register)
+│   │   └── app_settings/         # App settings (theme, language)
 │   ├── app_utility/              # Shared extensions & helpers
 │   └── app_widget/               # Shared UI widgets
 ├── configs/                      # Environment configs (dev, stg, beta)
@@ -54,7 +57,7 @@ flutter_codebase2025/
 
 ### Clean Architecture Layers
 ```
-Presentation (BLoC) → Business Logic (Use Cases) → Data (Repositories)
+Presentation (BLoC) → Domain (Use Cases + Repo Interfaces) ← Data (Repo Implementations)
 ```
 
 ### Monorepo Benefits
@@ -69,8 +72,11 @@ Presentation (BLoC) → Business Logic (Use Cases) → Data (Repositories)
 
 | Package | Description |
 |---------|-------------|
-| `domain` | Core business logic, entities, repositories, Result type |
+| `app_core` | Core shared: Result type, Failure, custom annotations, base services |
+| `domain` | Business logic: entities, use cases, repository interfaces (pure Dart) |
+| `data` | Data layer: repository implementations, network (Dio), local storage |
 | `feature_auth` | Authentication feature (login, register, navigation) |
+| `feature_app_settings` | App settings feature (theme mode, language) |
 | `app_utility` | Extensions, helpers, type definitions |
 | `app_widget` | Reusable UI components |
 
@@ -110,7 +116,8 @@ fvm dart run melos run ios:dev     # Build iOS (dev)
 - [Monorepo Guide](./docs/monorepo_guide.md) - Working with the workspace
 - [Feature Packages](./docs/feature_packages.md) - Creating feature packages
 - [New App Guide](./docs/new_app_guide.md) - Adding new apps
-- [Domain Package](./docs/domain_package.md) - Core business logic
+- [Domain Package](./docs/domain_package.md) - Domain layer (entities, use cases, interfaces)
+- [Data Package](./docs/data_package.md) - Data layer (implementations, network, storage)
 - [Auth Package](./docs/auth_package.md) - Authentication feature
 
 ### Development

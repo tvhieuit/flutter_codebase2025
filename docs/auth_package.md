@@ -69,175 +69,25 @@ fvm dart run melos run pg
 In your app's `di/injection.dart`:
 
 ```dart
-import 'package:feature_auth/auth.dart' as auth;
+import 'package:data/data.dart';
+import 'package:domain/domain.dart';
+import 'package:feature_auth/auth.dart';
 
 Future<void> configureDependencies() async {
-  // Initialize SharedPreferences first
-  final prefs = SharedPreferencesAsync();
-  getIt.registerSingleton<SharedPreferencesAsync>(prefs);
-
-  // Initialize domain package
-  domain.initDomainPackage(getIt: getIt);
-
-  // Initialize auth package
-  auth.initAuthPackage(getIt: getIt);
-
-  // Initialize your app's DI
+  initCorePackage();
+  initWidgetPackage();
+  initDataPackage();        // Registers AuthRepositoryImpl, Dio, SharedPrefs
+  initDomainPackage();      // Registers use cases
+  initAuthPackage();        // Registers auth BLoCs and feature use cases
+  initAppSettingsPackage();
   getIt.init();
 }
 ```
 
-### 2. Implement AuthRepository
+> **Note**: `AuthRepositoryImpl` is already provided by `packages/data/`.
+> You do NOT need to implement it in your app.
 
-Create an implementation in your app's `di/modules.dart`:
-
-```dart
-import 'package:feature_auth/auth.dart';
-import 'package:domain/domain.dart';
-import 'package:injectable/injectable.dart';
-
-@module
-abstract class AuthModule {
-  @LazySingleton(as: AuthRepository)
-  AuthRepositoryImpl get authRepository;
-}
-
-@Injectable()
-class AuthRepositoryImpl implements AuthRepository {
-  final Dio _dio;
-  final String _baseUrl;
-
-  AuthRepositoryImpl(this._dio, @Named('baseUrl') this._baseUrl);
-
-  @override
-  Future<Result<AuthToken>> login(LoginCredentials credentials) async {
-    try {
-      final response = await _dio.post(
-        '$_baseUrl/auth/login',
-        data: {
-          'email': credentials.email,
-          'password': credentials.password,
-        },
-      );
-
-      return Result.success(AuthToken.fromJson(response.data));
-    } on DioException catch (e) {
-      return Result.failure(Failure.server(
-        message: e.response?.data['message'] ?? 'Login failed',
-        code: e.response?.statusCode?.toString(),
-      ));
-    } catch (e) {
-      return Result.failure(Failure.unknown(message: e.toString()));
-    }
-  }
-
-  @override
-  Future<Result<AuthToken>> register(RegisterCredentials credentials) async {
-    try {
-      final response = await _dio.post(
-        '$_baseUrl/auth/register',
-        data: {
-          'name': credentials.name,
-          'email': credentials.email,
-          'password': credentials.password,
-          'phone': credentials.phone,
-        },
-      );
-
-      return Result.success(AuthToken.fromJson(response.data));
-    } on DioException catch (e) {
-      return Result.failure(Failure.server(
-        message: e.response?.data['message'] ?? 'Registration failed',
-      ));
-    } catch (e) {
-      return Result.failure(Failure.unknown(message: e.toString()));
-    }
-  }
-
-  @override
-  Future<Result<void>> logout() async {
-    try {
-      await _dio.post('$_baseUrl/auth/logout');
-      return const Result.success(null);
-    } catch (e) {
-      return Result.failure(Failure.server(message: e.toString()));
-    }
-  }
-
-  @override
-  Future<Result<AuthToken>> refreshToken(String refreshToken) async {
-    try {
-      final response = await _dio.post(
-        '$_baseUrl/auth/refresh',
-        data: {'refresh_token': refreshToken},
-      );
-      return Result.success(AuthToken.fromJson(response.data));
-    } catch (e) {
-      return Result.failure(Failure.server(message: e.toString()));
-    }
-  }
-
-  @override
-  Future<Result<bool>> isAuthenticated() async {
-    // Check if token exists and is valid
-    return const Result.success(false);
-  }
-
-  @override
-  Future<Result<String?>> getAccessToken() async {
-    // Get token from storage
-    return const Result.success(null);
-  }
-
-  @override
-  Future<Result<void>> forgotPassword(String email) async {
-    try {
-      await _dio.post('$_baseUrl/auth/forgot-password', data: {'email': email});
-      return const Result.success(null);
-    } catch (e) {
-      return Result.failure(Failure.server(message: e.toString()));
-    }
-  }
-
-  @override
-  Future<Result<void>> resetPassword({
-    required String token,
-    required String newPassword,
-  }) async {
-    try {
-      await _dio.post('$_baseUrl/auth/reset-password', data: {
-        'token': token,
-        'password': newPassword,
-      });
-      return const Result.success(null);
-    } catch (e) {
-      return Result.failure(Failure.server(message: e.toString()));
-    }
-  }
-
-  @override
-  Future<Result<void>> verifyEmail(String otp) async {
-    try {
-      await _dio.post('$_baseUrl/auth/verify-email', data: {'otp': otp});
-      return const Result.success(null);
-    } catch (e) {
-      return Result.failure(Failure.server(message: e.toString()));
-    }
-  }
-
-  @override
-  Future<Result<void>> resendVerificationEmail(String email) async {
-    try {
-      await _dio.post('$_baseUrl/auth/resend-verification', data: {'email': email});
-      return const Result.success(null);
-    } catch (e) {
-      return Result.failure(Failure.server(message: e.toString()));
-    }
-  }
-}
-```
-
-### 3. Implement AuthNavigation
+### 2. Implement AuthNavigation
 
 ```dart
 import 'package:feature_auth/auth.dart';
@@ -286,7 +136,7 @@ class AuthNavigationImpl implements AuthNavigation {
 }
 ```
 
-### 4. Create Route Definitions
+### 3. Create Route Definitions
 
 Since feature_auth pages use `@RoutePage()` but are in a different package, you need to create manual route definitions:
 
@@ -320,7 +170,7 @@ class RegisterRoute extends PageRouteInfo<void> {
 }
 ```
 
-### 5. Add Routes to Router
+### 4. Add Routes to Router
 
 **lib/app/app_router.dart:**
 ```dart
@@ -347,7 +197,7 @@ class AppRouter extends RootStackRouter {
 }
 ```
 
-### 6. Add Localization Delegate
+### 5. Add Localization Delegate
 
 **lib/app/app.dart:**
 ```dart
