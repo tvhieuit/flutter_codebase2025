@@ -258,6 +258,7 @@ fvm dart format .
 - [ ] Page uses `wrappedRoute()` for BLoC provider
 - [ ] Page uses `@RoutePage()` annotation
 - [ ] BlocBuilder has `buildWhen`
+- [ ] BlocBuilder is granular (does NOT wrap `Scaffold` or large static parts)
 - [ ] Uses `emit` instead of `Emitter<State>`
 - [ ] Uses `on()` instead of `on<Event>()`
 - [ ] Inject Use Case (not Repository)
@@ -278,7 +279,8 @@ fvm dart format .
 
 ### DON'T
 - Don't use abstract class for Events
-- Don't skip `buildWhen`
+- [ ] Don't skip `buildWhen`
+- [ ] Don't wrap the entire `Scaffold` in `BlocBuilder` (see [bloc_pattern.md](./bloc_pattern.md))
 - Don't inject Repositories in BLoCs
 - Don't make direct API calls
 - Don't create separate View class

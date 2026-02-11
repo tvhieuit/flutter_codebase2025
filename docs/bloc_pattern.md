@@ -85,14 +85,56 @@ class MyFeaturePage extends StatelessWidget implements AutoRouteWrapper {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<MyFeatureBloc, MyFeatureState>(
-      buildWhen: (previous, current) =>
-          previous.isLoading != current.isLoading,
-      builder: (context, state) {
-        return Scaffold(/* UI */);
-      },
+    return Scaffold(
+      appBar: AppBar(title: const Text('My Feature')),
+      body: BlocBuilder<MyFeatureBloc, MyFeatureState>(
+        buildWhen: (previous, current) =>
+            previous.isLoading != current.isLoading ||
+            previous.data != current.data,
+        builder: (context, state) {
+          if (state.isLoading) return const Center(child: CircularProgressIndicator());
+          return Center(child: Text(state.data ?? 'No data'));
+        },
+      ),
     );
   }
+}
+```
+
+## Granular Re-renders (Performance)
+
+### ❌ SAI (Wrong)
+Wrapping the entire `Scaffold` or large static layouts in `BlocBuilder` causes expensive re-renders of the whole screen.
+
+```dart
+@override
+Widget build(BuildContext context) {
+  return BlocBuilder<MyFeatureBloc, MyFeatureState>(
+    builder: (context, state) {
+      return Scaffold(  // ❌ Scaffold renders every time state changes
+        appBar: AppBar(title: Text('Avoid this')),
+        body: Center(child: Text(state.data)),
+      );
+    },
+  );
+}
+```
+
+### ✅ ĐÚNG (Correct)
+Only wrap the specific parts of the UI that depend on the state. Keep `Scaffold`, `AppBar`, and static elements OUTSIDE the `BlocBuilder`.
+
+```dart
+@override
+Widget build(BuildContext context) {
+  return Scaffold(      // ✅ Static layout
+    appBar: AppBar(title: Text('Better performance')),
+    body: BlocBuilder<MyFeatureBloc, MyFeatureState>(
+      buildWhen: (previous, current) => previous.data != current.data,
+      builder: (context, state) {
+        return Center(child: Text(state.data)); // ✅ Only this part re-renders
+      },
+    ),
+  );
 }
 ```
 
