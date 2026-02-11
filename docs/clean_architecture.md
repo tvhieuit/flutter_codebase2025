@@ -5,7 +5,7 @@
 ```dart
 // ❌ WRONG - Direct repository injection violates Clean Architecture
 @injectable
-class MyBloc extends Bloc<MyEvent, MyState> with SafetyNetworkMixin {
+class MyBloc extends Bloc<MyEvent, MyState> {
   final MyRepository _repository; // VIOLATION - Skip Use Case layer
 }
 ```
@@ -15,7 +15,7 @@ class MyBloc extends Bloc<MyEvent, MyState> with SafetyNetworkMixin {
 ```dart
 // ✅ CORRECT - Use Case injection follows Clean Architecture
 @injectable
-class MyBloc extends Bloc<MyEvent, MyState> with SafetyNetworkMixin {
+class MyBloc extends Bloc<MyEvent, MyState> {
   final MyUseCase _useCase; // CORRECT - Use Case layer
 }
 ```

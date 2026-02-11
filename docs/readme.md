@@ -18,7 +18,7 @@ Complete documentation for the Flutter Clean Architecture Monorepo.
 | [monorepo_guide.md](./monorepo_guide.md) | Working with the workspace |
 | [feature_packages.md](./feature_packages.md) | Creating feature packages |
 | [new_app_guide.md](./new_app_guide.md) | Adding new apps |
-| [domain_package.md](./domain_package.md) | Domain layer (entities, use cases, interfaces) |
+| [domain_package.md](./domain_package.md) | Domain layer (entities & interfaces) |
 | [data_package.md](./data_package.md) | Data layer (implementations, network, storage) |
 | [auth_package.md](./auth_package.md) | Authentication feature package |
 
@@ -111,10 +111,10 @@ docs/
 
 ## 🔗 Quick Links
 
-### Architecture Rules (in `rules/`)
-- [clean_architecture.md](../rules/clean_architecture.md) - Architecture principles
-- [bloc_pattern.md](../rules/bloc_pattern.md) - BLoC rules
-- [code_style.md](../rules/code_style.md) - Formatting & naming
+### Architecture Rules
+- [clean_architecture.md](./clean_architecture.md) - Architecture principles
+- [bloc_pattern.md](./bloc_pattern.md) - BLoC rules
+- [code_style.md](./code_style.md) - Formatting & naming
 
 ### Key Files
 - [pubspec.yaml](../pubspec.yaml) - Workspace & Melos config

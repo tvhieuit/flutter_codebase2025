@@ -343,17 +343,17 @@ class DataRepository {
   final _networkService = getIt<NetworkService>();
   final _apiService = getIt<ApiService>();
   
-  Future<Result> fetchData() async {
+  Future<Result<dynamic>> fetchData() async {
     // Check network first
     if (!await _networkService.hasConnection()) {
-      return Result.error('No internet connection');
+      return const Result.failure(Failure.network(message: 'No internet connection'));
     }
     
     try {
       final data = await _apiService.getData();
       return Result.success(data);
     } catch (e) {
-      return Result.error('Failed to fetch data');
+      return Result.failure(Failure.server(message: 'Failed to fetch data'));
     }
   }
 }
@@ -401,5 +401,5 @@ test('should open camera when permission granted', () async {
 - [connectivity_plus](https://pub.dev/packages/connectivity_plus)
 - [permission_handler](https://pub.dev/packages/permission_handler)
 - [Screen Template](./screen_template.md)
-- [Clean Architecture](../rules/clean_architecture.md)
+- [Clean Architecture](./clean_architecture.md)
 

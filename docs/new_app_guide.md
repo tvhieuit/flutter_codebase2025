@@ -84,7 +84,10 @@ dependencies:
   shared_preferences: any
 
   # Internal Packages
+  app_core: any
+  app_widget: any
   domain: any
+  use_cases: any
   data: any
   feature_auth: any  # If using auth
 
@@ -219,7 +222,7 @@ part 'app_router.gr.dart';
 
 @singleton
 @AutoRouterConfig()
-class AppRouter extends RootStackRouter {
+class AppRouter extends $AppRouter {
   @override
   List<AutoRoute> get routes => [
         AutoRoute(page: SplashRoute.page, initial: true),
@@ -285,7 +288,8 @@ Future<void> configureDependencies() async {
   initCorePackage();
   initWidgetPackage();
   initDataPackage();        // Registers repo impls, Dio, SharedPrefs
-  initDomainPackage();      // Registers use cases
+  initDomainPackage();      // Registers repo interfaces
+  initUseCasesPackage();    // Registers core use cases
   initAuthPackage();
 
   // Configure this app's DI
@@ -335,7 +339,7 @@ class AuthRepositoryImpl implements AuthRepository {
 // Implement AuthNavigation
 @Injectable()
 class AuthNavigationImpl implements AuthNavigation {
-  final AppRouter _router;
+  final StackRouter _router;
 
   AuthNavigationImpl(this._router);
 
@@ -370,38 +374,43 @@ part 'splash_event.dart';
 part 'splash_state.dart';
 
 @injectable
-class SplashBloc extends Bloc<SplashEvent, SplashState> with SafetyNetworkMixin {
+class SplashBloc extends Bloc<SplashEvent, SplashState> {
   final UserLocalRepository _userLocalRepository;
+  final StackRouter _router;
+  final AppRoute _appRoute;
+  final AppToast _toast;
 
-  SplashBloc(this._userLocalRepository) : super(SplashState.initial()) {
-    on<SplashEvent>(_onEvent);
+  SplashBloc(this._userLocalRepository, this._router, this._appRoute, this._toast) : super(SplashState.initial()) {
+    on<SplashEvent>((event, emit) async {
+       await event.when(
+        started: () => _onStarted(emit),
+      );
+    });
     add(const SplashEvent.started());
-  }
-
-  Future<void> _onEvent(SplashEvent event, Emitter<SplashState> emit) async {
-    await event.when(
-      started: () => _onStarted(emit),
-    );
   }
 
   Future<void> _onStarted(Emitter<SplashState> emit) async {
     emit(state.copyWith(isLoading: true));
     await Future.delayed(const Duration(seconds: 2));
 
-    await safeNetworkCall(
-      () async {
-        final tokenResult = await _userLocalRepository.getAccessToken();
-        final hasToken = tokenResult.data?.isNotEmpty ?? false;
+    try {
+      final tokenResult = await _userLocalRepository.getAccessToken();
+      final hasToken = tokenResult.data?.isNotEmpty ?? false;
 
-        emit(state.copyWith(
-          isLoading: false,
-          authStatus: hasToken ? AuthStatus.authenticated : AuthStatus.unauthenticated,
-        ));
-      },
-      onError: (_) {
-        emit(state.copyWith(isLoading: false, authStatus: AuthStatus.unauthenticated));
-      },
-    );
+      emit(state.copyWith(
+        isLoading: false,
+        authStatus: hasToken ? AuthStatus.authenticated : AuthStatus.unauthenticated,
+      ));
+      
+      if (hasToken) {
+        _router.replaceAll([_appRoute.home]);
+      } else {
+        _router.replaceAll([_appRoute.login]);
+      }
+    } catch (e) {
+      emit(state.copyWith(isLoading: false, authStatus: AuthStatus.unauthenticated));
+      _router.replaceAll([_appRoute.login]);
+    }
   }
 }
 ```

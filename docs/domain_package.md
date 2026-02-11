@@ -324,7 +324,8 @@ Future<void> configureDependencies() async {
   initCorePackage();
   initWidgetPackage();
   initDataPackage();        // Registers repo impls, Dio, SharedPrefs
-  initDomainPackage();      // Registers use cases
+  initDomainPackage();      // Registers repository interfaces
+  initUseCasesPackage();    // Registers application logic
   initAuthPackage();
   initAppSettingsPackage();
   getIt.init();

@@ -10,7 +10,8 @@ flutter_codebase2025/
 │   └── flutter_app/        # Main application
 ├── packages/                # Shared packages
 │   ├── app_core/            # Core shared (Result, Failure, annotations)
-│   ├── domain/              # Domain layer (entities, use cases, repo interfaces)
+│   ├── domain/              # Domain layer (entities, repo interfaces)
+│   ├── use_cases/           # Use case layer (application logic)
 │   ├── data/                # Data layer (repo implementations, network, storage)
 │   ├── feature/             # Feature packages
 │   │   ├── auth/            # Authentication feature
@@ -31,6 +32,7 @@ workspace:
   - packages/app_utility
   - packages/app_widget
   - packages/domain
+  - packages/use_cases
   - packages/data
   - packages/feature/auth
   - packages/feature/app_settings
@@ -44,9 +46,10 @@ workspace:
 Pure business logic shared across all apps (no infrastructure dependencies):
 - **Entities**: Business models with `@freezed`
 - **Repository Interfaces**: Abstract interfaces for data access (NO implementations)
-- **Use Cases**: Business logic operations
 - **Result Type**: Type-safe error handling (from `app_core`)
 - **Failures**: Sealed failure types (from `app_core`)
+
+> **Note**: Use Cases have been moved to `packages/use_cases`.
 
 ```dart
 // Usage in any app
@@ -145,8 +148,10 @@ AppPrimaryButton(
 └─────────┼──────────────────────────────────────────────────┘
           │
           ▼
+          │
+          ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    Feature Packages                          │
+│                      Feature Packages                          │
 │  ┌─────────────┐  ┌──────────────────┐                      │
 │  │ feature_auth│  │feature_app_settings│                    │
 │  └──────┬──────┘  └────────┬─────────┘                      │
@@ -154,16 +159,18 @@ AppPrimaryButton(
           │                  │
           ▼                  ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                      Core Packages                           │
+│                      Use Cases Package                       │
+│  ┌─────────────┐                                            │
+│  │  use_cases  │                                            │
+│  └──────┬──────┘                                            │
+└─────────┼───────────────────────────────────────────────────┘
+          │
+          ▼
+┌─────────────────────────────────────────────────────────────┐
+│                      Core & Data Packages                   │
 │  ┌──────────┐  ┌──────────┐  ┌─────────────┐  ┌──────────┐ │
-│  │  domain  │  │   data   │  │ app_utility │  │app_widget│ │
-│  └────┬─────┘  └────┬─────┘  └─────────────┘  └──────────┘ │
-│       │              │                                       │
-│       └──────┬───────┘                                       │
-│              ▼                                               │
-│        ┌──────────┐                                          │
-│        │ app_core │                                          │
-│        └──────────┘                                          │
+│  │  domain  │  │   data   │  │  app_core   │  │app_widget│ │
+│  └──────────┘  └──────────┘  └─────────────┘  └──────────┘ │
 └─────────────────────────────────────────────────────────────┘
 ```
 

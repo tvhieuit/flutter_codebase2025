@@ -31,11 +31,11 @@ packages/domain/lib/src/
 │   ├── user_repository.dart           # Remote repository interface (in domain)
 │   └── local/
 │       └── user_local_repository.dart  # Local repository interface (in domain)
-└── use_cases/
-    └── user/
-        ├── get_user_use_case.dart      # Single responsibility use case
-        ├── get_users_use_case.dart
-        └── ...
+packages/use_cases/lib/src/
+└── user/
+    ├── get_user_use_case.dart      # Single responsibility use case
+    ├── get_users_use_case.dart
+    └── ...
 
 packages/data/lib/src/
 ├── repositories/
@@ -231,12 +231,11 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     this._clearUserDataUseCase,
     this._toast,
   ) : super(UserState.initial()) {
-    on(_onStarted);
-    on(_onLoadUsers);
-    on(_onDeleteUser);
-    on(_onLogout);
-
     add(const UserEvent.started());
+  }
+
+  Future<void> _onStarted(_Started event, emit) async {
+    await _onLoadUsers(const _LoadUsers(), emit);
   }
 
   Future<void> _onLoadUsers(_LoadUsers event, emit) async {
@@ -295,43 +294,33 @@ class UserPage extends StatelessWidget implements AutoRouteWrapper {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<UserBloc, UserState>(
-      listenWhen: (previous, current) => 
-          previous.error != current.error && current.error != null,
-      listener: (context, state) {
-        // Show error message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(state.error!), backgroundColor: Colors.red),
-        );
-      },
-      child: Scaffold(
-        appBar: AppBar(title: const Text('User List')),
-        body: BlocBuilder<UserBloc, UserState>(
-          buildWhen: (previous, current) =>
-              previous.isLoading != current.isLoading ||
-              previous.users != current.users,
-          builder: (context, state) {
-            if (state.isLoading && state.users.isEmpty) {
-              return const Center(child: CircularProgressIndicator());
-            }
+    return Scaffold(
+      appBar: AppBar(title: const Text('User List')),
+      body: BlocBuilder<UserBloc, UserState>(
+        buildWhen: (previous, current) =>
+            previous.isLoading != current.isLoading ||
+            previous.users != current.users,
+        builder: (context, state) {
+          if (state.isLoading && state.users.isEmpty) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-            return ListView.builder(
-              itemCount: state.users.length,
-              itemBuilder: (context, index) {
-                final user = state.users[index];
-                return ListTile(
-                  title: Text(user.name ?? 'Unknown'),
-                  subtitle: Text(user.email ?? ''),
-                  onTap: () {
-                    context.read<UserBloc>().add(
-                      UserEvent.loadUserProfile(user.id!),
-                    );
-                  },
-                );
-              },
-            );
-          },
-        ),
+          return ListView.builder(
+            itemCount: state.users.length,
+            itemBuilder: (context, index) {
+              final user = state.users[index];
+              return ListTile(
+                title: Text(user.name ?? 'Unknown'),
+                subtitle: Text(user.email ?? ''),
+                onTap: () {
+                  context.read<UserBloc>().add(
+                    UserEvent.loadUserProfile(user.id!),
+                  );
+                },
+              );
+            },
+          );
+        },
       ),
     );
   }
@@ -373,7 +362,8 @@ Future<void> configureDependencies() async {
   initCorePackage();
   initWidgetPackage();
   initDataPackage();     // Registers Dio, SharedPrefs, repo impls
-  initDomainPackage();   // Registers use cases
+  initDomainPackage();   // Registers repo interfaces
+  initUseCasesPackage(); // Registers core use cases
   initAuthPackage();
   getIt.init();          // Registers app-level BLoCs
 }
@@ -505,7 +495,9 @@ void main() {
 - Use abstract interfaces for all layers
 - Implement caching strategy in Use Cases
 - Validate data in Use Cases
-- Use `SafetyNetworkMixin` for error handling
+- Use granular `BlocBuilder` (outside `Scaffold`)
+- Trigger all user actions via events
+- Use `try/catch` + `AppToast` for errors
 - Use `buildWhen` and `listenWhen`
 - Auto-start BLoCs with initial event
 

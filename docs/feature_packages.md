@@ -154,19 +154,17 @@ part 'my_feature_state.dart';
 @injectable
 class MyFeatureBloc extends Bloc<MyFeatureEvent, MyFeatureState> {
   final MyFeatureUseCase _useCase;
+  final StackRouter _router;
+  final AppRoute _appRoute;
+  final AppToast _toast;
 
-  MyFeatureBloc(this._useCase) : super(MyFeatureState.initial()) {
-    on<MyFeatureEvent>(_onEvent);
-  }
-
-  Future<void> _onEvent(
-    MyFeatureEvent event,
-    Emitter<MyFeatureState> emit,
-  ) async {
-    await event.when(
-      load: () => _onLoad(emit),
-      refresh: () => _onRefresh(emit),
-    );
+  MyFeatureBloc(this._useCase, this._router, this._appRoute, this._toast) : super(MyFeatureState.initial()) {
+    on<MyFeatureEvent>((event, emit) async {
+      await event.when(
+        load: () => _onLoad(emit),
+        refresh: () => _onRefresh(emit),
+      );
+    });
   }
 
   Future<void> _onLoad(Emitter<MyFeatureState> emit) async {
@@ -194,16 +192,9 @@ class MyFeatureBloc extends Bloc<MyFeatureEvent, MyFeatureState> {
         isLoading: false,
         data: data,
       ));
-    } on Failure catch (e) {
-      emit(state.copyWith(
-        isLoading: false,
-        error: e.message,
-      ));
     } catch (e) {
-      emit(state.copyWith(
-        isLoading: false,
-        error: e.toString(),
-      ));
+      emit(state.copyWith(isLoading: false));
+      _toast.error(e.toString());
     }
   }
 
@@ -364,15 +355,10 @@ class MyFeaturePage extends StatelessWidget implements AutoRouteWrapper {
       body: BlocBuilder<MyFeatureBloc, MyFeatureState>(
         buildWhen: (previous, current) =>
             previous.isLoading != current.isLoading ||
-            previous.data != current.data ||
-            previous.error != current.error,
+            previous.data != current.data,
         builder: (context, state) {
           if (state.isLoading) {
             return const Center(child: CircularProgressIndicator());
-          }
-
-          if (state.hasError) {
-            return Center(child: Text(state.error!));
           }
 
           return ListView.builder(
@@ -384,6 +370,9 @@ class MyFeaturePage extends StatelessWidget implements AutoRouteWrapper {
                 subtitle: item.description != null 
                     ? Text(item.description!) 
                     : null,
+                onTap: () {
+                  context.read<MyFeatureBloc>().add(const MyFeatureEvent.load());
+                },
               );
             },
           );
@@ -518,9 +507,13 @@ In app's `di/injection.dart`:
 import 'package:feature_my_feature/my_feature.dart' as my_feature;
 
 Future<void> configureDependencies() async {
-  // ...
+  initCorePackage();
+  initWidgetPackage();
+  initDataPackage();
+  initDomainPackage();
+  initUseCasesPackage();
   my_feature.initMyFeaturePackage(getIt: getIt);
-  // ...
+  getIt.init();
 }
 ```
 
@@ -546,13 +539,14 @@ class MyFeatureRepositoryImpl implements MyFeatureRepository {
 ```dart
 @Injectable()
 class MyFeatureNavigationImpl implements MyFeatureNavigation {
-  final AppRouter _router;
+  final StackRouter _router;
+  final AppRoute _appRoute;
   
-  MyFeatureNavigationImpl(this._router);
+  MyFeatureNavigationImpl(this._router, this._appRoute);
   
   @override
   void goToDetail(String id) {
-    _router.push(MyFeatureDetailRoute(id: id));
+    // _router.push(MyFeatureDetailRoute(id: id));
   }
   
   // ... other methods

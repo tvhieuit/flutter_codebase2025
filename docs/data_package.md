@@ -57,7 +57,7 @@ packages/data/
 
 - Entity definitions (in `domain`)
 - Repository interfaces (in `domain`)
-- Use cases (in `domain`)
+- Use cases (in `use_cases`)
 - BLoCs and UI (in `feature/*` or `apps/*`)
 
 ## Dependency Injection
@@ -80,7 +80,8 @@ Future<void> configureDependencies() async {
   initCorePackage();       // Result, Failure, annotations
   initWidgetPackage();     // Shared widgets
   initDataPackage();       // Repo implementations, Dio, SharedPrefs
-  initDomainPackage();     // Use cases (depend on repo interfaces)
+  initDomainPackage();     // Repository interfaces
+  initUseCasesPackage();   // Use cases (depend on repo interfaces)
   initAuthPackage();       // Auth feature BLoCs
   initAppSettingsPackage(); // App settings BLoCs
   getIt.init();            // App-level BLoCs

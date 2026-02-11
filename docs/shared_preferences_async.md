@@ -469,5 +469,10 @@ class LocalRepositoryImpl implements LocalRepository {
 - Large data storage needs
 - Memory-conscious applications
 
-Use `SharedPreferencesAsync` for all new code in this project!
+## See Also
+
+- [Data Package](./data_package.md)
+- [Domain Package](./domain_package.md)
+- [Services](./services.md)
+- [Clean Architecture](./clean_architecture.md)
 

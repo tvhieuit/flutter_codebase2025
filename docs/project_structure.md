@@ -58,17 +58,6 @@ lib/
 │       ├── user_event.dart
 │       ├── user_state.dart
 │       └── user_page.dart
-├── screen/
-│   ├── splash/
-│   │   ├── splash_bloc.dart
-│   │   ├── splash_event.dart
-│   │   ├── splash_state.dart
-│   │   └── splash_page.dart
-│   └── user/
-│       ├── user_bloc.dart
-│       ├── user_event.dart
-│       ├── user_state.dart
-│       └── user_page.dart
 ├── widgets/
 │   ├── app_loading.dart
 │   ├── app_loading_button.dart
@@ -115,20 +104,6 @@ packages/domain/
 
 Application logic - contains all core use cases. Depends on `domain`:
 
-```
-packages/use_cases/
-├── lib/
-│   ├── use_cases.dart            # Main export
-│   └── src/
-│       ├── di/                   # Dependency injection
-│       │   ├── di.dart
-│       │   └── injection.dart
-│       ├── use_cases.dart
-│       ├── base_use_case.dart
-│       ├── auth/
-│       ├── user/
-│       └── product/
-└── pubspec.yaml
 ```
 ```
 
@@ -341,9 +316,9 @@ workspace:
           │
           ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                      Core Packages                           │
+│                      Core & Data Packages                   │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
-│  │   domain    │  │ app_utility │  │ app_widget  │         │
+│  │   domain    │  │     data    │  │  app_core   │         │
 │  └─────────────┘  └─────────────┘  └─────────────┘         │
 └─────────────────────────────────────────────────────────────┘
 ```

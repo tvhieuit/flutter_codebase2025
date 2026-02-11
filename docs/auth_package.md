@@ -9,10 +9,9 @@ packages/feature/auth/
 ├── lib/
 │   ├── auth.dart                 # Main export
 │   └── src/
-│       ├── di/                   # Dependency injection
+│       ├── di/                   # Dependency injection (feature-specific)
 │       ├── l10n/                 # Localization
-│       ├── navigation/           # AppRoute contract
-│       ├── repository/           # Re-exports
+│       ├── navigation/           # Navigation interface/implementation
 │       ├── screen/
 │       │   ├── login/
 │       │   │   ├── login_bloc.dart
@@ -20,7 +19,7 @@ packages/feature/auth/
 │       │   └── register/
 │       │       ├── register_bloc.dart
 │       │       └── register_page.dart
-│       └── use_case/             # Login/Register use cases + validators
+│       └── use_case/             # Feature-specific use cases or re-exports
 ├── l10n/
 │   └── auth_en.arb
 ├── pubspec.yaml
@@ -77,8 +76,9 @@ Future<void> configureDependencies() async {
   initCorePackage();
   initWidgetPackage();
   initDataPackage();        // Registers AuthRepositoryImpl, Dio, SharedPrefs
-  initDomainPackage();      // Registers use cases
-  initAuthPackage();        // Registers auth BLoCs and feature use cases
+  initDomainPackage();      // Registers repository interfaces
+  initUseCasesPackage();    // Registers core use cases (Login, Register etc.)
+  initAuthPackage();        // Registers auth BLoCs
   initAppSettingsPackage();
   getIt.init();
 }
@@ -104,7 +104,7 @@ abstract class NavigationModule {
 
 @Injectable()
 class AuthNavigationImpl implements AuthNavigation {
-  final AppRouter _router;
+  final StackRouter _router;
 
   AuthNavigationImpl(this._router);
 

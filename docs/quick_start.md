@@ -25,8 +25,6 @@ lib/
 ├── app/
 │   ├── app.dart                 # Main app with routing
 │   └── app_router.dart          # Route configuration
-├── app_mixin/
-│   └── safety_network_mixin.dart # For safe API calls
 ├── di/
 │   └── injection.dart           # Dependency injection
 ├── screen/
@@ -44,8 +42,8 @@ lib/
 ✅ Auto Route navigation  
 ✅ GetIt dependency injection  
 ✅ Freezed immutable states  
-✅ SafetyNetworkMixin for error handling  
-✅ Clean Architecture structure  
+✅ AppToast for consistent messaging
+✅ Clean Architecture (Domain, Use Cases, Data)
 
 ## 🎯 Next Steps
 
@@ -73,7 +71,7 @@ class HomePage extends StatelessWidget {
 Add to `lib/app/app_router.dart`:
 ```dart
 @AutoRouterConfig(replaceInRouteName: 'Page,Route')
-class AppRouter extends RootStackRouter {
+class AppRouter extends $AppRouter {
   @override
   List<AutoRoute> get routes => [
     AutoRoute(page: SplashRoute.page, initial: true),
@@ -125,11 +123,17 @@ class AuthUseCaseImpl implements AuthUseCase {
 Update splash BLoC:
 ```dart
 @injectable
-class SplashBloc extends Bloc<SplashEvent, SplashState> with SafetyNetworkMixin {
+class SplashBloc extends Bloc<SplashEvent, SplashState> {
   final AuthUseCase _authUseCase;
+  final StackRouter _router;
+  final AppRoute _appRoute;
+  final AppToast _toast;
   
-  SplashBloc(this._authUseCase) : super(SplashState.initial());
-  // ... rest of implementation
+  SplashBloc(this._authUseCase, this._router, this._appRoute, this._toast) : super(SplashState.initial()) {
+    on<SplashEvent>((event, emit) async {
+      // Logic: try/catch + _toast
+    });
+  }
 }
 ```
 
@@ -158,11 +162,16 @@ fvm flutter run --flavor dev --dart-define-from-file=configs/dev.json
 ```dart
 // lib/screen/my_feature/my_feature_bloc.dart
 @injectable
-class MyFeatureBloc extends Bloc<MyFeatureEvent, MyFeatureState> 
-    with SafetyNetworkMixin {
+class MyFeatureBloc extends Bloc<MyFeatureEvent, MyFeatureState> {
   final MyFeatureUseCase _useCase;
+  final StackRouter _router;
+  final AppToast _toast;
   
-  MyFeatureBloc(this._useCase) : super(MyFeatureState.initial());
+  MyFeatureBloc(this._useCase, this._router, this._toast) : super(MyFeatureState.initial()) {
+    on<MyFeatureEvent>((event, emit) async {
+       // Logic
+    });
+  }
 }
 ```
 
@@ -235,10 +244,11 @@ fvm dart run melos run brd
 ### ✅ DO
 - Use `@injectable` for all BLoCs
 - Use `@freezed` for all states
-- Use `buildWhen` and `listenWhen`
+- Use granular `BlocBuilder` (outside `Scaffold`)
+- Trigger all user actions via events
+- Use `try/catch` + `AppToast` for errors
 - Inject Use Cases (not Repositories)
-- Keep repository interfaces in `packages/domain/`
-- Keep repository implementations in `packages/data/`
+- Repositories in `domain/`, Use Cases in `use_cases/`, Impls in `data/`
 
 ### ❌ DON'T
 - Don't inject Repositories directly in BLoCs

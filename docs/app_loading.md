@@ -110,17 +110,27 @@ Future<void> fetchData() async {
 
 ```dart
 @injectable
-class MyBloc extends Bloc<MyEvent, MyState> with SafetyNetworkMixin {
+class MyBloc extends Bloc<MyEvent, MyState> {
+  final MyUseCase _useCase;
+  final AppToast _toast;
+
+  MyBloc(this._useCase, this._toast) : super(state.initial()) {
+    on<MyEvent>(_onLoadData);
+  }
+
   Future<void> _onLoadData(event, emit) async {
     emit(state.copyWith(isLoading: true));
     AppLoading.show();
     
-    await safeNetworkCall(() async {
+    try {
       final result = await _useCase.getData();
-      emit(state.copyWith(data: result, isLoading: false));
-    });
-    
-    AppLoading.hide();
+      emit(state.copyWith(data: result.dataOrThrow, isLoading: false));
+    } catch (e) {
+      _toast.error(e.toString());
+      emit(state.copyWith(isLoading: false));
+    } finally {
+      AppLoading.hide();
+    }
   }
 }
 ```
@@ -465,5 +475,5 @@ class SyncService {
 ## References
 
 - [Screen Template](./screen_template.md)
-- [BLoC Pattern](../rules/bloc_pattern.md)
+- [BLoC Pattern](./bloc_pattern.md)
 

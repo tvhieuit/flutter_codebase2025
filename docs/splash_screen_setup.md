@@ -9,8 +9,6 @@ lib/
 │   ├── app.dart                    # Main app widget with routing
 │   ├── app_router.dart             # Auto Route configuration
 │   └── app_router.gr.dart          # Generated route file
-├── app_mixin/
-│   └── safety_network_mixin.dart   # Mixin for safe network calls in BLoCs
 ├── di/
 │   ├── injection.dart              # GetIt + Injectable setup
 │   └── injection.config.dart       # Generated DI configuration
@@ -28,9 +26,9 @@ lib/
 
 #### **Presentation Layer** (`screen/splash/`)
 - ✅ **splash_page.dart**: UI component with BlocProvider and BlocListener
-- ✅ **splash_bloc.dart**: Business logic with SafetyNetworkMixin
-- ✅ **splash_event.dart**: Events (Start, CheckAuth, Navigate)
-- ✅ **splash_state.dart**: State with freezed (isLoading, isInitialized, isAuthenticated)
+- ✅ **splash_bloc.dart**: Business logic with injected dependencies
+- ✅ **splash_event.dart**: Events (Start)
+- ✅ **splash_state.dart**: State with freezed (isLoading, authStatus)
 
 #### **Dependency Injection** (`di/`)
 - ✅ **injection.dart**: GetIt configuration with injectable
@@ -42,19 +40,8 @@ lib/
 - ✅ **app_router.gr.dart**: Generated routes
 - ✅ SplashPage set as initial route
 
-### 3. **Key Features**
-
-#### **SafetyNetworkMixin**
-```dart
-// Use in all BLoCs for safe API calls
-mixin SafetyNetworkMixin {
-  Future<T?> safeNetworkCall<T>({
-    required Future<T> Function() call,
-    Function(dynamic error)? onError,
-    Function()? onFinally,
-  });
-}
-```
+#### **Error Handling**
+Use `try/catch` blocks within BLoC event handlers and display errors via `AppToast`.
 
 #### **Splash BLoC Flow**
 1. **SplashEventStart** → Initialize app (2 second delay simulation)
@@ -67,9 +54,7 @@ mixin SafetyNetworkMixin {
 class SplashState with _$SplashState {
   const factory SplashState({
     @Default(false) bool isLoading,
-    @Default(false) bool isInitialized,
-    @Default(false) bool isAuthenticated,
-    String? error,
+    @Default(AuthStatus.unknown) AuthStatus authStatus,
   }) = _SplashState;
 }
 ```
@@ -120,22 +105,28 @@ BlocListener<SplashBloc, SplashState>(
 
 ### Creating New BLoCs
 1. Always use `@injectable` annotation
-2. Always extend with `SafetyNetworkMixin`
-3. Inject Use Cases (not Repositories directly)
-4. Use freezed for state management
+2. Inject required dependencies (Use Cases, Router, Toast)
+3. Use granular `BlocBuilder` (outside `Scaffold`)
+4. Trigger all user actions via events
+5. Use `try/catch` + `AppToast` for errors
+6. Use freezed for immutable states
 
 Example:
 ```dart
 @injectable
-class MyBloc extends Bloc<MyEvent, MyState> with SafetyNetworkMixin {
+class MyBloc extends Bloc<MyEvent, MyState> {
   final MyUseCase _useCase;
+  final StackRouter _router;
+  final AppToast _toast;
   
-  MyBloc(this._useCase) : super(MyState.initial());
-  
-  Future<void> _onEvent(MyEvent event, Emitter<MyState> emit) async {
-    await safeNetworkCall(() async {
-      final result = await _useCase.getData();
-      emit(state.copyWith(data: result));
+  MyBloc(this._useCase, this._router, this._toast) : super(MyState.initial()) {
+    on<MyEvent>((event, emit) async {
+       try {
+         final result = await _useCase.getData();
+         emit(state.copyWith(data: result.dataOrThrow));
+       } catch (e) {
+         _toast.error(e.toString());
+       }
     });
   }
 }
@@ -225,10 +216,11 @@ fvm dart run melos run l10n
 This implementation follows all project rules:
 - ✅ Clean Architecture layers properly separated
 - ✅ BLoC pattern with events and states
+- ✅ Selective `BlocBuilder` outside `Scaffold`
 - ✅ Freezed for immutable state
 - ✅ Injectable for dependency injection
 - ✅ Auto Route for navigation
-- ✅ SafetyNetworkMixin for error handling
+- ✅ try/catch + AppToast for error handling
 - ✅ Proper file organization
 - ✅ Code formatted and linted
 - ✅ All generated files created

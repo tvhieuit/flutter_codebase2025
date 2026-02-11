@@ -24,29 +24,27 @@ To add more locales, create new ARB files in `l10n/` directory.
 
 ## Usage Pattern
 
-### ✅ CORRECT - Use `l10n` extension (Recommended)
+### ✅ CORRECT - Use `l10n` Extension (Recommended)
 
-This project provides a global `l10n` extension for easy access:
+This project provides an extension on `BuildContext` for easy access:
 
-**`lib/extensions/l10n_extension.dart`**:
+**`packages/app_core/lib/src/extensions/context_extension.dart`**:
 ```dart
-import 'package:flutter_app/app/app_router.dart';
-import 'package:flutter_app/l10n/app_localization.dart';
-
-AppLocalizations get l10n => AppLocalizations.of(globalContext);
+extension LocalizationX on BuildContext {
+  AppLocalizations get l10n => AppLocalizations.of(this);
+}
 ```
 
 **Usage**:
 ```dart
-import '../../extensions/l10n_extension.dart';
-
 @override
 Widget build(BuildContext context) {
+  final l10n = context.l10n; // ✅ Accessible via context
+  
   return Column(
     children: [
-      Text(l10n.appName),      // ✅ Super clean - no context needed
-      Text(l10n.welcome),      // ✅ Import once, use everywhere
-      Text(l10n.save),         // ✅ Global access
+      Text(l10n.appName),
+      Text(l10n.welcome),
     ],
   );
 }
@@ -526,6 +524,7 @@ MaterialApp.router(
 - [Flutter Internationalization](https://docs.flutter.dev/ui/accessibility-and-localization/internationalization)
 - [ARB Format Specification](https://github.com/google/app-resource-bundle/wiki/ApplicationResourceBundleSpecification)
 - [Screen Template](./screen_template.md)
+- [Clean Architecture](./clean_architecture.md)
 
 ## Summary
 
