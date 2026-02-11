@@ -12,13 +12,13 @@ abstract class DataModule {
 
   /// Main Dio instance with auth interceptor
   @lazySingleton
-  Dio dio(@authInterceptorNamed Interceptor authInterceptor) {
+  Dio dio(
+    @authInterceptorNamed Interceptor authInterceptor,
+    @apiUrlNamed String apiUrl,
+  ) {
     final dio = Dio(
       BaseOptions(
-        baseUrl: const String.fromEnvironment(
-          'API_BASE_URL',
-          defaultValue: 'https://jsonplaceholder.typicode.com',
-        ),
+        baseUrl: apiUrl,
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
         headers: {
@@ -37,13 +37,10 @@ abstract class DataModule {
   /// Dio instance specifically for AuthRepository to avoid circular dependency
   @authDioNamed
   @lazySingleton
-  Dio authDio() {
+  Dio authDio(@apiUrlNamed String apiUrl) {
     return Dio(
       BaseOptions(
-        baseUrl: const String.fromEnvironment(
-          'API_BASE_URL',
-          defaultValue: 'https://jsonplaceholder.typicode.com',
-        ),
+        baseUrl: apiUrl,
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
         headers: {
